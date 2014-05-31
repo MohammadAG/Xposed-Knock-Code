@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <Preference
+        android:key="copyright_key"
+        android:summary="@string/pref_copyright_description"
+        android:title="@string/app_name" />
+    <Preference
+        android:key="change_knock_code"
+        android:summary="@string/pref_description_change_code"
+        android:title="@string/pref_title_change_code" />
+
+    <PreferenceCategory android:title="@string/appearance" >
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="should_draw_fill"
+            android:summary="@string/pref_description_draw_fill"
+            android:title="@string/pref_title_draw_fill" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="should_draw_lines"
+            android:summary="@string/pref_description_draw_lines"
+            android:title="@string/pref_title_draw_lines" />
+    </PreferenceCategory>
+
+</PreferenceScreen>
