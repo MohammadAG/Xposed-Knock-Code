@@ -1,7 +1,6 @@
 package com.mohammadag.knockcode;
 
 import java.util.ArrayList;
-import java.util.Locale;
 
 import android.content.Context;
 import android.os.CountDownTimer;
@@ -102,7 +101,7 @@ public class KnockCodeUnlockView extends LinearLayout implements OnPositionTappe
 	}
 
 	private String getEnablingInSecs(int secs) {
-		return String.format(Locale.ENGLISH, "Device disabled, try again in %d seconds", secs);
+		return ResourceHelper.getString(getContext(), R.string.device_disabled, secs);
 	}
 
 	protected void onAttemptLockoutEnd() {
@@ -164,7 +163,7 @@ public class KnockCodeUnlockView extends LinearLayout implements OnPositionTappe
 				}
 				mKnockCodeUnlockView.setMode(Mode.INCORRECT);
 
-				mTextView.setText("Incorrect pattern");
+				mTextView.setText(ResourceHelper.getString(getContext(), R.string.incorrect_pattern));
 			}
 		} else if (mTappedPositions.size() > mPasscode.size()) {
 			mTappedPositions.clear();
@@ -211,7 +210,7 @@ public class KnockCodeUnlockView extends LinearLayout implements OnPositionTappe
 
 	@Override
 	public boolean onLongClick(View v) {
-		mTextView.setText("Long pressed, pattern cleared");
+		mTextView.setText(ResourceHelper.getString(getContext(), R.string.long_pressed_hint));
 		mTappedPositions.clear();
 		return true;
 	}

@@ -28,4 +28,9 @@
     <string name="pref_title_change_code">Change knock code</string>
     <string name="pref_description_change_code">Tap here to change your knock code</string>
 
+    <!-- Lockscreen -->
+    <string name="device_disabled">Device disabled, try again in %1$d seconds</string>
+    <string name="incorrect_pattern">Incorrect pattern</string>
+    <string name="long_pressed_hint">Long pressed, pattern cleared</string>
+
 </resources>
