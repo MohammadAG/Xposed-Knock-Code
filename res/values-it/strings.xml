@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Knock Code</string>
+    <string name="pref_copyright_description">Copyright © 2014 Mohammad Abu-Garbeyyeh\nVedi più applicazioni e moduli</string>
+
+    <!-- Misc -->
+    <string name="menu_playstore">Play Store</string>
+    <string name="menu_xposed">Moduli Xposed</string>
+    <string name="action_settings">Impostazioni</string>
+
+    <!-- Categories -->
+    <string name="appearance">Aspetto</string>
+
+    <!-- Pattern change -->
+    <string name="enter_new_knock_code">Inserire il nuovo Knock Code</string>
+    <string name="enter_previous_knock_code">Inserisci il Knock Code in uso</string>
+    <string name="confirm_new_knock_code">Confermare il nuovo Knock Code</string>
+    <string name="successfully_changed_code">Codice cambiato con successo</string>
+    <string name="retry">Riprova</string>
+    <string name="next">Next</string>
+
+    <!-- Preferences -->
+    <string name="pref_title_draw_fill">Riempi</string>
+    <string name="pref_description_draw_fill">Mostra o non i tap del codice</string>
+    <string name="pref_title_draw_lines">Linee</string>
+    <string name="pref_description_draw_lines">Mostra o non le linee</string>
+    <string name="pref_title_change_code">Cambia Knock Code</string>
+    <string name="pref_description_change_code">Tocca qui per modificare il Knock Code</string>
+
+    <!-- Lockscreen -->
+    <string name="device_disabled">Dispositivo disabilitato, provare di nuovo tra %1$d secondi</string>
+    <string name="incorrect_pattern">Codice errato</string>
+    <string name="long_pressed_hint">Long pressed, pattern cleared</string>
+
+</resources>
