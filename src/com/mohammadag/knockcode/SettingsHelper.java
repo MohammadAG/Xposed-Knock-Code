@@ -25,12 +25,14 @@ public class SettingsHelper {
 	private Context mContext;
 
 	private HashSet<OnSettingsReloadedListener> mReloadListeners = null;
+	private String mUuid;
 
 	public interface OnSettingsReloadedListener {
 		void onSettingsReloaded();
 	}
 
 	public SettingsHelper(String uuid) {
+		mUuid = uuid;
 		mXPreferencesImpl = new XSharedPreferences(PACKAGE_NAME);
 		mXPreferencesImpl.makeWorldReadable();
 		mXPreferences = new SecurePreferences(mXPreferencesImpl, uuid);
@@ -49,6 +51,7 @@ public class SettingsHelper {
 
 	public void reloadSettings() {
 		mXPreferencesImpl.reload();
+		mXPreferences = new SecurePreferences(mXPreferencesImpl, mUuid);
 		try {
 			if (mReloadListeners != null) {
 				for (OnSettingsReloadedListener listener : mReloadListeners)

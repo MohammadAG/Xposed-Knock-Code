@@ -35,6 +35,10 @@ public class XposedMod implements IXposedHookLoadPackage {
 		if ("com.android.keyguard".equals(lpparam.packageName)) {
 			hookAospLockscreen(lpparam);
 		}
+
+		if ("android".equals(lpparam.packageName)) {
+			hookPrekitkatLockscreen(lpparam);
+		}
 	}
 
 	private void createHooksIfNeeded(final String keyguardPackageName) {
@@ -266,6 +270,20 @@ public class XposedMod implements IXposedHookLoadPackage {
 				lpparam.classLoader);
 		XposedBridge.hookAllConstructors(KeyguardHostView, mKeyguardHostViewInitHook);
 		findAndHookMethod(KeyguardHostView, "showSecurityScreen", "com.android.keyguard.KeyguardSecurityModel$SecurityMode", mShowSecurityScreenHook);
+		findAndHookMethod(KeyguardHostView, "updateSecurityView", View.class, mUpdateSecurityViewHook);
+		findAndHookMethod(KeyguardHostView, "onScreenTurnedOn", mOnScreenTurnedOnHook);
+		findAndHookMethod(KeyguardHostView, "onScreenTurnedOff", mOnScreenTurnedOffHook);
+	}
+
+	private void hookPrekitkatLockscreen(LoadPackageParam lpparam) {
+		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT)
+			return;
+
+		createHooksIfNeeded("com.android.internal.policy.impl.keyguard");
+		Class<?> KeyguardHostView = XposedHelpers.findClass("com.android.internal.policy.impl.keyguard.KeyguardHostView",
+				lpparam.classLoader);
+		XposedBridge.hookAllConstructors(KeyguardHostView, mKeyguardHostViewInitHook);
+		findAndHookMethod(KeyguardHostView, "showSecurityScreen", "com.android.internal.policy.impl.keyguard.KeyguardSecurityModel$SecurityMode", mShowSecurityScreenHook);
 		findAndHookMethod(KeyguardHostView, "updateSecurityView", View.class, mUpdateSecurityViewHook);
 		findAndHookMethod(KeyguardHostView, "onScreenTurnedOn", mOnScreenTurnedOnHook);
 		findAndHookMethod(KeyguardHostView, "onScreenTurnedOff", mOnScreenTurnedOffHook);

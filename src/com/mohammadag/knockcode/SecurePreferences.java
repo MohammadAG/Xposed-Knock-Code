@@ -78,7 +78,7 @@ public class SecurePreferences implements SharedPreferences {
 				try {
 					SecurePreferences.sFile.edit().putString(key, value).commit();
 				} catch (UnsupportedOperationException e) {
-
+					// Running in Xposed
 				}
 			}
 			SecurePreferences.sKey = SecurePreferences.decode(value);
