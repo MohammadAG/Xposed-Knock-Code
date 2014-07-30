@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Knock Code</string>
+    <string name="pref_copyright_description">Copyright © 2014 Mohammad Abu-Garbeyyeh\nView more apps and modules</string>
+
+    <!-- Misc -->
+    <string name="menu_playstore">Play Store</string>
+    <string name="menu_xposed">Xposed Module</string>
+    <string name="action_settings">Einstellungen</string>
+
+    <!-- Categories -->
+    <string name="appearance">Erscheinungsbild</string>
+
+    <!-- Pattern change -->
+    <string name="enter_new_knock_code">Neuen knock code eingeben</string>
+    <string name="enter_previous_knock_code">Aktuellen knock code eingeben</string>
+    <string name="confirm_new_knock_code">Neuen knock code bestätigen</string>
+    <string name="successfully_changed_code">Code wurde erfolgreich geändert</string>
+    <string name="retry">Nochmal</string>
+    <string name="next">Weiter</string>
+
+    <!-- Preferences -->
+    <string name="pref_title_draw_fill">Zeige Berührungen</string>
+    <string name="pref_description_draw_fill">Ob Berührungen angezeigt werden sollen oder nicht</string>
+    <string name="pref_title_draw_lines">Linien anzeigen</string>
+    <string name="pref_description_draw_lines">Ob Linien angezeigt werden soll oder nicht</string>
+    <string name="pref_title_change_code">Knock code ändern</string>
+    <string name="pref_description_change_code">Hier tippen um den knock code zu ändern</string>
+
+    <!-- Lockscreen -->
+    <string name="device_disabled">Gerät deaktiviert, versuchen Sie es erneut in %1$d Sekunden</string>
+    <string name="incorrect_pattern">Falsches Muster</string>
+    <string name="long_pressed_hint">Lange gedrückt, Muster zurückgesetzt</string>
+
+</resources>
