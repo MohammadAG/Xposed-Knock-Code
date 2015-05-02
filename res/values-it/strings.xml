@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+ 
+<!-- Translated by Massimiliano Montaleone -->
+
+<resources>
+
+    <string name="app_name">Knock Code</string>
+    <string name="pref_copyright_description">Copyright © 2014 Mohammad Abu-Garbeyyeh\nVedi più applicazioni e moduli</string>
+
+    <!-- Misc -->
+    <string name="menu_playstore">Play Store</string>
+    <string name="menu_xposed">Moduli Xposed</string>
+    <string name="action_settings">Impostazioni</string>
+
+    <!-- Categories -->
+    <string name="appearance">Aspetto</string>
+
+    <!-- Pattern change -->
+    <string name="enter_new_knock_code">Inserire il nuovo knock code</string>
+    <string name="enter_previous_knock_code">Inserire il knock code corrente</string>
+    <string name="confirm_new_knock_code">Conferma il nuovo knock code</string>
+    <string name="successfully_changed_code">Codice cambiato con successo</string>
+    <string name="retry">Riprova</string>
+    <string name="next">Prossimo</string>
+
+    <!-- Preferences -->
+    <string name="pref_title_draw_fill">Mostra contorni</string>
+    <string name="pref_description_draw_fill">Whether or not taps should be shown</string>
+    <string name="pref_title_draw_lines">Mostra linee</string>
+    <string name="pref_description_draw_lines">Whether or not the inner lines should be drawn</string>
+    <string name="pref_title_change_code">Cambia knock code</string>
+    <string name="pref_description_change_code">Toccare qui per modificare il knock code</string>
+
+    <!-- Lockscreen -->
+    <string name="device_disabled">Dispositivo bloccato, provare di nuovo tra %1$d secondi</string>
+    <string name="incorrect_pattern">Sequenza non corretta</string>
+    <string name="long_pressed_hint">Tenere premuto per cancellare la sequenza</string>
+
+</resources>
