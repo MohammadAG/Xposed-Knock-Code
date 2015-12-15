@@ -19,4 +19,12 @@ public abstract interface KeyguardSecurityView {
 	public abstract void setLockPatternUtils(Object paramLockPatternUtils);
 
 	public abstract void showUsabilityHint();
+
+	public abstract void startAppearAnimation();
+
+	public abstract boolean startDisappearAnimation(Runnable finishRunnable);
+
+	public abstract void showBouncer(int duration);
+
+	public abstract void hideBouncer(int duration);
 }

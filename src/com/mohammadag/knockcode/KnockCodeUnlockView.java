@@ -9,6 +9,8 @@ import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
 import android.view.View.OnLongClickListener;
+import android.view.animation.AnimationUtils;
+import android.view.animation.Interpolator;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -31,6 +33,8 @@ public class KnockCodeUnlockView extends LinearLayout implements OnPositionTappe
 	private ArrayList<Integer> mTappedPositions = new ArrayList<Integer>();
 	private TextView mTextView;
 	private SettingsHelper mSettingsHelper;
+	private Interpolator mLinearOutSlowInInterpolator;
+	private Interpolator mFastOutLinearInInterpolator;
 
 	private static final ArrayList<Integer> mPasscode = new ArrayList<Integer>();
 
@@ -60,6 +64,10 @@ public class KnockCodeUnlockView extends LinearLayout implements OnPositionTappe
 		mKnockCodeUnlockView.setOnPositionTappedListener(this);
 		mKnockCodeUnlockView.setOnLongClickListener(this);
 		addView(mKnockCodeUnlockView);
+		mLinearOutSlowInInterpolator = AnimationUtils.loadInterpolator(
+				context, android.R.interpolator.linear_out_slow_in);
+		mFastOutLinearInInterpolator = AnimationUtils.loadInterpolator(
+				context, android.R.interpolator.fast_out_linear_in);
 	}
 
 	public void setKeyguardCallback(Object paramKeyguardSecurityCallback) {
@@ -79,7 +87,7 @@ public class KnockCodeUnlockView extends LinearLayout implements OnPositionTappe
 	}
 
 	private void reportFailedUnlockAttempt() {
-		XposedHelpers.callMethod(mCallback, "reportFailedUnlockAttempt");	
+		XposedHelpers.callMethod(mCallback, "reportUnlockAttempt", false);
 	}
 
 	private void handleAttemptLockout(long paramLong) {
@@ -119,7 +127,7 @@ public class KnockCodeUnlockView extends LinearLayout implements OnPositionTappe
 	}
 
 	private void verifyPasscodeAndUnlock() {
-		XposedHelpers.callMethod(mCallback, "reportSuccessfulUnlockAttempt");
+		XposedHelpers.callMethod(mCallback, "reportUnlockAttempt", true);
 		try {
 			XposedHelpers.callMethod(mCallback, "dismiss", true);
 		} catch (Throwable t) {
@@ -214,4 +222,29 @@ public class KnockCodeUnlockView extends LinearLayout implements OnPositionTappe
 		mTappedPositions.clear();
 		return true;
 	}
+
+	public void startAppearAnimation() {
+		setAlpha(0f);
+		setTranslationY(0f);
+		animate()
+				.alpha(1)
+				.withLayer()
+				.setDuration(300)
+				.setInterpolator(mLinearOutSlowInInterpolator);
+	}
+
+	public boolean startDisappearAnimation(Runnable runnable) {
+		animate()
+				.alpha(0f)
+				.translationY(getResources().getDimensionPixelSize(
+						R.dimen.disappear_y_translation))
+				.setInterpolator(mFastOutLinearInInterpolator)
+				.setDuration(100)
+				.withEndAction(runnable);
+		return true;
+	}
+
+	public void showBouncer(int duration) {return;}
+
+	public void hideBouncer(int duration) {return;}
 }

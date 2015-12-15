@@ -4,14 +4,15 @@ import static de.robv.android.xposed.XposedHelpers.callMethod;
 import static de.robv.android.xposed.XposedHelpers.findAndHookMethod;
 import static de.robv.android.xposed.XposedHelpers.getObjectField;
 import android.content.Context;
+import android.os.Build;
 import android.provider.Settings.Secure;
 import android.view.View;
-import android.view.ViewGroup;
+//import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ViewFlipper;
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.XC_MethodHook;
-import de.robv.android.xposed.XC_MethodReplacement;
+//import de.robv.android.xposed.XC_MethodReplacement;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
@@ -21,24 +22,20 @@ public class XposedMod implements IXposedHookLoadPackage {
 	private XC_MethodHook mUpdateSecurityViewHook;
 	private XC_MethodHook mShowSecurityScreenHook;
 	private XC_MethodHook mKeyguardHostViewInitHook;
-	private XC_MethodReplacement mOnScreenTurnedOnHook;
-	private XC_MethodReplacement mOnScreenTurnedOffHook;
+	//private XC_MethodReplacement mOnScreenTurnedOnHook;
+	//private XC_MethodReplacement mOnScreenTurnedOffHook;
 	protected KnockCodeUnlockView mKnockCodeView;
 	private static SettingsHelper mSettingsHelper;
 
 	@Override
 	public void handleLoadPackage(LoadPackageParam lpparam) throws Throwable {
-		if ("com.htc.lockscreen".equals(lpparam.packageName)) {
-			hookHtcLockscreen(lpparam);
-		}
 
-		if ("com.android.keyguard".equals(lpparam.packageName)) {
+		if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) && (
+				lpparam.packageName.contains("android.keyguard") || lpparam.packageName.contains("com.android.systemui"))) {
 			hookAospLockscreen(lpparam);
 		}
 
-		if ("android".equals(lpparam.packageName)) {
-			hookPrekitkatLockscreen(lpparam);
-		}
+
 	}
 
 	private void createHooksIfNeeded(final String keyguardPackageName) {
@@ -87,10 +84,16 @@ public class XposedMod implements IXposedHookLoadPackage {
 			@Override
 			protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
 				View view = (View) param.args[0];
+				Boolean isBouncing = (Boolean) param.args[1];
 				if (view instanceof KnockCodeUnlockView) {
 					KnockCodeUnlockView unlockView = (KnockCodeUnlockView) view;
 					unlockView.setKeyguardCallback(XposedHelpers.getObjectField(param.thisObject, "mCallback"));
 					unlockView.setLockPatternUtils(XposedHelpers.getObjectField(param.thisObject, "mLockPatternUtils"));
+					if (isBouncing)
+						unlockView.showBouncer(0);
+					else
+						unlockView.hideBouncer(0);
+					XposedHelpers.setObjectField(param.thisObject,"mIsBouncing",isBouncing);
 					param.setResult(null);
 				}
 			}
@@ -122,18 +125,18 @@ public class XposedMod implements IXposedHookLoadPackage {
 				mKnockCodeView.setSettingsHelper(mSettingsHelper);
 				View newView = mKnockCodeView;
 
-				ViewGroup mAppWidgetContainer = (ViewGroup) getObjectField(param.thisObject, "mAppWidgetContainer");
-				mAppWidgetContainer.setVisibility(View.VISIBLE);
+				//ViewGroup mAppWidgetContainer = (ViewGroup) getObjectField(param.thisObject, "mAppWidgetContainer");
+				//mAppWidgetContainer.setVisibility(View.VISIBLE);
 				FrameLayout layout = (FrameLayout) param.thisObject;
 				// Don't show camera or search in navbar when SIM or Account screen is showing
 
 				int disableSearch = XposedHelpers.getStaticIntField(View.class, "STATUS_BAR_DISABLE_SEARCH");
 				layout.setSystemUiVisibility((layout.getSystemUiVisibility() & ~disableSearch));
 
-				Object mSlidingChallengeLayout = getObjectField(param.thisObject, "mSlidingChallengeLayout");
-				if (mSlidingChallengeLayout != null) {
-					callMethod(mSlidingChallengeLayout, "setChallengeInteractive", true);
-				}
+				//Object mSlidingChallengeLayout = getObjectField(param.thisObject, "mSlidingChallengeLayout");
+				//if (mSlidingChallengeLayout != null) {
+				//	callMethod(mSlidingChallengeLayout, "setChallengeInteractive", true);
+				//}
 
 				// Emulate Activity life cycle
 				if (oldView != null) {
@@ -145,14 +148,14 @@ public class XposedMod implements IXposedHookLoadPackage {
 				callMethod(newView, "onResume", KeyguardSecurityView.VIEW_REVEALED);
 				callMethod(newView, "setKeyguardCallback", mCallback);
 
-				final boolean needsInput = (Boolean) callMethod(newView, "needsInput");
-				Object mViewMediatorCallback = getObjectField(param.thisObject, "mViewMediatorCallback");
-				if (mViewMediatorCallback != null) {
-					callMethod(mViewMediatorCallback, "setNeedsInput", needsInput);
-				}
+				//final boolean needsInput = (Boolean) callMethod(newView, "needsInput");
+				//Object mViewMediatorCallback = getObjectField(param.thisObject, "mViewMediatorCallback");
+				//if (mViewMediatorCallback != null) {
+				//	callMethod(mViewMediatorCallback, "setNeedsInput", needsInput);
+				//}
 
 				// Find and show this child.
-				ViewFlipper mSecurityViewContainer = (ViewFlipper) getObjectField(param.thisObject, "mSecurityViewContainer");
+				ViewFlipper mSecurityViewContainer = (ViewFlipper) getObjectField(param.thisObject, "mSecurityViewFlipper");
 				mSecurityViewContainer.addView(newView);
 				final int childCount = mSecurityViewContainer.getChildCount();
 
@@ -176,7 +179,7 @@ public class XposedMod implements IXposedHookLoadPackage {
 				param.setResult(null);
 			}
 		};
-
+/*
 		mOnScreenTurnedOnHook = new XC_MethodReplacement() {
 			@Override
 			protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
@@ -250,9 +253,9 @@ public class XposedMod implements IXposedHookLoadPackage {
 				layout.clearFocus();
 				return null;
 			}
-		};
+		};*/
 	}
-
+/*
 	private void hookHtcLockscreen(LoadPackageParam lpparam) {
 		createHooksIfNeeded("com.htc.lockscreen.keyguard");
 		Class<?> KeyguardHostView = XposedHelpers.findClass("com.htc.lockscreen.keyguard.KeyguardHostView",
@@ -263,18 +266,18 @@ public class XposedMod implements IXposedHookLoadPackage {
 		findAndHookMethod(KeyguardHostView, "onScreenTurnedOn", mOnScreenTurnedOnHook);
 		findAndHookMethod(KeyguardHostView, "onScreenTurnedOff", mOnScreenTurnedOffHook);
 	}
-
+*/
 	private void hookAospLockscreen(LoadPackageParam lpparam) {
 		createHooksIfNeeded("com.android.keyguard");
-		Class<?> KeyguardHostView = XposedHelpers.findClass("com.android.keyguard.KeyguardHostView",
+		Class<?> KeyguardHostView = XposedHelpers.findClass("com.android.keyguard.KeyguardSecurityContainer",
 				lpparam.classLoader);
 		XposedBridge.hookAllConstructors(KeyguardHostView, mKeyguardHostViewInitHook);
 		findAndHookMethod(KeyguardHostView, "showSecurityScreen", "com.android.keyguard.KeyguardSecurityModel$SecurityMode", mShowSecurityScreenHook);
-		findAndHookMethod(KeyguardHostView, "updateSecurityView", View.class, mUpdateSecurityViewHook);
-		findAndHookMethod(KeyguardHostView, "onScreenTurnedOn", mOnScreenTurnedOnHook);
-		findAndHookMethod(KeyguardHostView, "onScreenTurnedOff", mOnScreenTurnedOffHook);
+		findAndHookMethod(KeyguardHostView, "updateSecurityView", View.class, boolean.class, mUpdateSecurityViewHook);
+		//findAndHookMethod(KeyguardHostView, "onScreenTurnedOn", mOnScreenTurnedOnHook);
+		//findAndHookMethod(KeyguardHostView, "onScreenTurnedOff", mOnScreenTurnedOffHook);
 	}
-
+/*
 	private void hookPrekitkatLockscreen(LoadPackageParam lpparam) {
 		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT)
 			return;
@@ -287,5 +290,5 @@ public class XposedMod implements IXposedHookLoadPackage {
 		findAndHookMethod(KeyguardHostView, "updateSecurityView", View.class, mUpdateSecurityViewHook);
 		findAndHookMethod(KeyguardHostView, "onScreenTurnedOn", mOnScreenTurnedOnHook);
 		findAndHookMethod(KeyguardHostView, "onScreenTurnedOff", mOnScreenTurnedOffHook);
-	}
+	}*/
 }
