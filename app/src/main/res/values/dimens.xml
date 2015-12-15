@@ -4,4 +4,7 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
 
+    <dimen name="appear_y_translation_start">32dp</dimen>
+    <dimen name="disappear_y_translation">-32dp</dimen>
+
 </resources>
