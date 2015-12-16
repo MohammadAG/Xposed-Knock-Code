@@ -1,7 +1,8 @@
-package com.mohammadag.knockcode;
+package me.rijul.knockcode;
 
 import java.util.ArrayList;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
@@ -9,8 +10,8 @@ import android.view.View.OnClickListener;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.mohammadag.knockcode.KnockCodeView.Mode;
-import com.mohammadag.knockcode.KnockCodeView.OnPositionTappedListener;
+import me.rijul.knockcode.KnockCodeView.Mode;
+import me.rijul.knockcode.KnockCodeView.OnPositionTappedListener;
 
 public class ChangeKnockCodeActivity extends Activity implements OnPositionTappedListener, OnClickListener {
 	private KnockCodeView mKnockCodeView;
@@ -28,7 +29,9 @@ public class ChangeKnockCodeActivity extends Activity implements OnPositionTappe
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_change_passcode);
-
+		ActionBar actionBar = getActionBar();
+		actionBar.setHomeButtonEnabled(true);
+		actionBar.setDisplayHomeAsUpEnabled(true);
 		mSettingsHelper = new SettingsHelper(getApplicationContext());
 
 		mKnockCodeView = (KnockCodeView) findViewById(R.id.knockCodeView1);

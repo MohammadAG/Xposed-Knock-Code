@@ -1,8 +1,9 @@
-package com.mohammadag.knockcode;
+package me.rijul.knockcode;
 
 import java.util.ArrayList;
 
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.os.CountDownTimer;
 import android.os.SystemClock;
 import android.util.TypedValue;
@@ -10,19 +11,21 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.View.OnLongClickListener;
 import android.view.animation.AnimationUtils;
-import android.view.animation.Interpolator;
+import java.lang.Runnable;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.mohammadag.knockcode.KnockCodeView.Mode;
-import com.mohammadag.knockcode.KnockCodeView.OnPositionTappedListener;
-import com.mohammadag.knockcode.SettingsHelper.OnSettingsReloadedListener;
+import de.robv.android.xposed.XposedBridge;
+import me.rijul.knockcode.KnockCodeView.Mode;
+import me.rijul.knockcode.KnockCodeView.OnPositionTappedListener;
+import me.rijul.knockcode.SettingsHelper.OnSettingsReloadedListener;
 
 import de.robv.android.xposed.XposedHelpers;
 
 public class KnockCodeUnlockView extends LinearLayout implements OnPositionTappedListener, KeyguardSecurityView, OnSettingsReloadedListener, OnLongClickListener {
 	private KnockCodeView mKnockCodeUnlockView;
 	private Object mCallback;
+	protected View mEcaView;
 	private Object mLockPatternUtils;
 	@SuppressWarnings("unused")
 	private CountDownTimer mCountdownTimer;
@@ -33,8 +36,11 @@ public class KnockCodeUnlockView extends LinearLayout implements OnPositionTappe
 	private ArrayList<Integer> mTappedPositions = new ArrayList<Integer>();
 	private TextView mTextView;
 	private SettingsHelper mSettingsHelper;
-	private Interpolator mLinearOutSlowInInterpolator;
-	private Interpolator mFastOutLinearInInterpolator;
+    private final AppearAnimationUtils mAppearAnimationUtils;
+    private final DisappearAnimationUtils mDisappearAnimationUtils;
+    private int mDisappearYTranslation;
+    private View[] mViews;
+
 
 	private static final ArrayList<Integer> mPasscode = new ArrayList<Integer>();
 
@@ -58,16 +64,22 @@ public class KnockCodeUnlockView extends LinearLayout implements OnPositionTappe
 				mTextView.getPaddingRight(), mTextView.getPaddingBottom() + spacing);
 		addView(mTextView);
 
-		mKnockCodeUnlockView = new KnockCodeView(context);
+		mKnockCodeUnlockView = new KnockCodeView(mContext);
 		mKnockCodeUnlockView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
 				LinearLayout.LayoutParams.MATCH_PARENT, 0.9f));
 		mKnockCodeUnlockView.setOnPositionTappedListener(this);
 		mKnockCodeUnlockView.setOnLongClickListener(this);
 		addView(mKnockCodeUnlockView);
-		mLinearOutSlowInInterpolator = AnimationUtils.loadInterpolator(
-				context, android.R.interpolator.linear_out_slow_in);
-		mFastOutLinearInInterpolator = AnimationUtils.loadInterpolator(
-				context, android.R.interpolator.fast_out_linear_in);
+        mAppearAnimationUtils = new AppearAnimationUtils(mContext,
+                AppearAnimationUtils.DEFAULT_APPEAR_DURATION, 1.5f /* translationScale */,
+                2.0f /* delayScale */, AnimationUtils.loadInterpolator(
+                mContext, android.R.interpolator.linear_out_slow_in));
+        mDisappearAnimationUtils = new DisappearAnimationUtils(context,
+                125, 1.2f /* translationScale */,
+                0.8f /* delayScale */, AnimationUtils.loadInterpolator(
+                mContext, android.R.interpolator.fast_out_linear_in));
+		mDisappearYTranslation = ResourceHelper.getResource(mContext, "com.android.systemui", "disappear_y_translation", "dimen");
+        mViews = new View[]{mKnockCodeUnlockView};
 	}
 
 	public void setKeyguardCallback(Object paramKeyguardSecurityCallback) {
@@ -123,6 +135,8 @@ public class KnockCodeUnlockView extends LinearLayout implements OnPositionTappe
 	}
 
 	private long setLockoutAttemptDeadline() {
+		if (mLockPatternUtils==null)
+			mLockPatternUtils = XposedHelpers.newInstance(XposedHelpers.findClass("com.android.internal.widget.LockPatternUtils",null),getContext());
 		return (Long) XposedHelpers.callMethod(mLockPatternUtils, "setLockoutAttemptDeadline");
 	}
 
@@ -139,6 +153,7 @@ public class KnockCodeUnlockView extends LinearLayout implements OnPositionTappe
 
 	@Override
 	public void onPositionTapped(int pos) {
+		XposedHelpers.callMethod(mCallback,"userActivity");
 		mTappedPositions.add(pos);
 		mKnockCodeUnlockView.setMode(Mode.READY);
 		mTextView.setText("");
@@ -192,6 +207,8 @@ public class KnockCodeUnlockView extends LinearLayout implements OnPositionTappe
 
 	public void onPause() {
 		mTappedPositions.clear();
+		mKnockCodeUnlockView.setMode(Mode.READY);
+		mTextView.setText("");
 	}
 
 	/*   
@@ -199,7 +216,9 @@ public class KnockCodeUnlockView extends LinearLayout implements OnPositionTappe
 	 * public static final int VIEW_REVEALED = 2;
 	 */
 	public void onResume(int type) {
-		mTappedPositions.clear();
+        mTappedPositions.clear();
+		mKnockCodeUnlockView.setMode(Mode.READY);
+		mTextView.setText("");
 	}
 
 	public void setSettingsHelper(SettingsHelper settingsHelper) {
@@ -213,34 +232,51 @@ public class KnockCodeUnlockView extends LinearLayout implements OnPositionTappe
 	@Override
 	public void onSettingsReloaded() {
 		mPasscode.clear();
-		mPasscode.addAll(mSettingsHelper.getPasscode());
+        mPasscode.addAll(mSettingsHelper.getPasscode());
 	}
 
 	@Override
 	public boolean onLongClick(View v) {
-		mTextView.setText(ResourceHelper.getString(getContext(), R.string.long_pressed_hint));
-		mTappedPositions.clear();
+        mTextView.setText(ResourceHelper.getString(getContext(), R.string.long_pressed_hint));
+        mTappedPositions.clear();
+		mKnockCodeUnlockView.setMode(Mode.READY);
 		return true;
 	}
 
 	public void startAppearAnimation() {
-		setAlpha(0f);
-		setTranslationY(0f);
-		animate()
-				.alpha(1)
-				.withLayer()
-				.setDuration(300)
-				.setInterpolator(mLinearOutSlowInInterpolator);
+        XposedBridge.log("Animating");
+        //enableClipping(false);
+        setAlpha(1f);
+        setTranslationY(mAppearAnimationUtils.getStartTranslation());
+        animate()
+                .setDuration(500)
+                .setInterpolator(mAppearAnimationUtils.getInterpolator())
+                .translationY(0);
+        mAppearAnimationUtils.startAnimation(mViews, new Runnable() {
+                    @Override
+                    public void run() {
+                        //enableClipping(true);
+                    }
+                });
+
 	}
 
-	public boolean startDisappearAnimation(Runnable runnable) {
-		animate()
-				.alpha(0f)
-				.translationY(getResources().getDimensionPixelSize(
-						R.dimen.disappear_y_translation))
-				.setInterpolator(mFastOutLinearInInterpolator)
-				.setDuration(100)
-				.withEndAction(runnable);
+	public boolean startDisappearAnimation(final Runnable finishRunnable) {
+        //enableClipping(false);
+        setTranslationY(0);
+        animate()
+                .setDuration(500)
+                .setInterpolator(mDisappearAnimationUtils.getInterpolator())
+                .translationY(mDisappearYTranslation);
+        mDisappearAnimationUtils.startAnimation(mViews, new Runnable() {
+                    @Override
+                    public void run() {
+                        //enableClipping(true);
+                        if (finishRunnable != null) {
+                            finishRunnable.run();
+                        }
+                    }
+                });
 		return true;
 	}
 

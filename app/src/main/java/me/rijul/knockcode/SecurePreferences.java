@@ -1,4 +1,4 @@
-package com.mohammadag.knockcode;
+package me.rijul.knockcode;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
@@ -71,7 +71,7 @@ public class SecurePreferences implements SharedPreferences {
 		}
 		// Initialize encryption/decryption key
 		try {
-			final String key = SecurePreferences.generateAesKeyName("com.mohammadag.knockcode", uuid);
+			final String key = SecurePreferences.generateAesKeyName("me.rijul.knockcode", uuid);
 			String value = SecurePreferences.sFile.getString(key, null);
 			if (value == null) {
 				value = SecurePreferences.generateAesKeyValue();

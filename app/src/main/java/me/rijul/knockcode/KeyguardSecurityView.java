@@ -1,4 +1,4 @@
-package com.mohammadag.knockcode;
+package me.rijul.knockcode;
 
 public abstract interface KeyguardSecurityView {
 	public static final int SCREEN_ON = 1;

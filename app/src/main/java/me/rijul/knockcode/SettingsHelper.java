@@ -1,4 +1,4 @@
-package com.mohammadag.knockcode;
+package me.rijul.knockcode;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -15,7 +15,7 @@ import android.provider.Settings.Secure;
 import de.robv.android.xposed.XSharedPreferences;
 
 public class SettingsHelper {
-	public static final String PACKAGE_NAME = "com.mohammadag.knockcode";
+	public static final String PACKAGE_NAME = "me.rijul.knockcode";
 	private static final String PREFS_NAME = PACKAGE_NAME + "_preferences";
 	public static final String INTENT_SETTINGS_CHANGED = PACKAGE_NAME + ".SETTINGS_CHANGED";
 

@@ -1,4 +1,4 @@
-package com.mohammadag.knockcode;
+package me.rijul.knockcode;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

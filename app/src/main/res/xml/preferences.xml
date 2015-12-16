@@ -2,9 +2,9 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <Preference
-        android:key="copyright_key"
-        android:summary="@string/pref_copyright_description"
-        android:title="@string/app_name" />
+        android:key="about_key"
+        android:summary="@string/pref_about_description"
+        android:title="@string/pref_about_title" />
     <Preference
         android:key="change_knock_code"
         android:summary="@string/pref_description_change_code"

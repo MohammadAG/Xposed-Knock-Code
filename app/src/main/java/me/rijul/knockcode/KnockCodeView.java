@@ -1,4 +1,4 @@
-package com.mohammadag.knockcode;
+package me.rijul.knockcode;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -12,7 +12,7 @@ import android.view.HapticFeedbackConstants;
 import android.view.MotionEvent;
 import android.view.View;
 
-import com.mohammadag.knockcode.SettingsHelper.OnSettingsReloadedListener;
+import me.rijul.knockcode.SettingsHelper.OnSettingsReloadedListener;
 
 public class KnockCodeView extends View implements OnSettingsReloadedListener {
 	public enum Mode {

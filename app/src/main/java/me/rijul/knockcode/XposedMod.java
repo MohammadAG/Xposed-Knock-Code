@@ -1,4 +1,4 @@
-package com.mohammadag.knockcode;
+package me.rijul.knockcode;
 
 import static de.robv.android.xposed.XposedHelpers.callMethod;
 import static de.robv.android.xposed.XposedHelpers.findAndHookMethod;
@@ -13,6 +13,7 @@ import android.widget.ViewFlipper;
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.XC_MethodHook;
 //import de.robv.android.xposed.XC_MethodReplacement;
+import de.robv.android.xposed.XC_MethodReplacement;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
@@ -22,9 +23,12 @@ public class XposedMod implements IXposedHookLoadPackage {
 	private XC_MethodHook mUpdateSecurityViewHook;
 	private XC_MethodHook mShowSecurityScreenHook;
 	private XC_MethodHook mKeyguardHostViewInitHook;
+	private XC_MethodReplacement mStartAppearAnimHook;
+    private XC_MethodReplacement mOnPauseHook;
+    private XC_MethodReplacement mOnResumeHook;
 	//private XC_MethodReplacement mOnScreenTurnedOnHook;
 	//private XC_MethodReplacement mOnScreenTurnedOffHook;
-	protected KnockCodeUnlockView mKnockCodeView;
+	protected static KnockCodeUnlockView mKnockCodeView;
 	private static SettingsHelper mSettingsHelper;
 
 	@Override
@@ -93,7 +97,7 @@ public class XposedMod implements IXposedHookLoadPackage {
 						unlockView.showBouncer(0);
 					else
 						unlockView.hideBouncer(0);
-					XposedHelpers.setObjectField(param.thisObject,"mIsBouncing",isBouncing);
+					XposedHelpers.setObjectField(param.thisObject, "mIsBouncing", isBouncing);
 					param.setResult(null);
 				}
 			}
@@ -179,6 +183,58 @@ public class XposedMod implements IXposedHookLoadPackage {
 				param.setResult(null);
 			}
 		};
+
+		mStartAppearAnimHook = new XC_MethodReplacement() {
+			@Override
+			protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+				Class<?> SecurityMode = XposedHelpers.findClass(keyguardPackageName + ".KeyguardSecurityModel$SecurityMode",
+						param.thisObject.getClass().getClassLoader());
+				Object patternMode = XposedHelpers.getStaticObjectField(SecurityMode, "Pattern");
+				if (!patternMode.equals(XposedHelpers.getObjectField(param.thisObject, "mCurrentSecuritySelection"))) {
+					XposedHelpers.callMethod(param.thisObject, "startAppearAnimation");
+				} else {
+					if (mKnockCodeView!=null) {
+						mKnockCodeView.startAppearAnimation();
+					}
+				}
+				return null;
+			}
+		};
+
+        mOnPauseHook= new XC_MethodReplacement() {
+            @Override
+            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                Class<?> SecurityMode = XposedHelpers.findClass(keyguardPackageName + ".KeyguardSecurityModel$SecurityMode",
+                        param.thisObject.getClass().getClassLoader());
+                Object patternMode = XposedHelpers.getStaticObjectField(SecurityMode, "Pattern");
+                if (!patternMode.equals(XposedHelpers.getObjectField(param.thisObject, "mCurrentSecuritySelection"))) {
+                    XposedHelpers.callMethod(param.thisObject, "onPause");
+                } else {
+                    if (mKnockCodeView!=null) {
+                        mKnockCodeView.onPause();
+                    }
+                }
+                return null;
+            }
+        };
+
+        mOnResumeHook= new XC_MethodReplacement() {
+            @Override
+            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                Class<?> SecurityMode = XposedHelpers.findClass(keyguardPackageName + ".KeyguardSecurityModel$SecurityMode",
+                        param.thisObject.getClass().getClassLoader());
+                Object patternMode = XposedHelpers.getStaticObjectField(SecurityMode, "Pattern");
+                if (!patternMode.equals(XposedHelpers.getObjectField(param.thisObject, "mCurrentSecuritySelection"))) {
+                    XposedHelpers.callMethod(param.thisObject, "onResume", (int) param.args[0]);
+                } else {
+                    if (mKnockCodeView!=null) {
+                        mKnockCodeView.onResume((int) param.args[0]);
+                    }
+                }
+                return null;
+            }
+        };
+
 /*
 		mOnScreenTurnedOnHook = new XC_MethodReplacement() {
 			@Override
@@ -274,6 +330,9 @@ public class XposedMod implements IXposedHookLoadPackage {
 		XposedBridge.hookAllConstructors(KeyguardHostView, mKeyguardHostViewInitHook);
 		findAndHookMethod(KeyguardHostView, "showSecurityScreen", "com.android.keyguard.KeyguardSecurityModel$SecurityMode", mShowSecurityScreenHook);
 		findAndHookMethod(KeyguardHostView, "updateSecurityView", View.class, boolean.class, mUpdateSecurityViewHook);
+		findAndHookMethod(KeyguardHostView,"startAppearAnimation",mStartAppearAnimHook);
+		findAndHookMethod(KeyguardHostView, "onPause", mOnPauseHook);
+		//findAndHookMethod(KeyguardHostView, "onResume", int.class, mOnResumeHook);
 		//findAndHookMethod(KeyguardHostView, "onScreenTurnedOn", mOnScreenTurnedOnHook);
 		//findAndHookMethod(KeyguardHostView, "onScreenTurnedOff", mOnScreenTurnedOffHook);
 	}

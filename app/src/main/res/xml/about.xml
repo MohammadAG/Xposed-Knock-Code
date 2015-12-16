@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <Preference
+        android:key="help_key"
+        android:summary="@string/about_help_description"
+        android:title="@string/about_help_title" />
+    <Preference
+        android:key="license_key"
+        android:title="@string/about_license_title"
+        android:summary="@string/about_license_description" />
+    <Preference
+        android:key="disclaimer_key"
+        android:title="@string/about_disclaimer_title"
+        android:summary="@string/about_disclaimer_description"/>
+    <Preference
+        android:key="source_key"
+        android:title="@string/about_source_title" />
+
+    <PreferenceCategory android:title="@string/about_authors" >
+        <Preference
+            android:key="mohammad_key"
+            android:title="@string/about_mohammadag"/>
+        <Preference
+            android:key="rijul_key"
+            android:title="@string/about_rijul"/>
+    </PreferenceCategory>
+
+</PreferenceScreen>

@@ -14,12 +14,17 @@
  * limitations under the License
  */
 
-package com.mohammadag.knockcode;
+package me.rijul.knockcode;
 
 import android.content.Context;
+import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.view.animation.Interpolator;
+
+import de.robv.android.xposed.XposedBridge;
+import me.rijul.knockcode.ResourceHelper;
 
 /**
  * A class to make nice appear transitions for views in a tabular layout.
@@ -29,7 +34,7 @@ public class AppearAnimationUtils implements AppearAnimationCreator<View> {
     public static final long DEFAULT_APPEAR_DURATION = 220;
 
     private final Interpolator mInterpolator;
-    private final float mStartTranslation;
+    private float mStartTranslation;
     private final AppearAnimationProperties mProperties = new AppearAnimationProperties();
     protected final float mDelayScale;
     private final long mDuration;
@@ -45,8 +50,8 @@ public class AppearAnimationUtils implements AppearAnimationCreator<View> {
     public AppearAnimationUtils(Context ctx, long duration, float translationScaleFactor,
                                 float delayScaleFactor, Interpolator interpolator) {
         mInterpolator = interpolator;
-        mStartTranslation = ctx.getResources().getDimensionPixelOffset(
-                R.dimen.appear_y_translation_start) * translationScaleFactor;
+        mStartTranslation = ResourceHelper.getResource(ctx, "com.android.systemui", "appear_y_translation_start", "dimen") * translationScaleFactor;
+        //mStartTranslation = 32 * translationScaleFactor;
         mDelayScale = delayScaleFactor;
         mDuration = duration;
         mScaleTranslationWithRow = false;

@@ -1,6 +1,7 @@
-package com.mohammadag.knockcode;
+package me.rijul.knockcode;
 
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Resources;
 
@@ -24,6 +25,17 @@ public class ResourceHelper {
 	}
 
 	public static Resources getOwnResources(Context context) {
-		return getResourcesForPackage(context, "com.mohammadag.knockcode");
+		return getResourcesForPackage(context, "me.rijul.knockcode");
+	}
+
+	public static int getResource(Context ctx, String packageName, String resName, String resType) {
+		try {
+			ctx = ctx.createPackageContext(packageName, Context.CONTEXT_RESTRICTED);
+		} catch (PackageManager.NameNotFoundException e) {
+			e.printStackTrace();
+			return -1;
+		}
+		return ctx.getResources().getDimensionPixelOffset(
+				ctx.getResources().getIdentifier(resName, resType, ctx.getPackageName()));
 	}
 }
