@@ -15,6 +15,7 @@ import java.lang.Runnable;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedBridge;
 import me.rijul.knockcode.KnockCodeView.Mode;
 import me.rijul.knockcode.KnockCodeView.OnPositionTappedListener;
@@ -38,7 +39,7 @@ public class KnockCodeUnlockView extends LinearLayout implements OnPositionTappe
     private final AppearAnimationUtils mAppearAnimationUtils;
     private final DisappearAnimationUtils mDisappearAnimationUtils;
     private int mDisappearYTranslation;
-    //protected View mEcaView;
+    protected View mEcaView;
 
 
 	private static final ArrayList<Integer> mPasscode = new ArrayList<Integer>();
@@ -50,7 +51,7 @@ public class KnockCodeUnlockView extends LinearLayout implements OnPositionTappe
 		mPasscode.add(4);
 	}
 
-	public KnockCodeUnlockView(Context context) {
+	public KnockCodeUnlockView(Context context, XC_MethodHook.MethodHookParam param) {
 		super(context);
 		setOrientation(VERTICAL);
 		mContext = context;
@@ -80,6 +81,7 @@ public class KnockCodeUnlockView extends LinearLayout implements OnPositionTappe
 		mDisappearYTranslation = ResourceHelper.getResource(mContext, "com.android.systemui", "disappear_y_translation", "dimen");
 		//mEcaView = (View) XposedHelpers.newInstance(XposedHelpers.findClass("com.android.keyguard.EmergencyCarrierArea", null), context);
 		//addView(mEcaView);
+		//addView(new EmergencyButton(context,param));
 	}
 
 	public void setKeyguardCallback(Object paramKeyguardSecurityCallback) {
