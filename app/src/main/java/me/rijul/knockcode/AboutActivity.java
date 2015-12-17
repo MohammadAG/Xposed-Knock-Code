@@ -19,7 +19,7 @@ import java.util.List;
  * Created by rijul on 16/12/15.
  */
 public class AboutActivity extends AppCompatPreferenceActivity {
-    private static final String URL_HELP = "http://repo.xposed.info";
+    private static final String URL_HELP = "http://forum.xda-developers.com/xposed/modules/lp-knock-code-screen-t3272679";
     private static final String URL_LICENSE = "https://www.gnu.org/licenses/gpl-3.0.txt";
     private static final String URL_SOURCE = "https://github.com/Rijul-Ahuja/Xposed-Knock-Code";
     private static final String URL_MOHAMMAD = "https://mohammadag.xceleo.org/wiki";

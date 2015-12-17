@@ -88,16 +88,20 @@ public class XposedMod implements IXposedHookLoadPackage {
 			@Override
 			protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
 				View view = (View) param.args[0];
-				Boolean isBouncing = (Boolean) param.args[1];
 				if (view instanceof KnockCodeUnlockView) {
 					KnockCodeUnlockView unlockView = (KnockCodeUnlockView) view;
 					unlockView.setKeyguardCallback(XposedHelpers.getObjectField(param.thisObject, "mCallback"));
 					unlockView.setLockPatternUtils(XposedHelpers.getObjectField(param.thisObject, "mLockPatternUtils"));
-					if (isBouncing)
-						unlockView.showBouncer(0);
-					else
-						unlockView.hideBouncer(0);
-					XposedHelpers.setObjectField(param.thisObject, "mIsBouncing", isBouncing);
+					try {
+						Boolean isBouncing = (Boolean) param.args[1];
+						if (isBouncing)
+							unlockView.showBouncer(0);
+						else
+							unlockView.hideBouncer(0);
+						XposedHelpers.setObjectField(param.thisObject, "mIsBouncing", isBouncing);
+					}
+					catch (Exception e) {
+					}
 					param.setResult(null);
 				}
 			}
@@ -329,7 +333,12 @@ public class XposedMod implements IXposedHookLoadPackage {
 				lpparam.classLoader);
 		XposedBridge.hookAllConstructors(KeyguardHostView, mKeyguardHostViewInitHook);
 		findAndHookMethod(KeyguardHostView, "showSecurityScreen", "com.android.keyguard.KeyguardSecurityModel$SecurityMode", mShowSecurityScreenHook);
-		findAndHookMethod(KeyguardHostView, "updateSecurityView", View.class, boolean.class, mUpdateSecurityViewHook);
+		try {
+			findAndHookMethod(KeyguardHostView, "updateSecurityView", View.class, boolean.class, mUpdateSecurityViewHook);
+		}
+		catch (Exception e) {
+			findAndHookMethod(KeyguardHostView, "updateSecurityView", View.class, mUpdateSecurityViewHook);
+		}
 		findAndHookMethod(KeyguardHostView,"startAppearAnimation",mStartAppearAnimHook);
 		findAndHookMethod(KeyguardHostView, "onPause", mOnPauseHook);
 		//findAndHookMethod(KeyguardHostView, "onResume", int.class, mOnResumeHook);
