@@ -25,7 +25,6 @@ import de.robv.android.xposed.XposedHelpers;
 public class KnockCodeUnlockView extends LinearLayout implements OnPositionTappedListener, KeyguardSecurityView, OnSettingsReloadedListener, OnLongClickListener {
 	private KnockCodeView mKnockCodeUnlockView;
 	private Object mCallback;
-	protected View mEcaView;
 	private Object mLockPatternUtils;
 	@SuppressWarnings("unused")
 	private CountDownTimer mCountdownTimer;
@@ -39,7 +38,7 @@ public class KnockCodeUnlockView extends LinearLayout implements OnPositionTappe
     private final AppearAnimationUtils mAppearAnimationUtils;
     private final DisappearAnimationUtils mDisappearAnimationUtils;
     private int mDisappearYTranslation;
-    private View[] mViews;
+    //protected View mEcaView;
 
 
 	private static final ArrayList<Integer> mPasscode = new ArrayList<Integer>();
@@ -79,7 +78,8 @@ public class KnockCodeUnlockView extends LinearLayout implements OnPositionTappe
                 0.8f /* delayScale */, AnimationUtils.loadInterpolator(
                 mContext, android.R.interpolator.fast_out_linear_in));
 		mDisappearYTranslation = ResourceHelper.getResource(mContext, "com.android.systemui", "disappear_y_translation", "dimen");
-        mViews = new View[]{mKnockCodeUnlockView};
+		//mEcaView = (View) XposedHelpers.newInstance(XposedHelpers.findClass("com.android.keyguard.EmergencyCarrierArea", null), context);
+		//addView(mEcaView);
 	}
 
 	public void setKeyguardCallback(Object paramKeyguardSecurityCallback) {
@@ -252,7 +252,7 @@ public class KnockCodeUnlockView extends LinearLayout implements OnPositionTappe
                 .setDuration(500)
                 .setInterpolator(mAppearAnimationUtils.getInterpolator())
                 .translationY(0);
-        mAppearAnimationUtils.startAnimation(mViews, new Runnable() {
+        mAppearAnimationUtils.startAnimation(new View[]{mKnockCodeUnlockView, null}, new Runnable() {
                     @Override
                     public void run() {
                         //enableClipping(true);
@@ -268,7 +268,7 @@ public class KnockCodeUnlockView extends LinearLayout implements OnPositionTappe
                 .setDuration(500)
                 .setInterpolator(mDisappearAnimationUtils.getInterpolator())
                 .translationY(mDisappearYTranslation);
-        mDisappearAnimationUtils.startAnimation(mViews, new Runnable() {
+        mDisappearAnimationUtils.startAnimation(new View[]{mKnockCodeUnlockView, null}, new Runnable() {
                     @Override
                     public void run() {
                         //enableClipping(true);

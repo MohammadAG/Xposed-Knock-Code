@@ -12,11 +12,11 @@
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/MyMaterialTheme" >
         <activity
             android:name="me.rijul.knockcode.MainActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme">
+            android:theme="@style/MyMaterialTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -25,13 +25,13 @@
         <activity
             android:name="me.rijul.knockcode.ChangeKnockCodeActivity"
             android:label="@string/app_name"
-            android:theme="@android:style/Theme.Material"
+            android:theme="@style/MyMaterialTheme"
             android:parentActivityName=".MainActivity">
         </activity>
         <activity
             android:name="me.rijul.knockcode.AboutActivity"
             android:label="@string/pref_about_title"
-            android:theme="@android:style/Theme.Material"
+            android:theme="@style/MyMaterialTheme"
             android:parentActivityName=".MainActivity">
         </activity>
         <meta-data

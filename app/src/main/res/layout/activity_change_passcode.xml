@@ -3,7 +3,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
-
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/toolbar" />
     <TextView
         android:id="@android:id/hint"
         android:layout_width="match_parent"
@@ -11,7 +13,7 @@
         android:gravity="center"
         android:paddingBottom="5dp"
         android:text="@string/enter_new_knock_code"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
+        android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <me.rijul.knockcode.LineView
         android:id="@+id/lineView1"

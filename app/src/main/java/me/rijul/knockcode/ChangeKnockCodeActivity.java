@@ -2,8 +2,9 @@ package me.rijul.knockcode;
 
 import java.util.ArrayList;
 
-import android.app.ActionBar;
-import android.app.Activity;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -13,7 +14,7 @@ import android.widget.Toast;
 import me.rijul.knockcode.KnockCodeView.Mode;
 import me.rijul.knockcode.KnockCodeView.OnPositionTappedListener;
 
-public class ChangeKnockCodeActivity extends Activity implements OnPositionTappedListener, OnClickListener {
+public class ChangeKnockCodeActivity extends AppCompatActivity implements OnPositionTappedListener, OnClickListener {
 	private KnockCodeView mKnockCodeView;
 	private PasscodeDotsView mPasscodeDotView;
 	private TextView mHintTextView;
@@ -29,9 +30,15 @@ public class ChangeKnockCodeActivity extends Activity implements OnPositionTappe
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_change_passcode);
-		ActionBar actionBar = getActionBar();
+
+		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+		setSupportActionBar(toolbar);
+		ActionBar actionBar = getSupportActionBar();
 		actionBar.setHomeButtonEnabled(true);
 		actionBar.setDisplayHomeAsUpEnabled(true);
+		actionBar.setDisplayShowHomeEnabled(true);
+		actionBar.setHomeAsUpIndicator(R.drawable.abc_ic_ab_back_mtrl_am_alpha);
+
 		mSettingsHelper = new SettingsHelper(getApplicationContext());
 
 		mKnockCodeView = (KnockCodeView) findViewById(R.id.knockCodeView1);
