@@ -41,7 +41,7 @@ public class XposedMod implements IXposedHookLoadPackage {
             try {
                 findAndHookMethod(KeyguardHostView, "updateSecurityView", View.class, boolean.class, mUpdateSecurityViewHook);
             }
-            catch (Exception e) {
+            catch (NoSuchMethodError e) {
                 findAndHookMethod(KeyguardHostView, "updateSecurityView", View.class, mUpdateSecurityViewHook);
             }
             findAndHookMethod(KeyguardHostView, "startAppearAnimation", mStartAppearAnimHook);

@@ -39,7 +39,8 @@ public class KnockCodeUnlockView extends LinearLayout implements OnPositionTappe
     private final AppearAnimationUtils mAppearAnimationUtils;
     private final DisappearAnimationUtils mDisappearAnimationUtils;
     private int mDisappearYTranslation;
-    protected View mEcaView;
+    //protected View mEcaView;
+	protected XC_MethodHook.MethodHookParam mParam;
 
 
 	private static final ArrayList<Integer> mPasscode = new ArrayList<Integer>();
@@ -79,6 +80,7 @@ public class KnockCodeUnlockView extends LinearLayout implements OnPositionTappe
                 0.8f /* delayScale */, AnimationUtils.loadInterpolator(
                 mContext, android.R.interpolator.fast_out_linear_in));
 		mDisappearYTranslation = ResourceHelper.getResource(mContext, "com.android.systemui", "disappear_y_translation", "dimen");
+		mParam = param;
 		//mEcaView = (View) XposedHelpers.newInstance(XposedHelpers.findClass("com.android.keyguard.EmergencyCarrierArea", null), context);
 		//addView(mEcaView);
 		//addView(new EmergencyButton(context,param));
@@ -101,7 +103,12 @@ public class KnockCodeUnlockView extends LinearLayout implements OnPositionTappe
 	}
 
 	private void reportFailedUnlockAttempt() {
-		XposedHelpers.callMethod(mCallback, "reportUnlockAttempt", false);
+		try {
+			XposedHelpers.callMethod(mCallback, "reportUnlockAttempt", false);
+		}
+		catch (NoSuchMethodError e) {
+			XposedHelpers.callMethod(mCallback, "reportUnlockAttempt", false, (mFailedPatternAttemptsSinceLastTimeout >= 5) ? 30000 : 0);
+		}
 	}
 
 	private void handleAttemptLockout(long paramLong) {
@@ -130,6 +137,7 @@ public class KnockCodeUnlockView extends LinearLayout implements OnPositionTappe
 		mKnockCodeUnlockView.setEnabled(true);
 		mFailedPatternAttemptsSinceLastTimeout = 0;
 		mKnockCodeUnlockView.setMode(Mode.READY);
+		mTextView.setText("");
 	}
 
 	protected void onAttemptLockoutStart() {
@@ -138,12 +146,23 @@ public class KnockCodeUnlockView extends LinearLayout implements OnPositionTappe
 
 	private long setLockoutAttemptDeadline() {
 		if (mLockPatternUtils==null)
-			mLockPatternUtils = XposedHelpers.newInstance(XposedHelpers.findClass("com.android.internal.widget.LockPatternUtils",null),getContext());
-		return (Long) XposedHelpers.callMethod(mLockPatternUtils, "setLockoutAttemptDeadline");
+			mLockPatternUtils = XposedHelpers.getObjectField(mParam.thisObject, "mLockPatternUtils");
+		try {
+			return (Long) XposedHelpers.callMethod(mLockPatternUtils, "setLockoutAttemptDeadline");
+		}
+		catch (NoSuchMethodError e) {
+			return (Long) XposedHelpers.callMethod(mLockPatternUtils, "setLockoutAttemptDeadline", (int) XposedHelpers.callMethod(XposedHelpers.getObjectField(
+					mParam.thisObject, "mUpdateMonitor"), "getCurrentUser"), 30000);
+		}
 	}
 
 	private void verifyPasscodeAndUnlock() {
-		XposedHelpers.callMethod(mCallback, "reportUnlockAttempt", true);
+		try {
+			XposedHelpers.callMethod(mCallback, "reportUnlockAttempt", true);
+		}
+		catch (NoSuchMethodError e) {
+			XposedHelpers.callMethod(mCallback, "reportUnlockAttempt", true, 0);
+		}
 		try {
 			XposedHelpers.callMethod(mCallback, "dismiss", true);
 		} catch (Throwable t) {
@@ -177,9 +196,9 @@ public class KnockCodeUnlockView extends LinearLayout implements OnPositionTappe
 				mKnockCodeUnlockView.setEnabled(true);
 				verifyPasscodeAndUnlock();
 			} else {
-				reportFailedUnlockAttempt();
 				mTotalFailedPatternAttempts++;
 				mFailedPatternAttemptsSinceLastTimeout++;
+				reportFailedUnlockAttempt();
 				if (mFailedPatternAttemptsSinceLastTimeout >= 5) {
 					handleAttemptLockout(setLockoutAttemptDeadline());
 					mKnockCodeUnlockView.setMode(Mode.DISABLED);
