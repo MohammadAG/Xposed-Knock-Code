@@ -55,11 +55,11 @@ public class MainActivity extends AppCompatPreferenceActivity implements OnShare
 			moduleActive.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					AlertDialog help = new AlertDialog.Builder(getActivity())
+					new AlertDialog.Builder(getActivity())
 							.setTitle(R.string.module_inactive)
 							.setMessage(R.string.dialog_message_not_active)
-							.create();
-					help.show();
+							.create()
+							.show();
 				}
 			});
 		}
