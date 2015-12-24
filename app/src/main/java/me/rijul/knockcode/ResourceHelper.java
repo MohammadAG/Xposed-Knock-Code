@@ -14,9 +14,22 @@ public class ResourceHelper {
 		return getOwnResources(context).getString(id, args);
 	}
 
+	public static String getString(Context ctx, String packageName, String resName, String resType) {
+		try {
+			ctx = ctx.createPackageContext(packageName, Context.CONTEXT_RESTRICTED);
+		} catch (PackageManager.NameNotFoundException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return ctx.getResources().getString(
+				ctx.getResources().getIdentifier(resName, resType, ctx.getPackageName()));
+	}
+
+
 	public static Resources getResourcesForPackage(Context context, String packageName) {
 		try {
-			return context.getPackageManager().getResourcesForApplication(packageName);
+			context = context.createPackageContext(packageName, Context.CONTEXT_IGNORE_SECURITY);
+			return context.getResources();
 		} catch (NameNotFoundException e) {
 			e.printStackTrace();
 		}

@@ -4,23 +4,39 @@
     <Preference
         android:key="help_key"
         android:summary="@string/about_help_description"
-        android:title="@string/about_help_title" />
+        android:title="@string/about_help_title">
+        <intent android:action="android.intent.action.VIEW"
+            android:data="http://forum.xda-developers.com/xposed/modules/lp-knock-code-screen-t3272679"/>
+    </Preference>
+
     <Preference
         android:key="license_key"
         android:title="@string/about_license_title"
-        android:summary="@string/about_license_description" />
+        android:summary="@string/about_license_description">
+        <intent android:action="android.intent.action.VIEW"
+            android:data="https://www.gnu.org/licenses/gpl-3.0.txt"/>
+    </Preference>
+
     <Preference
         android:key="disclaimer_key"
         android:title="@string/about_disclaimer_title"
         android:summary="@string/about_disclaimer_description"/>
+
     <Preference
         android:key="source_key"
-        android:title="@string/about_source_title" />
+        android:title="@string/about_source_title">
+        <intent android:action="android.intent.action.VIEW"
+            android:data="https://github.com/Rijul-Ahuja/Xposed-Knock-Code"/>
+    </Preference>
 
     <PreferenceCategory android:title="@string/about_authors" >
         <Preference
             android:key="mohammad_key"
-            android:title="@string/about_mohammadag"/>
+            android:title="@string/about_mohammadag">
+            <intent android:action="android.intent.action.VIEW"
+                android:data="https://mohammadag.xceleo.org/wiki"/>
+        </Preference>
+
         <Preference
             android:key="rijul_key"
             android:title="@string/about_rijul"/>

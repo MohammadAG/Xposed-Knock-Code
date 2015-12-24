@@ -2,25 +2,63 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <Preference
-        android:key="about_key"
-        android:summary="@string/pref_about_description"
-        android:title="@string/pref_about_title" />
-    <Preference
         android:key="change_knock_code"
         android:summary="@string/pref_description_change_code"
-        android:title="@string/pref_title_change_code" />
+        android:title="@string/pref_title_change_code">
+        <intent android:action="android.intent.action.VIEW"
+            android:targetPackage="me.rijul.knockcode"
+            android:targetClass="me.rijul.knockcode.ChangeKnockCodeActivity"/>
+    </Preference>
 
     <PreferenceCategory android:title="@string/appearance" >
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="should_draw_fill"
             android:summary="@string/pref_description_draw_fill"
+            android:summaryOff="@string/pref_description_draw_fill_off"
+            android:summaryOn="@string/pref_description_draw_fill_on"
             android:title="@string/pref_title_draw_fill" />
+
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="should_draw_lines"
             android:summary="@string/pref_description_draw_lines"
+            android:summaryOn="@string/pref_description_draw_lines_on"
+            android:summaryOff="@string/pref_description_draw_lines_off"
             android:title="@string/pref_title_draw_lines" />
+
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="should_show_text"
+            android:title="@string/pref_title_show_text"
+            android:summary="@string/pref_summary_show_text"
+            android:summaryOn="@string/pref_summary_show_text_on"
+            android:summaryOff="@string/pref_summary_show_text_off"/>
+
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="should_show_dialog"
+            android:title="@string/pref_title_show_dialog"
+            android:summary="@string/pref_summary_show_dialog"
+            android:summaryOn="@string/pref_summary_show_dialog_on"
+            android:summaryOff="@string/pref_summary_show_dialog_off"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/emergency_button">
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="show_emergency_button"
+            android:title="@string/pref_title_show_emergency_button"
+            android:summary="@string/pref_summary_show_emergency_button"
+            android:summaryOn="@string/pref_summary_show_emergency_button_on"
+            android:summaryOff="@string/pref_summary_show_emergency_button_off"/>
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="show_emergency_text"
+            android:title="@string/pref_title_show_emergency_text"
+            android:summary="@string/pref_summary_show_emergency_text"
+            android:summaryOn="@string/pref_summary_show_emergency_text_on"
+            android:summaryOff="@string/pref_summary_show_emergency_text_off"/>
     </PreferenceCategory>
 
 </PreferenceScreen>

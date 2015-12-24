@@ -19,10 +19,6 @@ import java.util.List;
  * Created by rijul on 16/12/15.
  */
 public class AboutActivity extends AppCompatPreferenceActivity {
-    private static final String URL_HELP = "http://forum.xda-developers.com/xposed/modules/lp-knock-code-screen-t3272679";
-    private static final String URL_LICENSE = "https://www.gnu.org/licenses/gpl-3.0.txt";
-    private static final String URL_SOURCE = "https://github.com/Rijul-Ahuja/Xposed-Knock-Code";
-    private static final String URL_MOHAMMAD = "https://mohammadag.xceleo.org/wiki";
     private static final String PROFILE_RIJUL = "rijul.ahuja";
 
     @Override
@@ -39,22 +35,6 @@ public class AboutActivity extends AppCompatPreferenceActivity {
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setDisplayShowHomeEnabled(true);
         actionBar.setHomeAsUpIndicator(R.drawable.abc_ic_ab_back_mtrl_am_alpha);
-
-    findPreference("help_key").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference arg0) {
-                startActivity(new Intent(Intent.ACTION_VIEW).setData(Uri.parse(URL_HELP)));
-                return false;
-            }
-        });
-
-        findPreference("license_key").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                startActivity(new Intent(Intent.ACTION_VIEW).setData(Uri.parse(URL_LICENSE)));
-                return false;
-            }
-        });
 
         findPreference("disclaimer_key").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
@@ -73,22 +53,6 @@ public class AboutActivity extends AppCompatPreferenceActivity {
                 Dialog dialog = builder.create();
                 dialog.show();
                 return true;
-            }
-        });
-
-        findPreference("source_key").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                startActivity(new Intent(Intent.ACTION_VIEW).setData(Uri.parse(URL_SOURCE)));
-                return false;
-            }
-        });
-
-        findPreference("mohammad_key").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                startActivity(new Intent(Intent.ACTION_VIEW).setData(Uri.parse(URL_MOHAMMAD)));
-                return false;
             }
         });
 

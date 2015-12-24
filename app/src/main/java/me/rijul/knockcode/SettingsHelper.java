@@ -209,9 +209,17 @@ public class SettingsHelper {
 		emitSettingsChanged(mContext);
 	}
 
+	public boolean shouldShowText() {return getBoolean("should_show_text", true);}
+
 	public boolean shouldDrawFill() {
 		return getBoolean("should_draw_fill", true);
 	}
+
+	public boolean shouldDisableDialog() {return !getBoolean("should_show_dialog", true); }
+
+	public boolean hideEmergencyButton() {return !getBoolean("show_emergency_button", true); }
+
+	public boolean hideEmergencyText() {return !getBoolean("show_emergency_text", true); }
 
 	public void setShouldDrawFill(boolean draw) {
 		edit().putBoolean("should_draw_fill", draw).commit();

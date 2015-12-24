@@ -50,7 +50,9 @@ public class AppearAnimationUtils implements AppearAnimationCreator<View> {
     public AppearAnimationUtils(Context ctx, long duration, float translationScaleFactor,
                                 float delayScaleFactor, Interpolator interpolator) {
         mInterpolator = interpolator;
-        mStartTranslation = ResourceHelper.getResource(ctx, "com.android.systemui", "appear_y_translation_start", "dimen") * translationScaleFactor;
+        Resources res = ResourceHelper.getResourcesForPackage(ctx, ctx.getPackageName());
+        mStartTranslation = res.getDimensionPixelOffset(res.
+                getIdentifier("appear_y_translation_start", "dimen", ctx.getPackageName())) * translationScaleFactor;
         //mStartTranslation = 32 * translationScaleFactor;
         mDelayScale = delayScaleFactor;
         mDuration = duration;

@@ -25,6 +25,9 @@ public class XposedMod implements IXposedHookLoadPackage {
 	private XC_MethodHook mKeyguardHostViewInitHook;
 	private XC_MethodHook mStartAppearAnimHook;
     private XC_MethodHook mOnPauseHook;
+	private XC_MethodHook mOnSimStateChangedHook;
+	private XC_MethodHook mOnPhoneStateChangedHook;
+	private XC_MethodHook mShowTimeoutDialogHook;
     protected static KnockCodeUnlockView mKnockCodeView;
 	private static SettingsHelper mSettingsHelper;
 
@@ -37,15 +40,25 @@ public class XposedMod implements IXposedHookLoadPackage {
             Class<?> KeyguardHostView = XposedHelpers.findClass("com.android.keyguard.KeyguardSecurityContainer",
                     lpparam.classLoader);
             XposedBridge.hookAllConstructors(KeyguardHostView, mKeyguardHostViewInitHook);
+			findAndHookMethod(KeyguardHostView, "startAppearAnimation", mStartAppearAnimHook);
+			findAndHookMethod(KeyguardHostView, "onPause", mOnPauseHook);
+			Class<?> clazz = XposedHelpers.findClass("com.android.keyguard.KeyguardUpdateMonitorCallback",
+					lpparam.classLoader);
+			Class<?> state = XposedHelpers.findClass("com.android.internal.telephony.IccCardConstants.State",
+					lpparam.classLoader);
+			findAndHookMethod(clazz, "onSimStateChanged", int.class, int.class, state, mOnSimStateChangedHook);
+			findAndHookMethod(clazz, "onPhoneStateChanged", int.class, mOnPhoneStateChangedHook);
             findAndHookMethod(KeyguardHostView, "showSecurityScreen", "com.android.keyguard.KeyguardSecurityModel$SecurityMode", mShowSecurityScreenHook);
-            try {
-                findAndHookMethod(KeyguardHostView, "updateSecurityView", View.class, boolean.class, mUpdateSecurityViewHook);
-            }
-            catch (NoSuchMethodError e) {
-                findAndHookMethod(KeyguardHostView, "updateSecurityView", View.class, mUpdateSecurityViewHook);
-            }
-            findAndHookMethod(KeyguardHostView, "startAppearAnimation", mStartAppearAnimHook);
-            findAndHookMethod(KeyguardHostView, "onPause", mOnPauseHook);
+
+			//marshmallow vs lollipop
+			if (Build.VERSION.SDK_INT == Build.VERSION_CODES.M) {
+				findAndHookMethod(KeyguardHostView, "showTimeoutDialog", int.class, mShowTimeoutDialogHook);
+				findAndHookMethod(KeyguardHostView, "updateSecurityView", View.class, mUpdateSecurityViewHook);
+			}
+			else {
+				findAndHookMethod(KeyguardHostView, "showTimeoutDialog", mShowTimeoutDialogHook);
+				findAndHookMethod(KeyguardHostView, "updateSecurityView", View.class, boolean.class, mUpdateSecurityViewHook);
+			}
         }
 	}
 
@@ -58,6 +71,46 @@ public class XposedMod implements IXposedHookLoadPackage {
 					String uuid = Secure.getString(context.getContentResolver(),
 							Secure.ANDROID_ID);
 					mSettingsHelper = new SettingsHelper(uuid);
+				}
+			}
+		};
+
+		mOnSimStateChangedHook = new XC_MethodHook() {
+			@Override
+			protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+				if (mKnockCodeView != null) {
+					if (Build.VERSION.SDK_INT == Build.VERSION_CODES.M) {
+						mKnockCodeView.updateEmergencyCallButton();
+					}
+					else {
+						int phoneState = (int) XposedHelpers.callMethod(mKnockCodeView.mKeyguardUpdateMonitor, "getPhoneState");
+						mKnockCodeView.updateEmergencyCallButton(phoneState);
+					}
+					param.setResult(null);
+				}
+			}
+		};
+
+		mShowTimeoutDialogHook = new XC_MethodHook() {
+			@Override
+			protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+				if ((mKnockCodeView != null) && (mSettingsHelper != null)) {
+					if (mSettingsHelper.shouldDisableDialog())
+						param.setResult(null);
+				}
+			}
+		};
+
+		mOnPhoneStateChangedHook = new XC_MethodHook() {
+			@Override
+			protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+				if (mKnockCodeView!=null) {
+					if (Build.VERSION.SDK_INT == Build.VERSION_CODES.M) {
+						mKnockCodeView.updateEmergencyCallButton();
+					} else {
+						mKnockCodeView.updateEmergencyCallButton((int) param.args[0]);
+						param.setResult(null);
+					}
 				}
 			}
 		};
@@ -92,8 +145,10 @@ public class XposedMod implements IXposedHookLoadPackage {
 				Class<?> SecurityMode = XposedHelpers.findClass(keyguardPackageName + ".KeyguardSecurityModel$SecurityMode",
 						param.thisObject.getClass().getClassLoader());
 				Object patternMode = XposedHelpers.getStaticObjectField(SecurityMode, "Pattern");
-				if (!patternMode.equals(securityMode))
+				if (!patternMode.equals(securityMode)) {
+					mKnockCodeView = null;
 					return;
+				}
 				Object mCurrentSecuritySelection = XposedHelpers.getObjectField(param.thisObject, "mCurrentSecuritySelection");
 				if (securityMode == mCurrentSecuritySelection) return;
 

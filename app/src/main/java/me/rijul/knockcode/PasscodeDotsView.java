@@ -30,7 +30,7 @@ public class PasscodeDotsView extends View {
 
 		if (mDotPaint == null) {
 			mDotPaint = new Paint();
-			mDotPaint.setColor(Color.WHITE);
+			mDotPaint.setColor(Color.BLACK);
 			mDotPaint.setAntiAlias(true);
 			mDotPaint.setStyle(Paint.Style.FILL);
 		}

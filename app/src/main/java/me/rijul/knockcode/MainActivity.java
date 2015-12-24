@@ -29,16 +29,6 @@ public class MainActivity extends AppCompatPreferenceActivity implements OnShare
 		SettingsHelper.emitSettingsChanged(getApplicationContext());
 	}
 
-	// We need to find a way to simulate pattern entries, will look into that later.
-	// Simulation
-	//		ArrayList<Cell> array = new ArrayList<Cell>();
-	//		array.add(new Cell(1, 0));
-	//		array.add(new Cell(1, 1));
-	//		array.add(new Cell(2, 0));
-	//		array.add(new Cell(2, 1));
-	//		Toast.makeText(getApplicationContext(), PatternUtils.patternToString(array),
-	//				Toast.LENGTH_SHORT).show();
-
 	@SuppressWarnings("deprecation")
 	@Override
 	protected void onPostCreate(Bundle savedInstanceState) {
@@ -47,21 +37,6 @@ public class MainActivity extends AppCompatPreferenceActivity implements OnShare
 		addPreferencesFromResource(R.xml.preferences);
 		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
-
-		findPreference("change_knock_code").setOnPreferenceClickListener(new OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference arg0) {
-                startActivity(new Intent(MainActivity.this, ChangeKnockCodeActivity.class));
-                return false;
-            }
-        });
-	findPreference("about_key").setOnPreferenceClickListener(new OnPreferenceClickListener() {
-        @Override
-        public boolean onPreferenceClick(Preference preference) {
-            startActivity(new Intent(MainActivity.this, AboutActivity.class));
-            return false;
-        }
-    });
 	}
 
 	@Override
@@ -78,13 +53,15 @@ public class MainActivity extends AppCompatPreferenceActivity implements OnShare
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		return true;
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		int id = item.getItemId();
-		if (id == R.id.action_settings) {
+		if (id == R.id.action_about) {
+            startActivity(new Intent(MainActivity.this, AboutActivity.class));
 			return true;
 		}
 		return super.onOptionsItemSelected(item);

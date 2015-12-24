@@ -9,7 +9,7 @@
     <string name="about_license_title">License</string>
     <string name="about_license_description">This app is licensed under the GPLv3</string>
     <string name="about_disclaimer_title">Disclaimer</string>
-    <string name="about_disclaimer_description">By using this app, you agree that the authors should not be held responsible if anything breaks. Currently, it does not show emergency call button on lockscreen. If you are uncomfortable without it, please do not use this app.</string>
+    <string name="about_disclaimer_description">By using this app, you agree that the authors should not be held responsible if anything breaks.</string>
     <string name="about_disclaimer_message">THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE</string>
     <string name="about_source_title">Source code</string>
     <string name="about_authors">Authors</string>
@@ -21,6 +21,7 @@
 
     <!-- Categories -->
     <string name="appearance">Appearance</string>
+    <string name="emergency_button">Emergency Button</string>
 
     <!-- Pattern change -->
     <string name="enter_new_knock_code">Enter new knock code</string>
@@ -31,18 +32,48 @@
     <string name="next">Next</string>
 
     <!-- Preferences -->
-    <string name="pref_title_draw_fill">Draw fill</string>
-    <string name="pref_description_draw_fill">Whether or not taps should be shown</string>
-    <string name="pref_title_draw_lines">Draw lines</string>
-    <string name="pref_description_draw_lines">Whether or not the inner lines should be drawn</string>
+    <string name="pref_about_title">About</string>
+    <string name="pref_about_description">Help, licensing, authors, disclaimer, source</string>
+
     <string name="pref_title_change_code">Change knock code</string>
     <string name="pref_description_change_code">Tap here to change your knock code</string>
-    <string name="pref_about_description">Help, licensing, authors, disclaimer, source</string>
-    <string name="pref_about_title">About</string>
+
+    <string name="pref_title_draw_fill">Draw fill</string>
+    <string name="pref_description_draw_fill">Whether or not taps should be shown</string>
+    <string name="pref_description_draw_fill_on">Taps will be shown</string>
+    <string name="pref_description_draw_fill_off">Taps will be hidden</string>
+
+    <string name="pref_title_draw_lines">Draw lines</string>
+    <string name="pref_description_draw_lines">Whether or not the inner lines should be drawn</string>
+    <string name="pref_description_draw_lines_on">Inner lines will be drawn</string>
+    <string name="pref_description_draw_lines_off">Inner lines will be hidden</string>
+
+    <string name="pref_title_show_text">Show text</string>
+    <string name="pref_summary_show_text">Whether text indicating the lockscreen state should be shown</string>
+    <string name="pref_summary_show_text_on">Text indicating the lockscreen state will be shown</string>
+    <string name="pref_summary_show_text_off">Text indicating the lockscreen state will be hidden</string>
+
+
+    <string name="pref_title_show_dialog">Show dialog</string>
+    <string name="pref_summary_show_dialog">Uncheck this to prevent the dialog which shows up on lockscreen if you make too many incorrect attempts</string>
+    <string name="pref_summary_show_dialog_on">Dialog will be shown on too many incorrect attempts</string>
+    <string name="pref_summary_show_dialog_off">Dialog will not be shown on too many incorrect attempts</string>
+
+    <string name="pref_title_show_emergency_button">Show emergency call button</string>
+    <string name="pref_summary_show_emergency_button">Uncheck to disable the button</string>
+    <string name="pref_summary_show_emergency_button_on">Button is enabled</string>
+    <string name="pref_summary_show_emergency_button_off">Button is disabled (use with caution!)</string>
+
+    <string name="pref_title_show_emergency_text">Show emergency call text</string>
+    <string name="pref_summary_show_emergency_text">Uncheck to hide the text, clicking the button will still work</string>
+    <string name="pref_summary_show_emergency_text_on">Text will be shown</string>
+    <string name="pref_summary_show_emergency_text_off">Text will be hidden, but button taps will still work</string>
 
     <!-- Lockscreen -->
     <string name="device_disabled">Device disabled, try again in %1$d seconds</string>
     <string name="incorrect_pattern">Incorrect pattern</string>
     <string name="long_pressed_hint">Long pressed, pattern cleared</string>
+    <string name="lockscreen_return_to_call">Return to Call</string>
+    <string name="lockscreen_emergency_call">Emergency is this</string>
 
 </resources>
