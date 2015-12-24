@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences.Editor;
 import android.provider.Settings.Secure;
+
 import de.robv.android.xposed.XSharedPreferences;
 
 public class SettingsHelper {
@@ -221,8 +222,32 @@ public class SettingsHelper {
 
 	public boolean hideEmergencyText() {return !getBoolean("show_emergency_text", true); }
 
+	public boolean vibrateOnLongPress() {return getBoolean("vibrate_long_press", true);}
+
+	public boolean vibrateOnTap() {return getBoolean("vibrate_tap", false); }
+
+	public boolean isDisabled() {return !getBoolean("switch", false); }
+
 	public void setShouldDrawFill(boolean draw) {
 		edit().putBoolean("should_draw_fill", draw).commit();
+		emitSettingsChanged(mContext);
+	}
+
+	public void putInt(String key, int value) {
+		edit().putInt(key, value).commit();
+		emitSettingsChanged(mContext);
+	}
+
+	public Grid getPatternSize() {
+		int columns,rows;
+		columns = Integer.parseInt(getString("pattern_size_columns", "2"));
+		rows = Integer.parseInt(getString("pattern_size_rows", "2"));
+		return new Grid(columns,rows);
+	}
+
+	public void storePatternSize(Grid g) {
+		edit().putString("pattern_size_columns", "" + g.numberOfColumns).commit();
+		edit().putString("pattern_size_rows", "" + g.numberOfRows).commit();
 		emitSettingsChanged(mContext);
 	}
 }

@@ -1,5 +1,6 @@
 package me.rijul.knockcode;
 
+import android.preference.PreferenceGroup;
 import android.support.v7.app.ActionBar;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -67,6 +68,8 @@ public class AboutActivity extends AppCompatPreferenceActivity {
                 return false;
             }
         });
+
+        ((PreferenceGroup) findPreference("hidden")).removeAll();
     }
 
     @Override

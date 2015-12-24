@@ -7,13 +7,11 @@ import android.content.Context;
 import android.os.Build;
 import android.provider.Settings.Secure;
 import android.view.View;
-import android.widget.Button;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.ViewFlipper;
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.XC_MethodHook;
+import de.robv.android.xposed.XC_MethodReplacement;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
@@ -29,6 +27,7 @@ public class XposedMod implements IXposedHookLoadPackage {
 	private XC_MethodHook mOnPhoneStateChangedHook;
 	private XC_MethodHook mShowTimeoutDialogHook;
     protected static KnockCodeUnlockView mKnockCodeView;
+	public static boolean isXperiaDevice=false;
 	private static SettingsHelper mSettingsHelper;
 
 	@Override
@@ -37,7 +36,8 @@ public class XposedMod implements IXposedHookLoadPackage {
 		if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) && (
 				lpparam.packageName.contains("android.keyguard") || lpparam.packageName.contains("com.android.systemui"))) {
             createHooksIfNeeded("com.android.keyguard");
-            Class<?> KeyguardHostView = XposedHelpers.findClass("com.android.keyguard.KeyguardSecurityContainer",
+            findAndHookMethod(MainActivity.class, "isModuleDisabled", XC_MethodReplacement.returnConstant(false));
+                    Class < ?> KeyguardHostView = XposedHelpers.findClass("com.android.keyguard.KeyguardSecurityContainer",
                     lpparam.classLoader);
             XposedBridge.hookAllConstructors(KeyguardHostView, mKeyguardHostViewInitHook);
 			findAndHookMethod(KeyguardHostView, "startAppearAnimation", mStartAppearAnimHook);
@@ -46,7 +46,15 @@ public class XposedMod implements IXposedHookLoadPackage {
 					lpparam.classLoader);
 			Class<?> state = XposedHelpers.findClass("com.android.internal.telephony.IccCardConstants.State",
 					lpparam.classLoader);
-			findAndHookMethod(clazz, "onSimStateChanged", int.class, int.class, state, mOnSimStateChangedHook);
+			try {
+				findAndHookMethod(clazz, "onSimStateChanged", int.class, int.class, state, mOnSimStateChangedHook);
+			}
+			catch (NoSuchMethodError e)
+			{
+				XposedBridge.log("[KnockCode] Looks like Xperia device!");
+				isXperiaDevice = true;
+				findAndHookMethod(clazz, "onSimStateChanged", int.class, state, mOnSimStateChangedHook);
+			}
 			findAndHookMethod(clazz, "onPhoneStateChanged", int.class, mOnPhoneStateChangedHook);
             findAndHookMethod(KeyguardHostView, "showSecurityScreen", "com.android.keyguard.KeyguardSecurityModel$SecurityMode", mShowSecurityScreenHook);
 
@@ -78,6 +86,8 @@ public class XposedMod implements IXposedHookLoadPackage {
 		mOnSimStateChangedHook = new XC_MethodHook() {
 			@Override
 			protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                if ((mSettingsHelper==null) || (mSettingsHelper.isDisabled()))
+                    return;
 				if (mKnockCodeView != null) {
 					if (Build.VERSION.SDK_INT == Build.VERSION_CODES.M) {
 						mKnockCodeView.updateEmergencyCallButton();
@@ -94,6 +104,8 @@ public class XposedMod implements IXposedHookLoadPackage {
 		mShowTimeoutDialogHook = new XC_MethodHook() {
 			@Override
 			protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                if ((mSettingsHelper==null) || (mSettingsHelper.isDisabled()))
+                    return;
 				if ((mKnockCodeView != null) && (mSettingsHelper != null)) {
 					if (mSettingsHelper.shouldDisableDialog())
 						param.setResult(null);
@@ -104,6 +116,8 @@ public class XposedMod implements IXposedHookLoadPackage {
 		mOnPhoneStateChangedHook = new XC_MethodHook() {
 			@Override
 			protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                if ((mSettingsHelper==null) || (mSettingsHelper.isDisabled()))
+                    return;
 				if (mKnockCodeView!=null) {
 					if (Build.VERSION.SDK_INT == Build.VERSION_CODES.M) {
 						mKnockCodeView.updateEmergencyCallButton();
@@ -118,6 +132,8 @@ public class XposedMod implements IXposedHookLoadPackage {
 		mUpdateSecurityViewHook = new XC_MethodHook() {
 			@Override
 			protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                if ((mSettingsHelper==null) || (mSettingsHelper.isDisabled()))
+                    return;
 				View view = (View) param.args[0];
 				if (view instanceof KnockCodeUnlockView) {
 					KnockCodeUnlockView unlockView = (KnockCodeUnlockView) view;
@@ -141,6 +157,8 @@ public class XposedMod implements IXposedHookLoadPackage {
 		mShowSecurityScreenHook = new XC_MethodHook() {
 			@Override
 			protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                if ((mSettingsHelper==null) || (mSettingsHelper.isDisabled()))
+                    return;
 				Object securityMode = param.args[0];
 				Class<?> SecurityMode = XposedHelpers.findClass(keyguardPackageName + ".KeyguardSecurityModel$SecurityMode",
 						param.thisObject.getClass().getClassLoader());
@@ -202,6 +220,8 @@ public class XposedMod implements IXposedHookLoadPackage {
 		mStartAppearAnimHook = new XC_MethodHook() {
 			@Override
 			protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                if ((mSettingsHelper==null) || (mSettingsHelper.isDisabled()))
+                    return;
 				if (isPattern(keyguardPackageName,param))
 					if (mKnockCodeView!=null) {
 						mKnockCodeView.startAppearAnimation();
@@ -213,6 +233,8 @@ public class XposedMod implements IXposedHookLoadPackage {
         mOnPauseHook= new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                if ((mSettingsHelper==null) || (mSettingsHelper.isDisabled()))
+                    return;
 				if (isPattern(keyguardPackageName,param))
                   if (mKnockCodeView!=null) {
                         mKnockCodeView.onPause();

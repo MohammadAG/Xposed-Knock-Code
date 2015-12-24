@@ -215,7 +215,7 @@ public class KnockCodeUnlockView extends LinearLayout implements OnPositionTappe
 				getIdentifier("icccardexist_hide_emergencybutton", "bool", mContext.getPackageName()))) {
 			enabled = false;
 		}
-		XposedHelpers.callMethod(mLockPatternUtils, "updateEmergencyCallButtonState", mEmergencyButton, enabled, false);
+		XposedHelpers.callMethod(mLockPatternUtils, "updateEmergencyCallButtonState", mEmergencyButton, enabled, XposedMod.isXperiaDevice);
 		if (mSettingsHelper.hideEmergencyText()) {
 			mEmergencyButton.setText("");
 		}

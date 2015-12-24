@@ -42,4 +42,14 @@
             android:title="@string/about_rijul"/>
     </PreferenceCategory>
 
+    <PreferenceCategory android:key="hidden">
+        <EditTextPreference
+            android:defaultValue="2"
+            android:numeric="integer"
+            android:key="pattern_size_columns"/>
+        <EditTextPreference
+            android:defaultValue="2"
+            android:numeric="integer"
+            android:key="pattern_size_rows"/>
+    </PreferenceCategory>
 </PreferenceScreen>

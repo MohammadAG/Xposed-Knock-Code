@@ -16,7 +16,6 @@
 
 package me.rijul.knockcode;
 
-import android.animation.Animator;
 import android.view.animation.Interpolator;
 
 /**

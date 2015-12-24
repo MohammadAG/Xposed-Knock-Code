@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.os.Build;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
@@ -15,7 +16,7 @@ import android.view.View;
 import me.rijul.knockcode.SettingsHelper.OnSettingsReloadedListener;
 
 public class KnockCodeView extends View implements OnSettingsReloadedListener {
-	public enum Mode {
+    public enum Mode {
 		READY, CORRECT, INCORRECT, DISABLED
 	}
 
@@ -31,6 +32,7 @@ public class KnockCodeView extends View implements OnSettingsReloadedListener {
 	private SettingsHelper mSettingsHelper;
 	protected boolean mLongClick;
 	private OnLongClickListener mLongClickListener;
+	public Grid mPatternSize = new Grid(2,2);
 
 	public interface OnPositionTappedListener {
 		void onPositionTapped(int pos);
@@ -45,16 +47,17 @@ public class KnockCodeView extends View implements OnSettingsReloadedListener {
 		DisplayMetrics dm = context.getResources().getDisplayMetrics();
 		mLineWidth = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 1, dm);
 		super.setOnLongClickListener(new OnLongClickListener() {
-			@Override
-			public boolean onLongClick(View v) {
-				if (mLongClickListener != null) {
-					v.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
-					mLongClick = true;
-					return mLongClickListener.onLongClick(KnockCodeView.this);
-				}
-				return false;
-			}
-		});
+            @Override
+            public boolean onLongClick(View v) {
+                if (mLongClickListener != null) {
+                    if (vibrateOnLongPress())
+                        v.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
+                    mLongClick = true;
+                    return mLongClickListener.onLongClick(KnockCodeView.this);
+                }
+                return false;
+            }
+        });
 	}
 
 	public KnockCodeView(Context context, AttributeSet attrs) {
@@ -74,6 +77,9 @@ public class KnockCodeView extends View implements OnSettingsReloadedListener {
 	public void setSettingsHelper(SettingsHelper settingsHelper) {
 		mSettingsHelper = settingsHelper;
 		mSettingsHelper.addOnReloadListener(this);
+        if (mInnerPaint!=null)
+            mInnerPaint.setColor(Color.WHITE);
+        setPatternSize(mSettingsHelper.getPatternSize());
 	}
 
 	private boolean shouldDrawLines() {
@@ -92,7 +98,21 @@ public class KnockCodeView extends View implements OnSettingsReloadedListener {
 		}
 	}
 
-	@Override
+    private boolean vibrateOnLongPress() {
+        if (mSettingsHelper!=null)
+            return mSettingsHelper.vibrateOnLongPress();
+        else
+            return true;
+    }
+
+    private boolean vibrateOnTap() {
+        if (mSettingsHelper!=null)
+            return mSettingsHelper.vibrateOnTap();
+        else
+            return false;
+    }
+
+    @Override
 	protected void onDraw(Canvas canvas) {
 		super.onDraw(canvas);
 
@@ -103,7 +123,10 @@ public class KnockCodeView extends View implements OnSettingsReloadedListener {
 			mLinePaint.setAntiAlias(true);
 
 			mInnerPaint = new Paint();
-			mInnerPaint.setColor(Color.WHITE);
+			if (mSettingsHelper==null)
+                mInnerPaint.setColor(Color.BLACK);
+            else
+                mInnerPaint.setColor(Color.WHITE);
 			mInnerPaint.setAntiAlias(true);
 			mInnerPaint.setStyle(Paint.Style.FILL);
 		}
@@ -128,8 +151,16 @@ public class KnockCodeView extends View implements OnSettingsReloadedListener {
 		}
 
 		if (shouldDrawLines()) {
-			canvas.drawLine(getWidth() / 2, 0, getWidth() / 2, getHeight(), mLinePaint);
-			canvas.drawLine(0, getHeight() / 2, getWidth(), getHeight() / 2, mLinePaint);
+            int i;
+            //canvas.drawLine(startX, startY, stopX, stopY, Paint)
+            //Vertical lines
+            for(i=1; i<mPatternSize.numberOfColumns; ++i) {
+                canvas.drawLine(i*getWidth()/mPatternSize.numberOfColumns, 0, i*getWidth()/mPatternSize.numberOfColumns, getHeight(), mLinePaint);
+            }
+            //Horizontal lines
+            for(i=1; i<mPatternSize.numberOfRows; ++i) {
+                canvas.drawLine(0, i*getHeight()/mPatternSize.numberOfRows, getWidth(), i*getHeight()/mPatternSize.numberOfRows, mLinePaint);
+            }
 		}
 
 		if (mPosition != -1 && shouldDrawFill()) {
@@ -156,6 +187,10 @@ public class KnockCodeView extends View implements OnSettingsReloadedListener {
 		case MotionEvent.ACTION_DOWN:
 			mPosition = getPositionOfClick(event.getX(), event.getY());
 			invalidate();
+            if (vibrateOnTap())
+                performHapticFeedback((Build.VERSION.SDK_INT == Build.VERSION_CODES.M) ?
+                        HapticFeedbackConstants.CONTEXT_CLICK : HapticFeedbackConstants.VIRTUAL_KEY ,
+                        HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
 			break;
 		case MotionEvent.ACTION_UP:
 			if (mLongClick) {
@@ -173,7 +208,6 @@ public class KnockCodeView extends View implements OnSettingsReloadedListener {
 				if (mListener != null)
 					mListener.onPositionTapped(position);
 			}
-
 			mPosition = -1;
 			invalidate();
 			return super.onTouchEvent(event);
@@ -183,19 +217,13 @@ public class KnockCodeView extends View implements OnSettingsReloadedListener {
 	}
 
 	private int getPositionOfClick(float x, float y) {
-		if (y < getHeight() / 2) {
-			if (x > getWidth() / 2) {
-				return 2;
-			} else {
-				return 1;
-			}
-		} else if (y > getHeight() / 2) {
-			if (x > getWidth() / 2) {
-				return 4;
-			} else {
-				return 3;
-			}
-		}
+        int i,j;
+        for(j=1; j<=mPatternSize.numberOfColumns; ++j)
+            if (x<=j*getWidth()/mPatternSize.numberOfColumns)
+                for (i=1; i<=mPatternSize.numberOfRows; ++i)
+                    if (y<=i*getHeight()/mPatternSize.numberOfRows) {
+                        return (j + (i - 1) * mPatternSize.numberOfColumns);
+                    }
 		return -1;
 	}
 
@@ -203,19 +231,22 @@ public class KnockCodeView extends View implements OnSettingsReloadedListener {
 		return normalizeRect(getRectForPositionImpl(pos));
 	}
 
-	private Rect getRectForPositionImpl(int pos) {
-		switch (pos) {
-		case 1:
-			return new Rect(0, 0, getWidth() / 2, getHeight() / 2);
-		case 2:
-			return new Rect(getWidth() / 2, 0, getWidth(), getHeight() / 2);
-		case 3:
-			return new Rect(0, getHeight() / 2, getWidth() / 2, getHeight());
-		case 4:
-			return new Rect(getWidth() / 2, getHeight() / 2, getWidth(), getHeight());
-		default:
-			throw new IllegalArgumentException("Only position 1-4 supported");
-		}
+	private Rect getRectForPositionImpl(final int pos) {
+        int i,j;
+        i=1; j=1;
+        for(j=1; j<=mPatternSize.numberOfRows; ++j)
+            for(i=1; i<=mPatternSize.numberOfColumns; ++i)
+                if (pos==i+(j-1)*mPatternSize.numberOfColumns)
+                    return new Rect((i-1)*getWidth()/mPatternSize.numberOfColumns,
+                                    (j-1)*getHeight()/mPatternSize.numberOfRows,
+                                    i*getWidth()/mPatternSize.numberOfColumns,
+                                    j*getHeight()/mPatternSize.numberOfRows);
+        throw new IllegalArgumentException("Only positions 1-" + mPatternSize.numberOfColumns*mPatternSize.numberOfRows + " supported, supplied " +
+                "\npos = " + pos +
+                "\ni = " + i +
+                "\nj = " + j +
+                "\nmPatternSize.numberOfColumns = " + mPatternSize.numberOfColumns +
+                "\nmPatternSize.numberOfRows = " + mPatternSize.numberOfRows);
 	}
 
 	private Rect normalizeRect(Rect rect) {
@@ -260,5 +291,8 @@ public class KnockCodeView extends View implements OnSettingsReloadedListener {
 	@Override
 	public void onSettingsReloaded() {
 		invalidate();
+        setPatternSize(mSettingsHelper.getPatternSize());
 	}
+
+    public void setPatternSize(Grid g) {mPatternSize = g; invalidate();}
 }

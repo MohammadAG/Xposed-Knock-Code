@@ -10,6 +10,14 @@
             android:targetClass="me.rijul.knockcode.ChangeKnockCodeActivity"/>
     </Preference>
 
+    <CheckBoxPreference
+        android:defaultValue="false"
+        android:key="hide_app_from_launcher"
+        android:summary="@string/pref_description_draw_fill"
+        android:summaryOff="@string/hide_from_launcher_off"
+        android:summaryOn="@string/hide_from_launcher_on"
+        android:title="@string/hide_from_launcher" />
+
     <PreferenceCategory android:title="@string/appearance" >
         <CheckBoxPreference
             android:defaultValue="true"
@@ -61,4 +69,20 @@
             android:summaryOff="@string/pref_summary_show_emergency_text_off"/>
     </PreferenceCategory>
 
+    <PreferenceCategory android:title="@string/vibration">
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="vibrate_long_press"
+            android:title="@string/pref_title_vibrate_long_press"
+            android:summary="@string/pref_description_vibrate_long_press"
+            android:summaryOn="@string/pref_description_vibrate_long_press_on"
+            android:summaryOff="@string/pref_description_vibrate_long_press_off"/>
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="vibrate_tap"
+            android:title="@string/pref_title_vibrate_tap"
+            android:summary="@string/pref_description_vibrate_tap"
+            android:summaryOn="@string/pref_description_vibrate_tap_on"
+            android:summaryOff="@string/pref_description_vibrate_tap_off"/>
+    </PreferenceCategory>
 </PreferenceScreen>

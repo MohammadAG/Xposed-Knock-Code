@@ -17,14 +17,10 @@
 package me.rijul.knockcode;
 
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.view.animation.Interpolator;
-
-import de.robv.android.xposed.XposedBridge;
-import me.rijul.knockcode.ResourceHelper;
 
 /**
  * A class to make nice appear transitions for views in a tabular layout.

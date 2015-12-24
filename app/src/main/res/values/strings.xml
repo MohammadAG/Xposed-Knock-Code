@@ -3,6 +3,8 @@
 
     <string name="app_name">Knock Code</string>
 
+    <string name="action_toggle">Turn On Knock Code</string>
+
     <!--About-->
     <string name="about_help_title">Help</string>
     <string name="about_help_description">Before looking for help, activate 3x3 pattern in system settings and ensure that the module is active.</string>
@@ -28,15 +30,24 @@
     <string name="enter_previous_knock_code">Enter current knock code</string>
     <string name="confirm_new_knock_code">Confirm new knock code</string>
     <string name="successfully_changed_code">Code changed successfully</string>
-    <string name="retry">Retry</string>
     <string name="next">Next</string>
+    <string name="retry">Retry</string>
+    <string name="size_exceeded">Maximum size exceeded, resetting.</string>
+    <string name="pref_description_change_code_pick_size">Choose the size for your pattern</string>
 
     <!-- Preferences -->
     <string name="pref_about_title">About</string>
     <string name="pref_about_description">Help, licensing, authors, disclaimer, source</string>
 
+    <string name="module_inactive">Knock Code is inactive</string>
+
     <string name="pref_title_change_code">Change knock code</string>
     <string name="pref_description_change_code">Tap here to change your knock code</string>
+
+    <string name="hide_from_launcher">Hide app</string>
+    <string name="hide_from_launcher_on">Hidden from launcher</string>
+    <string name="hide_from_launcher_off">Visible in launcher</string>
+    <string name="reboot_required">A reboot may be required to apply the changes.</string>
 
     <string name="pref_title_draw_fill">Draw fill</string>
     <string name="pref_description_draw_fill">Whether or not taps should be shown</string>
@@ -69,11 +80,28 @@
     <string name="pref_summary_show_emergency_text_on">Text will be shown</string>
     <string name="pref_summary_show_emergency_text_off">Text will be hidden, but button taps will still work</string>
 
+    <string name="vibration">Vibration (ignores system settings)</string>
+    <string name="pref_title_vibrate_long_press">Long press</string>
+    <string name="pref_description_vibrate_long_press">You should not see this</string>
+    <string name="pref_description_vibrate_long_press_on">Enabled</string>
+    <string name="pref_description_vibrate_long_press_off">Disabled</string>
+
+    <string name="pref_title_vibrate_tap">Tap</string>
+    <string name="pref_description_vibrate_tap">You should not see this</string>
+    <string name="pref_description_vibrate_tap_on">Enabled</string>
+    <string name="pref_description_vibrate_tap_off">Disabled</string>
+
     <!-- Lockscreen -->
     <string name="device_disabled">Device disabled, try again in %1$d seconds</string>
     <string name="incorrect_pattern">Incorrect pattern</string>
     <string name="long_pressed_hint">Long pressed, pattern cleared</string>
     <string name="lockscreen_return_to_call">Return to Call</string>
     <string name="lockscreen_emergency_call">Emergency is this</string>
+
+    <string name="dialog_message_not_active">Knock Code could not hook the Android System methods needed for it to work. This may have several reasons:\n
+    &#x2022; <i>Xposed Framework is not installed</i>\n
+    &#x2022; <i>Xposed is installed and active, but you didn\'t enable Knock Code in Xposed installer (\"Modules\" tab) or didn\'t reboot afterwards.</i>\n
+    &#x2022; <i>Xposed Framework got disabled by Xposed safemode. Look at the Xposed Thread on XDA for further information.</i>\n
+    &#x2022; <i>Knock Code may have encountered a crash. You should send me a bug report on the XDA thread (Hamburger menu -> About -> Help).</i></string>
 
 </resources>
