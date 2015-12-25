@@ -38,7 +38,7 @@ public class XposedMod implements IXposedHookLoadPackage {
 			XposedHelpers.setStaticBooleanField(XposedHelpers.findClass("me.rijul.knockcode.MainActivity", lpparam.classLoader),
 					"MODULE_INACTIVE", false);
 		}
-		else if ((lpparam.packageName.contains("android.keyguard")) || (lpparam.packageName.contains("com.android.systemui") ) {
+		else if ((lpparam.packageName.contains("android.keyguard")) || (lpparam.packageName.contains("com.android.systemui"))) {
             createHooksIfNeeded("com.android.keyguard");
                     Class < ?> KeyguardHostView = XposedHelpers.findClass("com.android.keyguard.KeyguardSecurityContainer",
                     lpparam.classLoader);
@@ -51,12 +51,24 @@ public class XposedMod implements IXposedHookLoadPackage {
 					lpparam.classLoader);
 			try {
 				findAndHookMethod(clazz, "onSimStateChanged", int.class, int.class, state, mOnSimStateChangedHook);
+				XposedBridge.log("[KnockCode] 5.1.x or 6.0.x device");
 			}
 			catch (NoSuchMethodError e)
 			{
-				XposedBridge.log("[KnockCode] Looks like Xperia device!");
-				isXperiaDevice = true;
-				findAndHookMethod(clazz, "onSimStateChanged", int.class, state, mOnSimStateChangedHook);
+				try {
+					findAndHookMethod(clazz, "onSimStateChanged", long.class, state, mOnSimStateChangedHook);
+					XposedBridge.log("[KnockCode] 5.0.x device");
+				}
+				catch (NoSuchMethodError e2) {
+					try {
+						findAndHookMethod(clazz, "onSimStateChanged", int.class, state, mOnSimStateChangedHook);
+						isXperiaDevice = true;
+						XposedBridge.log("[KnockCode] Xperia device");
+					}
+					catch (NoSuchMethodError e3) {
+						XposedBridge.log("[KnockCode] Unknown type of device, not hooking onSimStateChanged");
+					}
+				}
 			}
 			findAndHookMethod(clazz, "onPhoneStateChanged", int.class, mOnPhoneStateChangedHook);
             findAndHookMethod(KeyguardHostView, "showSecurityScreen", "com.android.keyguard.KeyguardSecurityModel$SecurityMode", mShowSecurityScreenHook);

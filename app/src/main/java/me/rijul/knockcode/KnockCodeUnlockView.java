@@ -2,11 +2,14 @@ package me.rijul.knockcode;
 
 import java.util.ArrayList;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.CountDownTimer;
 import android.os.SystemClock;
@@ -15,6 +18,7 @@ import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
 import android.view.View.OnLongClickListener;
+import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import java.lang.Runnable;
 
@@ -42,6 +46,7 @@ public class KnockCodeUnlockView extends LinearLayout implements OnPositionTappe
 	private int mFailedPatternAttemptsSinceLastTimeout = 0;
 	private ArrayList<Integer> mTappedPositions = new ArrayList<Integer>();
 	private TextView mTextView;
+	private PasscodeDotsView mDotsView;
 	private SettingsHelper mSettingsHelper;
     private final AppearAnimationUtils mAppearAnimationUtils;
     private final DisappearAnimationUtils mDisappearAnimationUtils;
@@ -75,11 +80,21 @@ public class KnockCodeUnlockView extends LinearLayout implements OnPositionTappe
 		mTextView = new TextView(mContext);
 		mTextView.setGravity(Gravity.CENTER);
 		mTextView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 0.1f));
+		setText(mTextView,"");
 		addView(mTextView);
+
+		//dots
+		mDotsView = new PasscodeDotsView(mContext);
+		mDotsView.setForegroundGravity(Gravity.CENTER);
+		mDotsView.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, 0, 0.03f));
+		mDotsView.reset();
+		mDotsView.mDotRadius = 5;
+		mDotsView.setDotPaintColor(Color.WHITE);
+		addView(mDotsView);
 
 		//knock code view
 		mKnockCodeUnlockView = new KnockCodeView(mContext);
-		mKnockCodeUnlockView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 0.8f));
+		mKnockCodeUnlockView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 0.77f));
 		mKnockCodeUnlockView.setOnPositionTappedListener(this);
 		mKnockCodeUnlockView.setOnLongClickListener(this);
 		addView(mKnockCodeUnlockView);
@@ -116,7 +131,6 @@ public class KnockCodeUnlockView extends LinearLayout implements OnPositionTappe
 		TypedArray a = context.obtainStyledAttributes(outValue.data, textSizeAttr);
 		int textColor = a.getColor(0, -1);
 		a.recycle();
-		mEmergencyButton.setTextColor(textColor);
 
 		mContext.getTheme().resolveAttribute(android.R.attr.selectableItemBackground, outValue, true);
 		mEmergencyButton.setBackgroundResource(outValue.resourceId);
@@ -199,7 +213,9 @@ public class KnockCodeUnlockView extends LinearLayout implements OnPositionTappe
 		if ((boolean) XposedHelpers.callMethod(mLockPatternUtils, "isInCall")) {
 			enabled = true; // always show "return to call" if phone is off-hook
 		} else if ((boolean) XposedHelpers.callMethod(mLockPatternUtils, "isEmergencyCallCapable")) {
-			boolean simLocked = (boolean) XposedHelpers.callMethod(mKeyguardUpdateMonitor, "isSimPinVoiceSecure");
+			boolean simLocked = (XposedMod.isXperiaDevice) ?
+					((boolean) XposedHelpers.callMethod(mKeyguardUpdateMonitor, "isSimLocked")) :
+					((boolean) XposedHelpers.callMethod(mKeyguardUpdateMonitor, "isSimPinVoiceSecure"));
 			if (simLocked) {
 				// Some countries can't handle emergency calls while SIM is locked.
 				enabled = (boolean) XposedHelpers.callMethod(mLockPatternUtils, "isEmergencyCallEnabledWhileSimLocked");
@@ -215,7 +231,7 @@ public class KnockCodeUnlockView extends LinearLayout implements OnPositionTappe
 				getIdentifier("icccardexist_hide_emergencybutton", "bool", mContext.getPackageName()))) {
 			enabled = false;
 		}
-		XposedHelpers.callMethod(mLockPatternUtils, "updateEmergencyCallButtonState", mEmergencyButton, enabled, XposedMod.isXperiaDevice);
+		XposedHelpers.callMethod(mLockPatternUtils, "updateEmergencyCallButtonState", mEmergencyButton, enabled, false);
 		if (mSettingsHelper.hideEmergencyText()) {
 			mEmergencyButton.setText("");
 		}
@@ -289,8 +305,8 @@ public class KnockCodeUnlockView extends LinearLayout implements OnPositionTappe
 			public void onTick(long millisUntilFinished) {
 				int secs = (int) (millisUntilFinished / 1000L);
 				if (mContext != null) {
-					if (mSettingsHelper.shouldShowText())
-					mTextView.setText(getEnablingInSecs(secs));
+					if (secs==30)
+						setText(mTextView, getEnablingInSecs(secs));
 				}
 			}
 		}
@@ -305,7 +321,7 @@ public class KnockCodeUnlockView extends LinearLayout implements OnPositionTappe
 		mKnockCodeUnlockView.setEnabled(true);
 		mFailedPatternAttemptsSinceLastTimeout = 0;
 		mKnockCodeUnlockView.setMode(Mode.READY);
-		mTextView.setText("");
+		setText(mTextView, "");
 	}
 
 	protected void onAttemptLockoutStart() {
@@ -342,8 +358,9 @@ public class KnockCodeUnlockView extends LinearLayout implements OnPositionTappe
 	public void onPositionTapped(int pos) {
 		XposedHelpers.callMethod(mCallback,"userActivity");
 		mTappedPositions.add(pos);
+		mDotsView.setCount(mTappedPositions.size());
 		mKnockCodeUnlockView.setMode(Mode.READY);
-		mTextView.setText("");
+		setText(mTextView, "");
 		if (mTappedPositions.size() == mPasscode.size()) {
 			mKnockCodeUnlockView.setEnabled(false);
 
@@ -356,12 +373,13 @@ public class KnockCodeUnlockView extends LinearLayout implements OnPositionTappe
 			}
 
 			mTappedPositions.clear();
-
 			if (correct) {
+				mDotsView.setDotPaintColor(Color.GREEN);
 				mKnockCodeUnlockView.setMode(Mode.CORRECT);
 				mKnockCodeUnlockView.setEnabled(true);
 				verifyPasscodeAndUnlock();
 			} else {
+				mDotsView.reset();
 				mTotalFailedPatternAttempts++;
 				mFailedPatternAttemptsSinceLastTimeout++;
 				reportFailedUnlockAttempt();
@@ -372,11 +390,11 @@ public class KnockCodeUnlockView extends LinearLayout implements OnPositionTappe
 					mKnockCodeUnlockView.setEnabled(true);
 				}
 				mKnockCodeUnlockView.setMode(Mode.INCORRECT);
-				if (mSettingsHelper.shouldShowText())
-					mTextView.setText(ResourceHelper.getString(getContext(), R.string.incorrect_pattern));
+				setText(mTextView, ResourceHelper.getString(getContext(), R.string.incorrect_pattern));
 			}
 		} else if (mTappedPositions.size() > mPasscode.size()) {
 			mTappedPositions.clear();
+			mDotsView.reset();
 		}
 	}
 
@@ -386,6 +404,7 @@ public class KnockCodeUnlockView extends LinearLayout implements OnPositionTappe
 
 	public void reset() {
 		mTappedPositions.clear();
+		mDotsView.reset();
 	}
 
 	public void showUsabilityHint() {
@@ -394,8 +413,9 @@ public class KnockCodeUnlockView extends LinearLayout implements OnPositionTappe
 
 	public void onPause() {
 		mTappedPositions.clear();
+		mDotsView.setCount(0);
 		mKnockCodeUnlockView.setMode(Mode.READY);
-		mTextView.setText("");
+		setText(mTextView,"");
 	}
 
 	/*   
@@ -404,8 +424,9 @@ public class KnockCodeUnlockView extends LinearLayout implements OnPositionTappe
 	 */
 	public void onResume(int type) {
         mTappedPositions.clear();
+		mDotsView.setCount(0);
 		mKnockCodeUnlockView.setMode(Mode.READY);
-		mTextView.setText("");
+		setText(mTextView,"");
 	}
 
 	public void setSettingsHelper(SettingsHelper settingsHelper) {
@@ -419,6 +440,7 @@ public class KnockCodeUnlockView extends LinearLayout implements OnPositionTappe
 	@Override
 	public void onSettingsReloaded() {
 		mPasscode.clear();
+		mDotsView.reset();
         mPasscode.addAll(mSettingsHelper.getPasscode());
 		if (mSettingsHelper.hideEmergencyButton())
 			mEmergencyButton.setVisibility(GONE);
@@ -429,27 +451,27 @@ public class KnockCodeUnlockView extends LinearLayout implements OnPositionTappe
 	@Override
 	public boolean onLongClick(View v) {
 		XposedHelpers.callMethod(mCallback, "userActivity");
-		if (mSettingsHelper.shouldShowText())
-        	mTextView.setText(ResourceHelper.getString(getContext(), R.string.long_pressed_hint));
+		setText(mTextView, ResourceHelper.getString(getContext(), R.string.long_pressed_hint));
         mTappedPositions.clear();
+		mDotsView.reset();
 		mKnockCodeUnlockView.setMode(Mode.READY);
 		return true;
 	}
 
 	public void startAppearAnimation() {
         //enableClipping(false);
-        setAlpha(1f);
         setTranslationY(mAppearAnimationUtils.getStartTranslation());
         animate()
                 .setDuration(500)
                 .setInterpolator(mAppearAnimationUtils.getInterpolator())
-                .translationY(0);
-        mAppearAnimationUtils.startAnimation(new View[]{mTextView, mKnockCodeUnlockView, mEmergencyButton}, new Runnable() {
-                    @Override
-                    public void run() {
-                        //enableClipping(true);
-                    }
-                });
+                .translationY(0)
+				.alpha(1f);
+        mAppearAnimationUtils.startAnimation(new View[]{mDotsView, mTextView, mKnockCodeUnlockView, mEmergencyButton}, new Runnable() {
+			@Override
+			public void run() {
+				//enableClipping(true);
+			}
+		});
 
 	}
 
@@ -459,8 +481,9 @@ public class KnockCodeUnlockView extends LinearLayout implements OnPositionTappe
         animate()
                 .setDuration(500)
                 .setInterpolator(mDisappearAnimationUtils.getInterpolator())
-                .translationY(mDisappearYTranslation);
-        mDisappearAnimationUtils.startAnimation(new View[]{mTextView, mKnockCodeUnlockView, mEmergencyButton}, new Runnable() {
+                .translationY(mDisappearYTranslation)
+				.alpha(0.0f);
+        mDisappearAnimationUtils.startAnimation(new View[]{mDotsView, mTextView, mKnockCodeUnlockView, mEmergencyButton}, new Runnable() {
                     @Override
                     public void run() {
                         //enableClipping(true);
@@ -475,4 +498,28 @@ public class KnockCodeUnlockView extends LinearLayout implements OnPositionTappe
 	public void showBouncer(int duration) {return;}
 
 	public void hideBouncer(int duration) {return;}
+
+	private void setText(final TextView tv, final String text) {
+		//only check if mSettingsHelper has been assigned, that is, this is not first run
+		if (mSettingsHelper!=null)
+			if (tv.getText().equals(text))
+				return;
+		//if either first run, or show text is on
+		if ((mSettingsHelper==null)||(mSettingsHelper.shouldShowText())) {
+			setTranslationY(0);
+			tv
+					.animate()
+					.translationY(-getHeight())
+					.alpha(0.0f).setDuration(100)
+					.setListener(new AnimatorListenerAdapter() {
+						@Override
+						public void onAnimationEnd(Animator animation) {
+							super.onAnimationEnd(animation);
+							tv.setText(text);
+							tv.animate().translationY(0).alpha(1.1f).setDuration(100).start();
+						}
+					})
+					.start();
+		}
+	}
 }
