@@ -32,11 +32,13 @@ public class XposedMod implements IXposedHookLoadPackage {
 
 	@Override
 	public void handleLoadPackage(LoadPackageParam lpparam) throws Throwable {
-
-		if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) && (
+		if (lpparam.packageName.equals("me.rijul.knockcode")) {
+			XposedHelpers.setStaticBooleanField(XposedHelpers.findClass("me.rijul.knockcode.MainActivity", lpparam.classLoader),
+					"MODULE_INACTIVE", false);
+		}
+		else if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) && (
 				lpparam.packageName.contains("android.keyguard") || lpparam.packageName.contains("com.android.systemui"))) {
             createHooksIfNeeded("com.android.keyguard");
-            findAndHookMethod(MainActivity.class, "isModuleDisabled", XC_MethodReplacement.returnConstant(false));
                     Class < ?> KeyguardHostView = XposedHelpers.findClass("com.android.keyguard.KeyguardSecurityContainer",
                     lpparam.classLoader);
             XposedBridge.hookAllConstructors(KeyguardHostView, mKeyguardHostViewInitHook);

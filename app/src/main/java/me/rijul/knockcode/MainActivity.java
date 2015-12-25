@@ -23,6 +23,7 @@ import android.widget.CompoundButton;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatPreferenceActivity implements OnSharedPreferenceChangeListener, OnPreferenceChangeListener  {
+	private static boolean MODULE_INACTIVE = true;
 
 	@Override
 	public boolean onPreferenceChange(Preference preference, Object newValue) {
@@ -49,7 +50,7 @@ public class MainActivity extends AppCompatPreferenceActivity implements OnShare
 		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
 
-		if (isModuleDisabled()) {
+		if (MODULE_INACTIVE) {
 			View moduleActive = findViewById(R.id.xposed_active);
 			moduleActive.setVisibility(View.VISIBLE);
 			moduleActive.setOnClickListener(new View.OnClickListener() {
@@ -78,10 +79,6 @@ public class MainActivity extends AppCompatPreferenceActivity implements OnShare
 				return true;
 			}
 		});
-	}
-
-	public static boolean isModuleDisabled() {
-		return true;
 	}
 
 	public MainActivity getActivity() {
