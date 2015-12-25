@@ -50,6 +50,13 @@
             android:summary="@string/pref_summary_show_dialog"
             android:summaryOn="@string/pref_summary_show_dialog_on"
             android:summaryOff="@string/pref_summary_show_dialog_off"/>
+
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="show_dots"
+            android:title="@string/pref_show_dots_title"
+            android:summaryOn="@string/pref_desc_show_dots_on"
+            android:summaryOff="@string/pref_desc_show_dots_off"/>
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/emergency_button">

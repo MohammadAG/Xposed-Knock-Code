@@ -133,7 +133,10 @@ public class KnockCodeView extends View implements OnSettingsReloadedListener {
 
 		switch (mMode) {
 		case READY:
-			mLinePaint.setColor(Color.GRAY);
+			if (mSettingsHelper==null)
+				mLinePaint.setColor(Color.GRAY);
+			else
+				mLinePaint.setColor(Color.WHITE);
 			break;
 		case CORRECT:
 			mLinePaint.setColor(Color.GREEN);

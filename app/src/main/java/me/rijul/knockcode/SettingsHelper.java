@@ -228,6 +228,8 @@ public class SettingsHelper {
 
 	public boolean isDisabled() {return !getBoolean("switch", false); }
 
+	public boolean showDots() {return getBoolean("show_dots", true); }
+
 	public void setShouldDrawFill(boolean draw) {
 		edit().putBoolean("should_draw_fill", draw).commit();
 		emitSettingsChanged(mContext);

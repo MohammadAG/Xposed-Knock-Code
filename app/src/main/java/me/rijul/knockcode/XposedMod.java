@@ -193,8 +193,7 @@ public class XposedMod implements IXposedHookLoadPackage {
 				//	newInstance(XposedHelpers.findClass(keyguardPackageName + ".EmergencyButton",param.thisObject.getClass().getClassLoader()), mContext));
 				//eca.addView((TextView) XposedHelpers.
 				//		newInstance(XposedHelpers.findClass(keyguardPackageName + ".CarrierText", param.thisObject.getClass().getClassLoader()), mContext));
-				mKnockCodeView = new KnockCodeUnlockView(mContext,param);
-				mKnockCodeView.setSettingsHelper(mSettingsHelper);
+				mKnockCodeView = new KnockCodeUnlockView(mContext,param,mSettingsHelper);
 				View newView = mKnockCodeView;
 
                 FrameLayout layout = (FrameLayout) param.thisObject;

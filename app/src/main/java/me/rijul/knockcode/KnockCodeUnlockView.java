@@ -48,8 +48,8 @@ public class KnockCodeUnlockView extends LinearLayout implements OnPositionTappe
 	private TextView mTextView;
 	private PasscodeDotsView mDotsView;
 	private SettingsHelper mSettingsHelper;
-    private final AppearAnimationUtils mAppearAnimationUtils;
-    private final DisappearAnimationUtils mDisappearAnimationUtils;
+    private AppearAnimationUtils mAppearAnimationUtils;
+    private DisappearAnimationUtils mDisappearAnimationUtils;
     private int mDisappearYTranslation;
     //protected View mEcaView;
 	protected XC_MethodHook.MethodHookParam mParam;
@@ -65,7 +65,7 @@ public class KnockCodeUnlockView extends LinearLayout implements OnPositionTappe
 		mPasscode.add(4);
 	}
 
-	public KnockCodeUnlockView(Context context, XC_MethodHook.MethodHookParam param) {
+	public KnockCodeUnlockView(Context context, XC_MethodHook.MethodHookParam param, SettingsHelper settingsHelper) {
 		//initialisation
 		super(context);
 		setOrientation(VERTICAL);
@@ -75,79 +75,7 @@ public class KnockCodeUnlockView extends LinearLayout implements OnPositionTappe
 						findClass("com.android.keyguard.KeyguardUpdateMonitor", mParam.thisObject.getClass().getClassLoader()),
 				"getInstance", mContext);
 		mLockPatternUtils = XposedHelpers.getObjectField(mParam.thisObject, "mLockPatternUtils");
-
-		//top text view
-		mTextView = new TextView(mContext);
-		mTextView.setGravity(Gravity.CENTER);
-		mTextView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 0.1f));
-		setText(mTextView,"");
-		addView(mTextView);
-
-		//dots
-		mDotsView = new PasscodeDotsView(mContext);
-		mDotsView.setForegroundGravity(Gravity.CENTER);
-		mDotsView.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, 0, 0.03f));
-		mDotsView.reset();
-		mDotsView.mDotRadius = 5;
-		mDotsView.setDotPaintColor(Color.WHITE);
-		addView(mDotsView);
-
-		//knock code view
-		mKnockCodeUnlockView = new KnockCodeView(mContext);
-		mKnockCodeUnlockView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 0.77f));
-		mKnockCodeUnlockView.setOnPositionTappedListener(this);
-		mKnockCodeUnlockView.setOnLongClickListener(this);
-		addView(mKnockCodeUnlockView);
-		//appear utils for knockcode view
-        mAppearAnimationUtils = new AppearAnimationUtils(mContext,
-                AppearAnimationUtils.DEFAULT_APPEAR_DURATION, 1.5f /* translationScale */,
-                2.0f /* delayScale */, AnimationUtils.loadInterpolator(
-                mContext, android.R.interpolator.linear_out_slow_in));
-        mDisappearAnimationUtils = new DisappearAnimationUtils(context,
-                125, 1.2f /* translationScale */,
-                0.8f /* delayScale */, AnimationUtils.loadInterpolator(
-                mContext, android.R.interpolator.fast_out_linear_in));
-		Resources res = ResourceHelper.getResourcesForPackage(mContext, mContext.getPackageName());
-		mDisappearYTranslation = res.getDimensionPixelOffset(res.getIdentifier(
-				"disappear_y_translation", "dimen", mContext.getPackageName()));
-
-		//emergency button
-		mEmergencyButton = new Button(mContext);
-		LinearLayout.LayoutParams llp = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, 0, 0.1f);
-		llp.gravity = Gravity.CENTER_HORIZONTAL;
-		mEmergencyButton.setLayoutParams(llp);
-		float textSize = res.getDimensionPixelSize(
-				res.getIdentifier("kg_status_line_font_size", "dimen", mContext.getPackageName()));
-		mEmergencyButton.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
-		if (Build.VERSION.SDK_INT == Build.VERSION_CODES.M) {
-			Resources res2 = ResourceHelper.getOwnResources(mContext);
-			mEmergencyButton.setText(res2.getString(res2.getIdentifier("lockscreen_return_to_call", "string", "me.rijul.knockcode")));
-		}
-		else
-			mEmergencyButton.setText(res.getString(res.getIdentifier("kg_emergency_call_label", "string", mContext.getPackageName())));
-		TypedValue outValue = new TypedValue();
-		mContext.getTheme().resolveAttribute(android.R.attr.textColorSecondary, outValue, true);
-		int[] textSizeAttr = new int[] {android.R.attr.textColorSecondary};
-		TypedArray a = context.obtainStyledAttributes(outValue.data, textSizeAttr);
-		int textColor = a.getColor(0, -1);
-		a.recycle();
-
-		mContext.getTheme().resolveAttribute(android.R.attr.selectableItemBackground, outValue, true);
-		mEmergencyButton.setBackgroundResource(outValue.resourceId);
-
-		int spacing = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 5, getResources().getDisplayMetrics());
-		mEmergencyButton.setPadding(mEmergencyButton.getPaddingLeft() + spacing, mEmergencyButton.getPaddingTop(),
-				mEmergencyButton.getPaddingRight() + spacing, mEmergencyButton.getPaddingBottom());
-
-		if (mEmergencyButton.getText()==null)
-			mEmergencyButton.setText("Error");
-
-		mEmergencyButton.setOnClickListener(new OnClickListener() {
-			public void onClick(View v) {
-				takeEmergencyCallAction();
-			}
-		});
-        addView(mEmergencyButton);
+        setSettingsHelper(settingsHelper);
 	}
 
 	public void setKeyguardCallback(Object paramKeyguardSecurityCallback) {
@@ -207,6 +135,8 @@ public class KnockCodeUnlockView extends LinearLayout implements OnPositionTappe
 	}
 
 	public void updateEmergencyCallButton(int phoneState) {
+        if (mEmergencyButton==null)
+            return;
 		if (mSettingsHelper.hideEmergencyButton())
 			return;
 		boolean enabled = false;
@@ -238,6 +168,8 @@ public class KnockCodeUnlockView extends LinearLayout implements OnPositionTappe
 	}
 
 	public void updateEmergencyCallButton() {
+        if (mEmergencyButton==null)
+            return;
 		if (mSettingsHelper.hideEmergencyButton())
 			return;
 		mEmergencyButton.setVisibility(View.VISIBLE);
@@ -358,7 +290,7 @@ public class KnockCodeUnlockView extends LinearLayout implements OnPositionTappe
 	public void onPositionTapped(int pos) {
 		XposedHelpers.callMethod(mCallback,"userActivity");
 		mTappedPositions.add(pos);
-		mDotsView.setCount(mTappedPositions.size());
+		setDotsCount(mTappedPositions.size());
 		mKnockCodeUnlockView.setMode(Mode.READY);
 		setText(mTextView, "");
 		if (mTappedPositions.size() == mPasscode.size()) {
@@ -374,12 +306,12 @@ public class KnockCodeUnlockView extends LinearLayout implements OnPositionTappe
 
 			mTappedPositions.clear();
 			if (correct) {
-				mDotsView.setDotPaintColor(Color.GREEN);
+				resetDots(true);
 				mKnockCodeUnlockView.setMode(Mode.CORRECT);
 				mKnockCodeUnlockView.setEnabled(true);
 				verifyPasscodeAndUnlock();
 			} else {
-				mDotsView.reset();
+				resetDots(false);
 				mTotalFailedPatternAttempts++;
 				mFailedPatternAttemptsSinceLastTimeout++;
 				reportFailedUnlockAttempt();
@@ -394,7 +326,7 @@ public class KnockCodeUnlockView extends LinearLayout implements OnPositionTappe
 			}
 		} else if (mTappedPositions.size() > mPasscode.size()) {
 			mTappedPositions.clear();
-			mDotsView.reset();
+			resetDots();
 		}
 	}
 
@@ -404,7 +336,7 @@ public class KnockCodeUnlockView extends LinearLayout implements OnPositionTappe
 
 	public void reset() {
 		mTappedPositions.clear();
-		mDotsView.reset();
+		resetDots();
 	}
 
 	public void showUsabilityHint() {
@@ -413,7 +345,7 @@ public class KnockCodeUnlockView extends LinearLayout implements OnPositionTappe
 
 	public void onPause() {
 		mTappedPositions.clear();
-		mDotsView.setCount(0);
+		resetDots();
 		mKnockCodeUnlockView.setMode(Mode.READY);
 		setText(mTextView,"");
 	}
@@ -424,28 +356,141 @@ public class KnockCodeUnlockView extends LinearLayout implements OnPositionTappe
 	 */
 	public void onResume(int type) {
         mTappedPositions.clear();
-		mDotsView.setCount(0);
+		resetDots();
 		mKnockCodeUnlockView.setMode(Mode.READY);
 		setText(mTextView,"");
 	}
 
 	public void setSettingsHelper(SettingsHelper settingsHelper) {
 		mSettingsHelper = settingsHelper;
-		mKnockCodeUnlockView.setSettingsHelper(settingsHelper);
-		mSettingsHelper.addInProcessListener(getContext());
-		mSettingsHelper.addOnReloadListener(this);
 		onSettingsReloaded();
+        mKnockCodeUnlockView.setSettingsHelper(settingsHelper);
+        mSettingsHelper.addInProcessListener(getContext());
+        mSettingsHelper.addOnReloadListener(this);
 	}
+
+    private void setUpTextView() {
+        //if text is not to be shown, do not add the view
+        if (!(mSettingsHelper.shouldShowText()))
+            return;
+        if (mTextView==null)
+            mTextView = new TextView(mContext);
+        mTextView.setGravity(Gravity.CENTER);
+        mTextView.setLayoutParams(getParams(0.1f));
+        setText(mTextView, "", true);
+        addView(mTextView);
+    }
+
+    private void setUpDotsView() {
+        if (!(mSettingsHelper.showDots()))
+            return;
+        if (mDotsView==null)
+            mDotsView = new PasscodeDotsView(mContext);
+        mDotsView.setForegroundGravity(Gravity.CENTER);
+        mDotsView.setLayoutParams(getParams(0.03f));
+        mDotsView.reset();
+        mDotsView.mDotRadius = 5;
+        mDotsView.setDotPaintColor(Color.WHITE);
+        mDotsView.setCount(0);
+        addView(mDotsView);
+    }
+
+    private void setUpKnockView() {
+        if (mKnockCodeUnlockView==null)
+            mKnockCodeUnlockView = new KnockCodeView(mContext);
+        mKnockCodeUnlockView.setLayoutParams(getParams(0.77f));
+        mKnockCodeUnlockView.setOnPositionTappedListener(this);
+        mKnockCodeUnlockView.setOnLongClickListener(this);
+        addView(mKnockCodeUnlockView);
+        //appear utils for knockcode view
+        mAppearAnimationUtils = new AppearAnimationUtils(mContext,
+                AppearAnimationUtils.DEFAULT_APPEAR_DURATION, 1.5f /* translationScale */,
+                2.0f /* delayScale */, AnimationUtils.loadInterpolator(
+                mContext, android.R.interpolator.linear_out_slow_in));
+        mDisappearAnimationUtils = new DisappearAnimationUtils(mContext,
+                125, 1.2f /* translationScale */,
+                0.8f /* delayScale */, AnimationUtils.loadInterpolator(
+                mContext, android.R.interpolator.fast_out_linear_in));
+        Resources res = ResourceHelper.getResourcesForPackage(mContext, mContext.getPackageName());
+        mDisappearYTranslation = res.getDimensionPixelOffset(res.getIdentifier(
+                "disappear_y_translation", "dimen", mContext.getPackageName()));
+
+    }
+
+    private void setUpEmergencyButton() {
+        if (mSettingsHelper.hideEmergencyButton())
+            return;
+        if (mEmergencyButton==null)
+            mEmergencyButton = new Button(mContext);
+        Resources res = ResourceHelper.getResourcesForPackage(mContext, mContext.getPackageName());
+        LinearLayout.LayoutParams llp = new LinearLayout.LayoutParams(getParams(0.1f));
+        llp.gravity = Gravity.CENTER_HORIZONTAL;
+        mEmergencyButton.setLayoutParams(llp);
+        //text size
+        float textSize = res.getDimensionPixelSize(
+                res.getIdentifier("kg_status_line_font_size", "dimen", mContext.getPackageName()));
+        mEmergencyButton.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
+        /*
+        //not required as updateemergencybutton does this
+        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.M) {
+            Resources res2 = ResourceHelper.getOwnResources(mContext);
+            mEmergencyButton.setText(res2.getString(res2.getIdentifier("lockscreen_return_to_call", "string", "me.rijul.knockcode")));
+        }
+        else
+            mEmergencyButton.setText(res.getString(res.getIdentifier("kg_emergency_call_label", "string", mContext.getPackageName())));
+            */
+        //text colour
+        TypedValue outValue = new TypedValue();
+        mContext.getTheme().resolveAttribute(android.R.attr.textColorSecondary, outValue, true);
+        int[] textSizeAttr = new int[] {android.R.attr.textColorSecondary};
+        TypedArray a = mContext.obtainStyledAttributes(outValue.data, textSizeAttr);
+        int textColor = a.getColor(0, -1);
+        a.recycle();
+        mEmergencyButton.setTextColor(textColor);
+
+        //button transparency
+        mContext.getTheme().resolveAttribute(android.R.attr.selectableItemBackground, outValue, true);
+        mEmergencyButton.setBackgroundResource(outValue.resourceId);
+
+        //button left and right extra space
+        int spacing = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 5, getResources().getDisplayMetrics());
+        mEmergencyButton.setPadding(mEmergencyButton.getPaddingLeft() + spacing, mEmergencyButton.getPaddingTop(),
+                mEmergencyButton.getPaddingRight() + spacing, mEmergencyButton.getPaddingBottom());
+
+        mEmergencyButton.setOnClickListener(new OnClickListener() {
+            public void onClick(View v) {
+                takeEmergencyCallAction();
+            }
+        });
+        addView(mEmergencyButton);
+    }
+
+    private LinearLayout.LayoutParams getParams(float weight) {
+        //mSettingsHelper.getString("lrc", "right");
+        return new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, 0, weight);
+    }
+
+    private void setUpViews() {
+        removeAllViews();
+
+        //top text view
+        setUpTextView();
+
+        //dots
+        setUpDotsView();
+
+        //knock code view
+        setUpKnockView();
+
+        //emergency button
+        setUpEmergencyButton();
+    }
 
 	@Override
 	public void onSettingsReloaded() {
+        setUpViews();
 		mPasscode.clear();
-		mDotsView.reset();
         mPasscode.addAll(mSettingsHelper.getPasscode());
-		if (mSettingsHelper.hideEmergencyButton())
-			mEmergencyButton.setVisibility(GONE);
-		if (mSettingsHelper.hideEmergencyText())
-			mEmergencyButton.setText("");
 	}
 
 	@Override
@@ -453,7 +498,7 @@ public class KnockCodeUnlockView extends LinearLayout implements OnPositionTappe
 		XposedHelpers.callMethod(mCallback, "userActivity");
 		setText(mTextView, ResourceHelper.getString(getContext(), R.string.long_pressed_hint));
         mTappedPositions.clear();
-		mDotsView.reset();
+		resetDots();
 		mKnockCodeUnlockView.setMode(Mode.READY);
 		return true;
 	}
@@ -499,13 +544,15 @@ public class KnockCodeUnlockView extends LinearLayout implements OnPositionTappe
 
 	public void hideBouncer(int duration) {return;}
 
-	private void setText(final TextView tv, final String text) {
+	private void setText(final TextView tv, final String text, final boolean firstRun) {
 		//only check if mSettingsHelper has been assigned, that is, this is not first run
-		if (mSettingsHelper!=null)
-			if (tv.getText().equals(text))
+        if (tv==null)
+            return;
+        if (!firstRun)
+            if (tv.getText().equals(text))
 				return;
 		//if either first run, or show text is on
-		if ((mSettingsHelper==null)||(mSettingsHelper.shouldShowText())) {
+		if ((firstRun)||(mSettingsHelper.shouldShowText())) {
 			setTranslationY(0);
 			tv
 					.animate()
@@ -522,4 +569,23 @@ public class KnockCodeUnlockView extends LinearLayout implements OnPositionTappe
 					.start();
 		}
 	}
+
+    private void setText(final TextView tv, final String text) {
+        setText(tv,text,false);
+    }
+
+    private void setDotsCount(int n) {
+        if (mDotsView!=null)
+            mDotsView.setCount(n);
+    }
+
+    private void resetDots() {
+        if (mDotsView!=null)
+            mDotsView.reset();
+    }
+
+    private void resetDots(boolean b) {
+        if (mDotsView!=null)
+            mDotsView.reset(b);
+    }
 }
