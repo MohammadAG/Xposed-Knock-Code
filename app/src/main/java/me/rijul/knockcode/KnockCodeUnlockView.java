@@ -327,13 +327,13 @@ public class KnockCodeUnlockView extends LinearLayout implements OnPositionTappe
 	}
 
 	private void verifyPasscodeAndUnlock() {
+		XposedHelpers.callMethod(mCallback, "dismiss", true);
 		if (Build.VERSION.SDK_INT == Build.VERSION_CODES.M) {
 			XposedHelpers.callMethod(mCallback, "reportUnlockAttempt", true, 0);
 		}
 		else {
 			XposedHelpers.callMethod(mCallback, "reportUnlockAttempt", true);
 		}
-		XposedHelpers.callMethod(mCallback, "dismiss", true);
 		mFailedPatternAttemptsSinceLastTimeout = 0;
 		mKnockCodeUnlockView.setMode(Mode.READY);
 	}

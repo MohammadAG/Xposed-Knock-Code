@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatPreferenceActivity implements OnShare
 				@Override
 				public void onClick(View v) {
 					new AlertDialog.Builder(getActivity())
-							.setTitle(R.string.module_inactive)
+							.setTitle(R.string.module_inactive_dialog)
 							.setMessage(R.string.dialog_message_not_active)
 							.create()
 							.show();
