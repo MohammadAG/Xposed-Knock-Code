@@ -34,10 +34,12 @@
     <string name="retry">Retry</string>
     <string name="size_exceeded">Maximum size exceeded, resetting.</string>
     <string name="pref_description_change_code_pick_size">Choose the size for your pattern</string>
+    <string name="will_restart_systemui">The SystemUI will automatically be restarted after the code is set.</string>
 
     <!-- Preferences -->
     <string name="pref_about_title">About</string>
     <string name="pref_about_description">Help, licensing, authors, disclaimer, source</string>
+    <string name="pref_restart_systemui">Restart SystemUI</string>
 
     <string name="module_inactive">Module is inactive, tap here for information</string>
     <string name="module_inactive_dialog">Knock Code is inactive</string>
@@ -48,7 +50,7 @@
     <string name="hide_from_launcher">Hide app</string>
     <string name="hide_from_launcher_on">Hidden from launcher</string>
     <string name="hide_from_launcher_off">Visible in launcher</string>
-    <string name="reboot_required">A reboot may be required to apply the changes.</string>
+    <string name="reboot_required">A reboot or a SystemUI restart is required to apply the changes</string>
 
     <string name="pref_title_draw_fill">Draw fill</string>
     <string name="pref_description_draw_fill">Whether or not taps should be shown</string>
@@ -107,5 +109,7 @@
     <string name="pref_show_dots_title">Show dots</string>
     <string name="pref_desc_show_dots_on">Dots indicating number of knocks will be shown</string>
     <string name="pref_desc_show_dots_off">Dots indicating number of knocks will not be shown</string>
+    <string name="disable_knock_screen">Disabled knock code, turn screen off and on to see pattern again.</string>
+    <string name="reboot_unexpected">Please reboot to properly apply the changes, otherwise it will lead to unexpected behaviour.</string>
 
 </resources>

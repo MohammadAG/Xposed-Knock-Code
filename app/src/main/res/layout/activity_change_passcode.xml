@@ -22,7 +22,7 @@
         android:paddingLeft="10dp"
         android:paddingRight="10dp" />
 
-    <me.rijul.knockcode.PasscodeDotsView
+    <me.rijul.knockcode.PasswordTextView
         android:id="@+id/passcodeDotView1"
         android:layout_width="wrap_content"
         android:layout_height="17dp"

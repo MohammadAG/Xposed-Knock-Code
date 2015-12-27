@@ -1,19 +1,17 @@
 package me.rijul.knockcode;
 
-import android.annotation.SuppressLint;
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -21,13 +19,15 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.Toast;
+import android.support.design.widget.Snackbar;
 
-public class MainActivity extends AppCompatPreferenceActivity implements OnSharedPreferenceChangeListener, OnPreferenceChangeListener  {
+public class MainActivity extends AppCompatPreferenceActivity implements  OnPreferenceChangeListener, OnSharedPreferenceChangeListener  {
 	private static boolean MODULE_INACTIVE = true;
 
 	@Override
 	public boolean onPreferenceChange(Preference preference, Object newValue) {
-		SettingsHelper.emitSettingsChanged(getApplicationContext());
+		//SettingsHelper.emitSettingsChanged(getApplicationContext());
+		Toast.makeText(getActivity(), R.string.reboot_required, Toast.LENGTH_SHORT).show();
 		return true;
 	}
 
@@ -38,7 +38,8 @@ public class MainActivity extends AppCompatPreferenceActivity implements OnShare
 
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-		SettingsHelper.emitSettingsChanged(getApplicationContext());
+		//SettingsHelper.emitSettingsChanged(getApplicationContext());
+		Toast.makeText(getActivity(), R.string.reboot_required, Toast.LENGTH_LONG).show();
 	}
 
 	@SuppressWarnings("deprecation")
@@ -106,6 +107,7 @@ public class MainActivity extends AppCompatPreferenceActivity implements OnShare
 			@Override
 			public void onCheckedChanged(CompoundButton button, boolean b) {
 				new SettingsHelper(getApplicationContext()).edit().putBoolean("switch", b).commit();
+				Toast.makeText(getActivity(), R.string.reboot_required, Toast.LENGTH_SHORT).show();
 			}
 		});
         return true;
@@ -118,6 +120,10 @@ public class MainActivity extends AppCompatPreferenceActivity implements OnShare
 		int id = item.getItemId();
 		if (id == R.id.action_about) {
             startActivity(new Intent(MainActivity.this, AboutActivity.class));
+			return true;
+		}
+		else if (id == R.id.restart_systemui) {
+			SettingsHelper.killPackage("com.android.systemui");
 			return true;
 		}
 		return super.onOptionsItemSelected(item);

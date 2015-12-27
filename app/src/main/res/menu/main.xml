@@ -10,6 +10,12 @@
         android:title="@string/pref_about_title"/>
 
     <item
+        android:id="@+id/restart_systemui"
+        android:orderInCategory="200"
+        app:showAsAction="never"
+        android:title="@string/pref_restart_systemui"/>
+
+    <item
         android:id="@+id/toolbar_master_switch"
         android:title="@string/action_toggle"
         app:actionViewClass="android.support.v7.widget.SwitchCompat"

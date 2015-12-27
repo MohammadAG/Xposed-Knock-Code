@@ -23,7 +23,7 @@
         android:paddingBottom="8dp"
         android:paddingTop="8dp"
         android:text="@string/module_inactive"
-        android:textColor="@android:color/white"
+        android:textColor="@color/windowBackground"
         android:textSize="14sp"
         android:textStyle="italic"
         android:visibility="gone"

@@ -1,5 +1,7 @@
 package me.rijul.knockcode;
 
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Map;
@@ -11,7 +13,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences.Editor;
+import android.os.AsyncTask;
 import android.provider.Settings.Secure;
+import android.util.Log;
 
 import de.robv.android.xposed.XSharedPreferences;
 
@@ -25,7 +29,7 @@ public class SettingsHelper {
 	private static SecurePreferences mPreferences = null;
 	private Context mContext;
 
-	private HashSet<OnSettingsReloadedListener> mReloadListeners = null;
+	public static HashSet<OnSettingsReloadedListener> mReloadListeners = new HashSet<SettingsHelper.OnSettingsReloadedListener>();
 	private String mUuid;
 
 	public interface OnSettingsReloadedListener {
@@ -52,17 +56,22 @@ public class SettingsHelper {
 
 	public void reloadSettings() {
 		mXPreferencesImpl.reload();
-		mXPreferences = new SecurePreferences(mXPreferencesImpl, mUuid);
+		if (mUuid!=null)
+			mXPreferences = new SecurePreferences(mXPreferencesImpl, mUuid);
+		announceToListeners();
+	}
+
+	public static void announceToListeners() {
 		try {
 			if (mReloadListeners != null) {
-				for (OnSettingsReloadedListener listener : mReloadListeners)
+				for (SettingsHelper.OnSettingsReloadedListener listener : mReloadListeners)
 					listener.onSettingsReloaded();
 			}
 		} catch (Throwable t) {}
 	}
 
 	public void addInProcessListener(Context context) {
-		context.registerReceiver(new BroadcastReceiver() {	
+		context.registerReceiver(new BroadcastReceiver() {
 			@Override
 			public void onReceive(Context context, Intent intent) {
 				reloadSettings();
@@ -226,7 +235,7 @@ public class SettingsHelper {
 
 	public boolean vibrateOnTap() {return getBoolean("vibrate_tap", false); }
 
-	public boolean isDisabled() {return !getBoolean("switch", false); }
+	public boolean isDisabled() { return !getBoolean("switch", false);	}
 
 	public boolean showDots() {return getBoolean("show_dots", true); }
 
@@ -251,5 +260,42 @@ public class SettingsHelper {
 		edit().putString("pattern_size_columns", "" + g.numberOfColumns).commit();
 		edit().putString("pattern_size_rows", "" + g.numberOfRows).commit();
 		emitSettingsChanged(mContext);
+	}
+
+	private static class killPackage extends AsyncTask<String, Void, Void> {
+		@Override
+		protected Void doInBackground(String... params) {
+			// this method is executed in a background thread
+			// no problem calling su here
+			String packageToKill = params[0];
+			Process su = null;
+			// get superuser
+			try {
+				su = Runtime.getRuntime().exec("su");
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
+			// kill given package
+			if (su != null ){
+				try {
+					DataOutputStream os = new DataOutputStream(su.getOutputStream());
+					os.writeBytes("pkill " + packageToKill + "\n");
+					os.flush();
+					os.writeBytes("exit\n");
+					os.flush();
+					su.waitFor();
+				} catch (IOException e) {
+					e.printStackTrace();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+			return null;
+		}
+	}
+
+	public static void killPackage(String packageToKill) {
+		(new killPackage()).execute(packageToKill);
 	}
 }

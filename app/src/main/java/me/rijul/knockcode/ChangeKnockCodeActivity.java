@@ -1,8 +1,10 @@
 package me.rijul.knockcode;
 
 import java.util.ArrayList;
+import java.util.Set;
 
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -25,7 +27,7 @@ public class ChangeKnockCodeActivity extends AppCompatActivity implements OnPosi
     public static final int MIN_SIZE = 2;
 
 	private KnockCodeView mKnockCodeView;
-	private PasscodeDotsView mPasscodeDotView;
+	private PasswordTextView mPasscodeDotView;
 	private TextView mHintTextView;
 
 	private ArrayList<Integer> mFirstTappedPositions = new ArrayList<Integer>();
@@ -53,8 +55,9 @@ public class ChangeKnockCodeActivity extends AppCompatActivity implements OnPosi
 		mKnockCodeView = (KnockCodeView) findViewById(R.id.knockCodeView1);
 		mKnockCodeView.setOnPositionTappedListener(this);
 
-		mPasscodeDotView = (PasscodeDotsView) findViewById(R.id.passcodeDotView1);
-		mPasscodeDotView.setCount(0);
+		mPasscodeDotView = (PasswordTextView) findViewById(R.id.passcodeDotView1);
+		mPasscodeDotView.setPaintColor(Color.BLACK
+		);
 
 		mHintTextView = (TextView) findViewById(android.R.id.hint);
 
@@ -79,23 +82,24 @@ public class ChangeKnockCodeActivity extends AppCompatActivity implements OnPosi
 		findViewById(R.id.retry_button).setEnabled(true);
 
 		if (!mIsConfirmationMode) {
-			if (mFirstTappedPositions.size() < KNOCK_CODE_MAX_SIZE)
+			if (mFirstTappedPositions.size() < KNOCK_CODE_MAX_SIZE) {
 				mFirstTappedPositions.add(pos);
-
+				mPasscodeDotView.append('R');
+			}
 			if (mFirstTappedPositions.size() == KNOCK_CODE_MAX_SIZE && !mIsOldCode) {
 				Toast.makeText(ChangeKnockCodeActivity.this, R.string.size_exceeded, Toast.LENGTH_SHORT).show();
 				reset();
 			}
-			mPasscodeDotView.setCount(mFirstTappedPositions.size());
 		} else {
-			if (mSecondTappedPositions.size() < KNOCK_CODE_MAX_SIZE)
+			if (mSecondTappedPositions.size() < KNOCK_CODE_MAX_SIZE) {
 				mSecondTappedPositions.add(pos);
+				mPasscodeDotView.append('R');
+			}
 
 			if (mSecondTappedPositions.size() == KNOCK_CODE_MAX_SIZE) {
 				Toast.makeText(ChangeKnockCodeActivity.this, R.string.size_exceeded, Toast.LENGTH_SHORT).show();
 				reset();
 			}
-			mPasscodeDotView.setCount(mSecondTappedPositions.size());
 		}
 	}
 
@@ -121,9 +125,10 @@ public class ChangeKnockCodeActivity extends AppCompatActivity implements OnPosi
 			}
 			if (!mIsConfirmationMode) {
 				mIsConfirmationMode = true;
+				Toast.makeText(ChangeKnockCodeActivity.this, R.string.will_restart_systemui, Toast.LENGTH_SHORT).show();
 				mHintTextView.setText(R.string.confirm_new_knock_code);
 				v.setEnabled(false);
-				mPasscodeDotView.setCount(0);
+				mPasscodeDotView.reset(true);
 			} else {
 				if (confirmPasscodePair(mFirstTappedPositions, mSecondTappedPositions)) {
 					knocksMatch();
@@ -138,8 +143,9 @@ public class ChangeKnockCodeActivity extends AppCompatActivity implements OnPosi
 	private void knocksMatch() {
 		mKnockCodeView.setMode(Mode.CORRECT);
 		mSettingsHelper.setPasscode(mSecondTappedPositions);
+		mSettingsHelper.storePatternSize(mKnockCodeView.mPatternSize);
 		Toast.makeText(this, R.string.successfully_changed_code, Toast.LENGTH_SHORT).show();
-        mSettingsHelper.storePatternSize(mKnockCodeView.mPatternSize);
+		SettingsHelper.killPackage("com.android.systemui");
 		finish();
 	}
 
@@ -147,7 +153,7 @@ public class ChangeKnockCodeActivity extends AppCompatActivity implements OnPosi
 		mIsConfirmationMode = false;
 		mFirstTappedPositions.clear();
 		mSecondTappedPositions.clear();
-		mPasscodeDotView.setCount(0);
+		mPasscodeDotView.reset(true);
 		findViewById(R.id.retry_button).setEnabled(false);
 		mHintTextView.setText(mIsOldCode ? R.string.enter_previous_knock_code : R.string.enter_new_knock_code);
 		findViewById(R.id.next_button).setEnabled(false);
