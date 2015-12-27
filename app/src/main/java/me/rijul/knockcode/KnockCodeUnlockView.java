@@ -323,7 +323,7 @@ public class KnockCodeUnlockView extends LinearLayout implements OnPositionTappe
 			if (correct) {
                 XposedBridge.log("resetting dots");
 				//resetDots(); //disabled because the last dot would not appear before this would start
-				setDotsColor(true);
+				//setDotsColor(true);
                 XposedBridge.log("setting correct");
 				mKnockCodeUnlockView.setMode(Mode.CORRECT);
                 XposedBridge.log("setting enabled");
@@ -341,7 +341,7 @@ public class KnockCodeUnlockView extends LinearLayout implements OnPositionTappe
 				} else {
 					mKnockCodeUnlockView.setEnabled(true);
 				}
-				mKnockCodeUnlockView.setMode(Mode.INCORRECT);
+				//mKnockCodeUnlockView.setMode(Mode.INCORRECT);
 				setText(mTextView, ResourceHelper.getString(getContext(), R.string.incorrect_pattern));
 			}
 		} else if (mTappedPositions.size() > mPasscode.size()) {
@@ -557,26 +557,7 @@ public class KnockCodeUnlockView extends LinearLayout implements OnPositionTappe
 	}
 
 	public boolean startDisappearAnimation(final Runnable finishRunnable) {
-        enableClipping(false);
-		/*
-        setTranslationY(0);
-        animate()
-                .setDuration(280)
-                .setInterpolator(mDisappearAnimationUtils.getInterpolator())
-                .translationY(mDisappearYTranslation);
-        mDisappearAnimationUtils.startAnimation(new View[]{mTextView, mDotsView, mKnockCodeUnlockView, mEmergencyButton},
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        enableClipping(true);
-                        if (finishRunnable != null) {
-                            finishRunnable.run();
-                        }
-                    }
-                });
-                */
 		setAlpha(0f);
-		enableClipping(true);
 		if (finishRunnable!=null)
 			finishRunnable.run();
 		return true;

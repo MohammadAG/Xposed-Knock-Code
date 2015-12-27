@@ -276,25 +276,28 @@ public class PasswordTextView extends View {
 
 
         ValueAnimator anim = ValueAnimator.ofFloat(0, 1);   // animate from 0 to 1
-        anim.setDuration(300);                              // for 300 ms
+        anim.setDuration(100);                              // for 300 ms
 
         final float[] hsv  = new float[3];                  // transition color
-        anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener(){
+        anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
                 // Transition along each axis of HSV (hue, saturation, value)
-                hsv[0] = from[0] + (to[0] - from[0])*animation.getAnimatedFraction();
-                hsv[1] = from[1] + (to[1] - from[1])*animation.getAnimatedFraction();
-                hsv[2] = from[2] + (to[2] - from[2])*animation.getAnimatedFraction();
+                hsv[0] = from[0] + (to[0] - from[0]) * animation.getAnimatedFraction();
+                hsv[1] = from[1] + (to[1] - from[1]) * animation.getAnimatedFraction();
+                hsv[2] = from[2] + (to[2] - from[2]) * animation.getAnimatedFraction();
 
                 setPaintColor(Color.HSVToColor(hsv));
 
-                if (animation.getAnimatedFraction()==1) {
+                if (animation.getAnimatedFraction() == 1) {
                     animateDotsUp();
                 }
             }
         });
-        anim.start();
+        AnimatorSet animatorSet = new AnimatorSet();
+        animatorSet.play(anim);
+        animatorSet.setStartDelay(DOT_APPEAR_DURATION_OVERSHOOT);
+        animatorSet.start();
     }
 
     private void animateDotsUp() {

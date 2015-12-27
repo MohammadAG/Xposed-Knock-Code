@@ -45,7 +45,7 @@ public class XposedMod implements IXposedHookLoadPackage {
                     lpparam.classLoader);
             XposedBridge.hookAllConstructors(KeyguardHostView, mKeyguardHostViewInitHook);
 			findAndHookMethod(KeyguardHostView, "startAppearAnimation", mStartAppearAnimHook);
-			//findAndHookMethod(KeyguardHostView, "startDisappearAnimation", Runnable.class, mStartDisAppearAnimHook);
+			findAndHookMethod(KeyguardHostView, "startDisappearAnimation", Runnable.class, mStartDisAppearAnimHook);
 			findAndHookMethod(KeyguardHostView, "onPause", mOnPauseHook);
 			Class<?> clazz = XposedHelpers.findClass("com.android.keyguard.KeyguardUpdateMonitorCallback",
 					lpparam.classLoader);

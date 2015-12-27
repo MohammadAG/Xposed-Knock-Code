@@ -13,6 +13,7 @@ import android.util.TypedValue;
 import android.view.HapticFeedbackConstants;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 
 import me.rijul.knockcode.SettingsHelper.OnSettingsReloadedListener;
 
@@ -34,6 +35,7 @@ public class KnockCodeView extends View implements OnSettingsReloadedListener {
 	protected boolean mLongClick;
 	private OnLongClickListener mLongClickListener;
 	public Grid mPatternSize = new Grid(2,2);
+	private Context mContext;
 
 	public interface OnPositionTappedListener {
 		void onPositionTapped(int pos);
@@ -45,6 +47,7 @@ public class KnockCodeView extends View implements OnSettingsReloadedListener {
 	}
 
 	private void init(Context context) {
+		mContext = context;
 		DisplayMetrics dm = context.getResources().getDisplayMetrics();
 		mLineWidth = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 1, dm);
 		super.setOnLongClickListener(new OnLongClickListener() {
@@ -62,7 +65,6 @@ public class KnockCodeView extends View implements OnSettingsReloadedListener {
 		TypedValue outValue = new TypedValue();
 		context.getTheme().resolveAttribute(android.R.attr.selectableItemBackground, outValue, true);
 		setBackgroundResource(outValue.resourceId);
-
 	}
 
 	public KnockCodeView(Context context, AttributeSet attrs) {
@@ -236,46 +238,6 @@ public class KnockCodeView extends View implements OnSettingsReloadedListener {
 		return -1;
 	}
 
-	private Rect getRectForPosition(int pos) {
-		return normalizeRect(getRectForPositionImpl(pos));
-	}
-
-	private Rect getRectForPositionImpl(final int pos) {
-        int i,j;
-        i=1; j=1;
-        for(j=1; j<=mPatternSize.numberOfRows; ++j)
-            for(i=1; i<=mPatternSize.numberOfColumns; ++i)
-                if (pos==i+(j-1)*mPatternSize.numberOfColumns)
-                    return new Rect((i-1)*getWidth()/mPatternSize.numberOfColumns,
-                                    (j-1)*getHeight()/mPatternSize.numberOfRows,
-                                    i*getWidth()/mPatternSize.numberOfColumns,
-                                    j*getHeight()/mPatternSize.numberOfRows);
-        throw new IllegalArgumentException("Only positions 1-" + mPatternSize.numberOfColumns*mPatternSize.numberOfRows + " supported, supplied " +
-                "\npos = " + pos +
-                "\ni = " + i +
-                "\nj = " + j +
-                "\nmPatternSize.numberOfColumns = " + mPatternSize.numberOfColumns +
-                "\nmPatternSize.numberOfRows = " + mPatternSize.numberOfRows);
-	}
-
-	private Rect normalizeRect(Rect rect) {
-		Rect newRect = rect;
-		if (rect.top > 0) {
-			newRect.top = rect.top + (int) mLineWidth;
-		}
-		if (rect.left > 0) {
-			newRect.left = rect.left + (int) mLineWidth;
-		}
-		if (rect.right > 0) {
-			newRect.right = rect.right - (int) mLineWidth;
-		}
-		if (rect.bottom > 0) {
-			newRect.bottom = rect.bottom - (int) mLineWidth;
-		}
-
-		return newRect;
-	}
-
 	@Override
 	public void setEnabled(boolean enabled) {
 		if (!enabled) {
@@ -302,5 +264,8 @@ public class KnockCodeView extends View implements OnSettingsReloadedListener {
 		invalidate();
 	}
 
-    public void setPatternSize(Grid g) {mPatternSize = g; invalidate();}
+    public void setPatternSize(Grid g) {
+		mPatternSize = g;
+		invalidate();
+	}
 }
