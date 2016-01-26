@@ -18,6 +18,14 @@
         android:summaryOn="@string/hide_from_launcher_on"
         android:title="@string/hide_from_launcher" />
 
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="fail_safe"
+        android:summary="@string/fail_safe_summary"
+        android:summaryOff="@string/fail_safe_summary_off"
+        android:summaryOn="@string/fail_safe_summary_on"
+        android:title="@string/fail_safe" />
+
     <PreferenceCategory android:title="@string/appearance" >
         <CheckBoxPreference
             android:defaultValue="true"

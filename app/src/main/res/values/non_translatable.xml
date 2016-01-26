@@ -3,5 +3,6 @@
     <string-array name="my_apps" translatable="false">
         <item>@string/about_mohammadag</item>
         <item>@string/about_rijul</item>
+        <item>@string/translator_pt_br_gabriel</item>
     </string-array>
 </resources>

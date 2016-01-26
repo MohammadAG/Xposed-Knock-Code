@@ -42,6 +42,12 @@
             android:title="@string/about_rijul"/>
     </PreferenceCategory>
 
+    <PreferenceCategory android:title="@string/about_translators" >
+        <Preference
+            android:key="translator_pt_br_gabriel"
+            android:title="@string/translator_pt_br_gabriel"/>
+    </PreferenceCategory>
+
     <PreferenceCategory android:key="hidden">
         <EditTextPreference
             android:defaultValue="2"

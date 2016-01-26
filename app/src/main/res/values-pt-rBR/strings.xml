@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Knock Code</string>
+
+    <string name="action_toggle">Ativar o Knock Code</string>
+
+    <!--About-->
+    <string name="about_help_title">Ajuda</string>
+    <string name="about_help_description">Antes de procurar por ajuda, ative o padrãdo 3x3 nas configurações e confirme se o módulo está ativo.</string>
+    <string name="about_license_title">Licença</string>
+    <string name="about_license_description">Este aplicativo está licenciado sob a GPLv3</string>
+    <string name="about_disclaimer_title">Termos de Uso</string>
+    <string name="about_disclaimer_description">Ao usar este aplicativo, você concordará que os autores não serão responsáveis sobre quaisquer danos causados.</string>
+    <string name="about_disclaimer_message">O SOFTWARE É FORNECIDO "TAL COMO ESTÁ", SEM QUALQUER TIPO DE GARANTIA, EXPRESSA OU IMPLÍCITA, INCLUINDO ENTRE OUTRAS, AS GARANTIAS IMPLÍCITAS DE COMERCIALIZAÇÃO E ADEQUAÇÃO A UM DETERMINADO FIM. EM CASO ALGUM DEVERÃO OS AUTORES OU TITULARES DE DIREITOS DE AUTOR SER RESPONSÁVEIS POR RECLAMAÇÕES, DANOS OU OUTRO TIPO DE RESPONSABILIDADE, QUER SEJAM AÇÕES DE CONTRATO, ATO ILÍCITO OU OUTRAS, RESULTANTES OU RELACIONADAS COM O SOFTWARE OU COM A UTILIZAÇÃO OU OUTROS PROCEDIMENTOS DO SOFTWARE.</string>
+    <string name="about_source_title">Código fonte</string>
+    <string name="about_authors">Autores</string>
+    <string name="about_mohammadag">Mohammad Abu-Garbeyyeh</string>
+    <string name="about_rijul">Rijul Ahuja</string>
+
+    <!-- Misc -->
+    <string name="action_settings">Configurações</string>
+
+    <!-- Categories -->
+    <string name="appearance">Aparência</string>
+    <string name="emergency_button">Botão de Emergência</string>
+
+    <!-- Pattern change -->
+    <string name="enter_new_knock_code">Insira o novo knock code</string>
+    <string name="enter_previous_knock_code">Insira o knock code atual</string>
+    <string name="confirm_new_knock_code">Confirme o novo knock code</string>
+    <string name="successfully_changed_code">Código mudado com sucesso</string>
+    <string name="next">Próximo</string>
+    <string name="retry">Tentar novamente</string>
+    <string name="size_exceeded">Tamanho máximo excedido, resetando.</string>
+    <string name="pref_description_change_code_pick_size">Escolha o tamanho do seu padrão</string>
+    <string name="will_restart_systemui">A SystemUI será automaticamente resetada depois do código ser definido.</string>
+
+    <!-- Preferences -->
+    <string name="pref_about_title">Sobre</string>
+    <string name="pref_about_description">Ajuda, licença, autores, termo de responsabilidade, código</string>
+    <string name="pref_restart_systemui">Reiniciar a SystemUI</string>
+
+    <string name="module_inactive">O módulo está inativo, toque aqui para mais informações</string>
+    <string name="module_inactive_dialog">Knock Code está inativo</string>
+
+    <string name="pref_title_change_code">Mudar o knock code</string>
+    <string name="pref_description_change_code">Toque aqui para mudar o seu knock code</string>
+
+    <string name="hide_from_launcher">Esconder o app</string>
+    <string name="hide_from_launcher_on">Esconder do launcher</string>
+    <string name="hide_from_launcher_off">Visível no launcher</string>
+    <string name="reboot_required">É necessário reiniciar o celular para efetuar as mudanças.</string>
+
+    <string name="fail_safe">Failsafe</string>
+    <string name="fail_safe_summary">You will not see this</string>
+    <string name="fail_safe_summary_on">Five continuous long presses will kill the knock code and restore your pattern</string>
+    <string name="fail_safe_summary_off">Keep it off at your own risk</string>
+
+    <string name="pref_title_draw_fill">Espaços</string>
+    <string name="pref_description_draw_fill">Os toques serão exibidos ou não</string>
+    <string name="pref_description_draw_fill_on">Toques serão exibidos</string>
+    <string name="pref_description_draw_fill_off">Toques não serão exibidos</string>
+
+    <string name="pref_title_draw_lines">Linhas</string>
+    <string name="pref_description_draw_lines">As linhas serão exibidas ou não</string>
+    <string name="pref_description_draw_lines_on">Linhas internas serão exibidas</string>
+    <string name="pref_description_draw_lines_off">Linhas internas não serão exibidas</string>
+
+    <string name="pref_title_show_text">Mostrar texto</string>
+    <string name="pref_summary_show_text">O texto indicando o estado da tela de bloqueio será exibido ou não</string>
+    <string name="pref_summary_show_text_on">O texto indicando o estado da tela de bloqueio será exibido</string>
+    <string name="pref_summary_show_text_off">O texto indicando o estado da tela de bloqueio não será exibido</string>
+
+
+    <string name="pref_title_show_dialog">Mostrar diálogo</string>
+    <string name="pref_summary_show_dialog">Desmarque para que o diálogo que você fez muitas tentativas incorretas apareça na tela de bloqueio</string>
+    <string name="pref_summary_show_dialog_on">Diálogo será exbido quando houver muitas tentativas incorretas</string>
+    <string name="pref_summary_show_dialog_off">Diálogo não será exbido quando houver muitas tentativas incorretas</string>
+
+    <string name="pref_title_show_emergency_button">Mostrar o botão de emergência</string>
+    <string name="pref_summary_show_emergency_button">Desmarque para desativar o botão</string>
+    <string name="pref_summary_show_emergency_button_on">Botão está ativado</string>
+    <string name="pref_summary_show_emergency_button_off">Botão está desativado (use com cuidado!)</string>
+
+    <string name="pref_title_show_emergency_text">Mostrar texto de chamada de emergência</string>
+    <string name="pref_summary_show_emergency_text">Desmarque para esconder o texto, clicar no botão ainda funcionará</string>
+    <string name="pref_summary_show_emergency_text_on">Texto será exibido</string>
+    <string name="pref_summary_show_emergency_text_off">Texto será escondido, mas ao clicar no botão ainda funcionará</string>
+
+    <string name="vibration">Vibração (ignora a configuração do sistema)</string>
+    <string name="pref_title_vibrate_long_press">Toque longo</string>
+    <string name="pref_description_vibrate_long_press">Você não deve ver isso</string>
+    <string name="pref_description_vibrate_long_press_on">Ativado</string>
+    <string name="pref_description_vibrate_long_press_off">Desativado</string>
+
+    <string name="pref_title_vibrate_tap">Toque</string>
+    <string name="pref_description_vibrate_tap">Você não deve ver isso</string>
+    <string name="pref_description_vibrate_tap_on">Ativado</string>
+    <string name="pref_description_vibrate_tap_off">Desativado</string>
+
+    <!-- Lockscreen -->
+    <string name="device_disabled">Dispotivo bloqueado, tente novamente em %1$d segundos</string>
+    <string name="incorrect_pattern">Padrão incorreto</string>
+    <string name="long_pressed_hint">Toque longo, padrão resetado</string>
+    <string name="lockscreen_return_to_call">Voltar para chamada</string>
+    <string name="lockscreen_emergency_call">Emergência é esse</string>
+
+    <string name="dialog_message_not_active">Knock Code não pode ligar aos métodos necessários do Sistema Android para que ele funcione. Pode haver vários motivos:\n
+    &#x2022; <i>Xposed Framework não está instalado</i>\n
+    &#x2022; <i>Xposed está instalado e ativo, mas você não ativou o Knock Code no Xposed installer (\"Módulos\" aba) ou não reiniciou o celular depois de ativar.</i>\n
+    &#x2022; <i>Xposed Framework foi desativado pelo Xposed safemode. Olhe no fórum do Xposed no XDA para maiores informações.</i>\n
+    &#x2022; <i>Knock Code pode ter travado. Você deveria me reportar esse bug no fórum do XDA (Menu -> Sobre -> Ajuda).</i></string>
+    <string name="pref_show_dots_title">Mostrar os pontos</string>
+    <string name="pref_desc_show_dots_on">Os pontos indicando os números de toques serão exibidos</string>
+    <string name="pref_desc_show_dots_off">Os pontos indicando os números de toques não userão exibidos</string>
+    <string name="disable_knock_screen">Knock Code desativado, desligue a tela e ligue para voltar ao padrão antigo.</string>
+    <string name="reboot_unexpected">Por favor reinicie o celular para que as mudanças sejam efetudas, caso contrário não irá funcionar corretamente.</string>
+    <string name="about_translators">Tradutores</string>
+    <string name="translator_pt_br_gabriel">Gabriel Campos (PT-BR)</string>
+</resources>

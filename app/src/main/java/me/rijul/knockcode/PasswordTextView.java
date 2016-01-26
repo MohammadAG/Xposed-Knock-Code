@@ -122,7 +122,6 @@ public class PasswordTextView extends View {
         mDrawPaint.setTypeface(Typeface.create("sans-serif-light", 0));
         mDotSize = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 9, getResources().getDisplayMetrics());
         mCharPadding = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 15, getResources().getDisplayMetrics());
-        XposedBridge.log("[KnockCode] mCharPadding " + mCharPadding);
         mShowPassword = false;
         mAppearInterpolator = AnimationUtils.loadInterpolator(context,
                 android.R.interpolator.linear_out_slow_in);
@@ -264,57 +263,72 @@ public class PasswordTextView extends View {
         }
     }
 
-    public void setDotsColor(final boolean b) {
-        final float[] from = new float[3],
-                to =   new float[3];
-
-        Color.colorToHSV(Color.parseColor("#FFFFFFFF"), from);   // from white
-        if (b)
-            Color.colorToHSV(Color.parseColor("#FF4CAF50"), to);     // to green
-        else
-            Color.colorToHSV(Color.parseColor("#FFF44336"), to);     // to red
-
-
-        ValueAnimator anim = ValueAnimator.ofFloat(0, 1);   // animate from 0 to 1
+    public void setDotsColor(final KnockCodeButtonView kcv, final boolean shouldEnable) {
+        ValueAnimator anim = ValueAnimator.ofArgb(0xff212121, 0xfff44336);   // animate from 0 to 1
         anim.setDuration(100);                              // for 300 ms
-
-        final float[] hsv  = new float[3];                  // transition color
         anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
-                // Transition along each axis of HSV (hue, saturation, value)
-                hsv[0] = from[0] + (to[0] - from[0]) * animation.getAnimatedFraction();
-                hsv[1] = from[1] + (to[1] - from[1]) * animation.getAnimatedFraction();
-                hsv[2] = from[2] + (to[2] - from[2]) * animation.getAnimatedFraction();
-
-                setPaintColor(Color.HSVToColor(hsv));
-
-                if (animation.getAnimatedFraction() == 1) {
-                    animateDotsUp();
-                }
+                setPaintColor((int) animation.getAnimatedValue());
             }
         });
-        AnimatorSet animatorSet = new AnimatorSet();
-        animatorSet.play(anim);
-        animatorSet.setStartDelay(DOT_APPEAR_DURATION_OVERSHOOT);
-        animatorSet.start();
+        anim.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                animateDotsUp(kcv, shouldEnable);
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+            }
+        });
+        anim.setStartDelay(DOT_APPEAR_DURATION_OVERSHOOT);
+        anim.setRepeatCount(0);
+        anim.start();
     }
 
-    private void animateDotsUp() {
-        animate()
-                .translationY(-getHeight())
-                .alpha(0.0f).setDuration(200)
-                .setListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        super.onAnimationEnd(animation);
-                        reset(false);
-                        setPaintColor(Color.WHITE);
-                        setAlpha(1.0f);
-                        setTranslationY(0);
-                    }
-                })
-                .start();
+    private void animateDotsUp(final KnockCodeButtonView kcv, final boolean shouldEnable) {
+        //alpha 0 is transparent, alpha 1 is visible
+        ValueAnimator anim = ValueAnimator.ofFloat(1.0f, 0.0f);
+        anim.setDuration(200);
+        anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                setTranslationY(-(1 - (float) animation.getAnimatedValue()) * getHeight());
+                setAlpha((float) animation.getAnimatedValue());
+            }
+        });
+        anim.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                reset(false);
+                setPaintColor(Color.WHITE);
+                setAlpha(1.0f);
+                setTranslationY(0);
+                kcv.enableButtons(shouldEnable);
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+            }
+        });
+        anim.start();
     }
 
     private class CharState {

@@ -52,6 +52,11 @@
     <string name="hide_from_launcher_off">Visible in launcher</string>
     <string name="reboot_required">A reboot or a SystemUI restart is required to apply the changes</string>
 
+    <string name="fail_safe">Failsafe</string>
+    <string name="fail_safe_summary">You will not see this</string>
+    <string name="fail_safe_summary_on">Five continuous long presses will kill the knock code and restore your pattern</string>
+    <string name="fail_safe_summary_off">Keep it off at your own risk</string>
+
     <string name="pref_title_draw_fill">Draw fill</string>
     <string name="pref_description_draw_fill">Whether or not taps should be shown</string>
     <string name="pref_description_draw_fill_on">Taps will be shown</string>
@@ -111,5 +116,7 @@
     <string name="pref_desc_show_dots_off">Dots indicating number of knocks will not be shown</string>
     <string name="disable_knock_screen">Disabled knock code, turn screen off and on to see pattern again.</string>
     <string name="reboot_unexpected">Please reboot to properly apply the changes, otherwise it will lead to unexpected behaviour.</string>
+    <string name="translator_pt_br_gabriel">Gabriel Campos (PT-BR)</string>
+    <string name="about_translators">Translators</string>
 
 </resources>

@@ -18,15 +18,15 @@ import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import me.rijul.knockcode.KnockCodeView.Mode;
-import me.rijul.knockcode.KnockCodeView.OnPositionTappedListener;
+import me.rijul.knockcode.KnockCodeButtonView.Mode;
+import me.rijul.knockcode.KnockCodeButtonView.OnPositionTappedListener;
 
 public class ChangeKnockCodeActivity extends AppCompatActivity implements OnPositionTappedListener, OnClickListener {
 	public static final int KNOCK_CODE_MAX_SIZE = 20;
     public static final int MAX_SIZE = 5;
     public static final int MIN_SIZE = 2;
 
-	private KnockCodeView mKnockCodeView;
+	private KnockCodeButtonView mKnockCodeView;
 	private PasswordTextView mPasscodeDotView;
 	private TextView mHintTextView;
 
@@ -52,12 +52,11 @@ public class ChangeKnockCodeActivity extends AppCompatActivity implements OnPosi
 
 		mSettingsHelper = new SettingsHelper(getApplicationContext());
 
-		mKnockCodeView = (KnockCodeView) findViewById(R.id.knockCodeView1);
+		mKnockCodeView = (KnockCodeButtonView) findViewById(R.id.knockCodeView1);
 		mKnockCodeView.setOnPositionTappedListener(this);
 
 		mPasscodeDotView = (PasswordTextView) findViewById(R.id.passcodeDotView1);
-		mPasscodeDotView.setPaintColor(Color.BLACK
-		);
+		mPasscodeDotView.setPaintColor(Color.BLACK);
 
 		mHintTextView = (TextView) findViewById(android.R.id.hint);
 
@@ -72,7 +71,7 @@ public class ChangeKnockCodeActivity extends AppCompatActivity implements OnPosi
             mKnockCodeView.setPatternSize(mSettingsHelper.getPatternSize());
 		}
         else
-            getNewPatternSize(true);
+            getNewPatternSize();
 	}
 
 	@Override
@@ -114,7 +113,7 @@ public class ChangeKnockCodeActivity extends AppCompatActivity implements OnPosi
 			if (mIsOldCode) {
 				if (confirmPasscodePair(mFirstTappedPositions, mSettingsHelper.getPasscode())) {
 					mIsOldCode = false;
-                    getNewPatternSize(false);
+                    getNewPatternSize();
 					mHintTextView.setText(R.string.enter_new_knock_code);
 					reset();
 				} else {
@@ -176,7 +175,7 @@ public class ChangeKnockCodeActivity extends AppCompatActivity implements OnPosi
 		return true;
 	}
 
-    private void getNewPatternSize(boolean firstRun) {
+    private void getNewPatternSize() {
         ViewGroup numberPickerView = (ViewGroup) LayoutInflater.from(this).inflate(R.layout.grid_number_picker, null);
         final NumberPicker npr,npc;
         if (numberPickerView!=null) {
@@ -184,14 +183,14 @@ public class ChangeKnockCodeActivity extends AppCompatActivity implements OnPosi
             if (npr!=null) {
                 npr.setMinValue(MIN_SIZE);
                 npr.setMaxValue(MAX_SIZE);
-                npr.setValue((firstRun) ? 2 : mKnockCodeView.mPatternSize.numberOfRows);
+                npr.setValue(mKnockCodeView.mPatternSize.numberOfRows);
             }
 
             npc = (NumberPicker) numberPickerView.findViewById(R.id.numberPickerY);
             if (npc!=null) {
                 npc.setMinValue(MIN_SIZE);
                 npc.setMaxValue(MAX_SIZE);
-                npc.setValue((firstRun) ? 2 : mKnockCodeView.mPatternSize.numberOfColumns);
+                npc.setValue(mKnockCodeView.mPatternSize.numberOfColumns);
             }
 
             new AlertDialog.Builder(this)

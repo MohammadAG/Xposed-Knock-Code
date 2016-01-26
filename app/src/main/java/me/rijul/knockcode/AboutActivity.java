@@ -21,12 +21,13 @@ import java.util.List;
  */
 public class AboutActivity extends AppCompatPreferenceActivity {
     private static final String PROFILE_RIJUL = "rijul.ahuja";
+    private static final String TRANSLATOR_PT_BR_GABRIEL = "zzzgabriel";
 
     @Override
     @SuppressWarnings("deprecation")
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        setContentView(R.layout.activity_about);
+        setContentView(R.layout.activity_main);
         addPreferencesFromResource(R.xml.about);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -60,12 +61,14 @@ public class AboutActivity extends AppCompatPreferenceActivity {
         findPreference("rijul_key").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                try {
-                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("fb://profile/" + PROFILE_RIJUL)));
-                } catch (Exception e) {
-                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.facebook.com/" + PROFILE_RIJUL)));
-                }
-                return false;
+                return viewFacebookProfile(PROFILE_RIJUL);
+            }
+        });
+
+        findPreference("translator_pt_br_gabriel").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                return viewFacebookProfile(TRANSLATOR_PT_BR_GABRIEL);
             }
         });
 
@@ -80,5 +83,14 @@ public class AboutActivity extends AppCompatPreferenceActivity {
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public boolean viewFacebookProfile(String profile) {
+        try {
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("fb://profile/" + profile)));
+        } catch (Exception e) {
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.facebook.com/" + profile)));
+        }
+        return false;
     }
 }

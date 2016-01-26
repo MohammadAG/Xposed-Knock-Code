@@ -1,7 +1,10 @@
 package me.rijul.knockcode;
 
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.pm.PackageManager;
@@ -19,17 +22,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.Toast;
-import android.support.design.widget.Snackbar;
 
-public class MainActivity extends AppCompatPreferenceActivity implements  OnPreferenceChangeListener, OnSharedPreferenceChangeListener  {
+public class MainActivity extends AppCompatPreferenceActivity implements OnSharedPreferenceChangeListener  {
 	private static boolean MODULE_INACTIVE = true;
-
-	@Override
-	public boolean onPreferenceChange(Preference preference, Object newValue) {
-		//SettingsHelper.emitSettingsChanged(getApplicationContext());
-		Toast.makeText(getActivity(), R.string.reboot_required, Toast.LENGTH_SHORT).show();
-		return true;
-	}
+	private Menu mMenu;
 
 	@Override
 	public SharedPreferences getSharedPreferences(String name, int mode) {
@@ -38,7 +34,6 @@ public class MainActivity extends AppCompatPreferenceActivity implements  OnPref
 
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-		//SettingsHelper.emitSettingsChanged(getApplicationContext());
 		Toast.makeText(getActivity(), R.string.reboot_required, Toast.LENGTH_LONG).show();
 	}
 
@@ -46,7 +41,7 @@ public class MainActivity extends AppCompatPreferenceActivity implements  OnPref
 	@Override
 	protected void onPostCreate(Bundle savedInstanceState) {
 		super.onPostCreate(savedInstanceState);
-		setContentView(R.layout.activity_about);
+		setContentView(R.layout.activity_main);
 		addPreferencesFromResource(R.xml.preferences);
 		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
@@ -69,7 +64,6 @@ public class MainActivity extends AppCompatPreferenceActivity implements  OnPref
 		findPreference("hide_app_from_launcher").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
 			@Override
 			public boolean onPreferenceClick(Preference preference) {
-				Toast.makeText(getActivity(), R.string.reboot_required, Toast.LENGTH_SHORT).show();
 				if (((CheckBoxPreference) preference).isChecked()) {
 					ComponentName componentName = new ComponentName(getActivity(), "me.rijul.knockcode.MainActivity");
 					getActivity().getPackageManager().setComponentEnabledSetting(componentName, PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
@@ -80,6 +74,13 @@ public class MainActivity extends AppCompatPreferenceActivity implements  OnPref
 				return true;
 			}
 		});
+
+		registerReceiver(new BroadcastReceiver() {
+			@Override
+			public void onReceive(Context context, Intent intent) {
+				updateSwitchState(false);
+			}
+		}, new IntentFilter("me.rijul.knockcode.RELOAD_SWITCH_STATE"));
 	}
 
 	public MainActivity getActivity() {
@@ -100,17 +101,23 @@ public class MainActivity extends AppCompatPreferenceActivity implements  OnPref
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
+		mMenu = menu;
         getMenuInflater().inflate(R.menu.main, menu);
-		SwitchCompat master_switch = (SwitchCompat) MenuItemCompat.getActionView(menu.findItem(R.id.toolbar_master_switch));
+		updateSwitchState(true);
+        return true;
+	}
+
+	private void updateSwitchState(final boolean showToast) {
+		SwitchCompat master_switch = (SwitchCompat) MenuItemCompat.getActionView(mMenu.findItem(R.id.toolbar_master_switch));
 		master_switch.setChecked(!(new SettingsHelper(getApplicationContext()).isDisabled()));
+		if (!showToast)
+			return;
 		master_switch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 			@Override
 			public void onCheckedChanged(CompoundButton button, boolean b) {
 				new SettingsHelper(getApplicationContext()).edit().putBoolean("switch", b).commit();
-				Toast.makeText(getActivity(), R.string.reboot_required, Toast.LENGTH_SHORT).show();
 			}
 		});
-        return true;
 	}
 
 

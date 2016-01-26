@@ -235,6 +235,8 @@ public class SettingsHelper {
 
 	public boolean vibrateOnTap() {return getBoolean("vibrate_tap", false); }
 
+	public boolean failSafe() {return getBoolean("fail_safe", true); }
+
 	public boolean isDisabled() { return !getBoolean("switch", false);	}
 
 	public boolean showDots() {return getBoolean("show_dots", true); }
