@@ -34,12 +34,12 @@
     <string name="retry">Retry</string>
     <string name="size_exceeded">Maximum size exceeded, resetting.</string>
     <string name="pref_description_change_code_pick_size">Choose the size for your pattern</string>
-    <string name="will_restart_systemui">The SystemUI will automatically be restarted after the code is set.</string>
+    <string name="will_restart_systemui">The keyguard will automatically be restarted after the code is set.</string>
 
     <!-- Preferences -->
     <string name="pref_about_title">About</string>
     <string name="pref_about_description">Help, licensing, authors, disclaimer, source</string>
-    <string name="pref_restart_systemui">Restart SystemUI</string>
+    <string name="pref_restart_systemui">Restart keyguard</string>
 
     <string name="module_inactive">Module is inactive, tap here for information</string>
     <string name="module_inactive_dialog">Knock Code is inactive</string>
@@ -50,7 +50,7 @@
     <string name="hide_from_launcher">Hide app</string>
     <string name="hide_from_launcher_on">Hidden from launcher</string>
     <string name="hide_from_launcher_off">Visible in launcher</string>
-    <string name="reboot_required">A reboot or a SystemUI restart is required to apply the changes</string>
+    <string name="reboot_required">A reboot or a keyguard restart is required to apply the changes</string>
 
     <string name="fail_safe">Failsafe</string>
     <string name="fail_safe_summary">You will not see this</string>

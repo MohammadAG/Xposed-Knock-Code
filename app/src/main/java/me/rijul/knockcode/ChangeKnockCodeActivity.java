@@ -144,7 +144,7 @@ public class ChangeKnockCodeActivity extends AppCompatActivity implements OnPosi
 		mSettingsHelper.setPasscode(mSecondTappedPositions);
 		mSettingsHelper.storePatternSize(mKnockCodeView.mPatternSize);
 		Toast.makeText(this, R.string.successfully_changed_code, Toast.LENGTH_SHORT).show();
-		SettingsHelper.killPackage("com.android.systemui");
+		SettingsHelper.killPackage();
 		finish();
 	}
 

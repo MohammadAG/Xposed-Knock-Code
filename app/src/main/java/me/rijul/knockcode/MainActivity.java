@@ -130,7 +130,7 @@ public class MainActivity extends AppCompatPreferenceActivity implements OnShare
 			return true;
 		}
 		else if (id == R.id.restart_systemui) {
-			SettingsHelper.killPackage("com.android.systemui");
+			SettingsHelper.killPackage();
 			return true;
 		}
 		return super.onOptionsItemSelected(item);

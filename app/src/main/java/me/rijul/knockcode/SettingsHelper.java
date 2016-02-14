@@ -15,6 +15,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences.Editor;
 import android.os.AsyncTask;
 import android.provider.Settings.Secure;
+import android.os.Build;
 import android.util.Log;
 
 import de.robv.android.xposed.XSharedPreferences;
@@ -297,7 +298,9 @@ public class SettingsHelper {
 		}
 	}
 
-	public static void killPackage(String packageToKill) {
+	public static void killPackage() {
+		String packageToKill = android.os.Build.MANUFACTURER.equalsIgnoreCase("HTC") ? "com.htc.lockscreen" : "com.android.systemui";
 		(new killPackage()).execute(packageToKill);
+		Log.v(BuildConfig.APPLICATION_ID, packageToKill);
 	}
 }
