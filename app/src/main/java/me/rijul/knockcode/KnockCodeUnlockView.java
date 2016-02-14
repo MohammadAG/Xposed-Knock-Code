@@ -77,7 +77,11 @@ public class KnockCodeUnlockView extends LinearLayout implements OnPositionTappe
 		mKeyguardUpdateMonitor = XposedHelpers.callStaticMethod(XposedHelpers.
 						findClass(mKeyguardPackageName + ".KeyguardUpdateMonitor", mParam.thisObject.getClass().getClassLoader()),
 				"getInstance", mContext);
-		mLockPatternUtils = XposedHelpers.getObjectField(mParam.thisObject, "mLockPatternUtils");
+		try {
+			mLockPatternUtils = XposedHelpers.getObjectField(mParam.thisObject, "mLockPatternUtils");
+		} catch (NoSuchFieldError e) {
+			mLockPatternUtils = XposedHelpers.getObjectField(mParam.thisObject, "mLockUtils");
+		}
         mAppearAnimationUtils = new AppearAnimationUtils(mContext);
         setSettingsHelper(settingsHelper);
 	}
