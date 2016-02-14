@@ -53,9 +53,9 @@
     <string name="reboot_required">É necessário reiniciar o celular para efetuar as mudanças.</string>
 
     <string name="fail_safe">Failsafe</string>
-    <string name="fail_safe_summary">You will not see this</string>
-    <string name="fail_safe_summary_on">Five continuous long presses will kill the knock code and restore your pattern</string>
-    <string name="fail_safe_summary_off">Keep it off at your own risk</string>
+    <string name="fail_safe_summary">Você não verá isso</string>
+    <string name="fail_safe_summary_on">Cinco toques longos consecutivos para voltar para o padrão nativo</string>
+    <string name="fail_safe_summary_off">Mantenha desligado(não recomendado)/string>
 
     <string name="pref_title_draw_fill">Espaços</string>
     <string name="pref_description_draw_fill">Os toques serão exibidos ou não</string>
