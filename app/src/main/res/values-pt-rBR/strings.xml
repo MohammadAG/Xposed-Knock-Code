@@ -55,7 +55,7 @@
     <string name="fail_safe">Failsafe</string>
     <string name="fail_safe_summary">Você não verá isso</string>
     <string name="fail_safe_summary_on">Cinco toques longos consecutivos para voltar para o padrão nativo</string>
-    <string name="fail_safe_summary_off">Mantenha desligado(não recomendado)/string>
+    <string name="fail_safe_summary_off">Mantenha desligado(não recomendado)</string>
 
     <string name="pref_title_draw_fill">Espaços</string>
     <string name="pref_description_draw_fill">Os toques serão exibidos ou não</string>
