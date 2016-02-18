@@ -11,6 +11,7 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="colorControlActivated">@color/colorControlActivated</item>
+        <item name="navigationBarColor">@color/navigationBarColor</item>
     </style>
 
     <style name="AppTheme" parent="@android:style/Theme.Material.Light.DarkActionBar">
