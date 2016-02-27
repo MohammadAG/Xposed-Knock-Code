@@ -118,6 +118,6 @@
     <string name="reboot_unexpected">Please reboot to properly apply the changes, otherwise it will lead to unexpected behaviour.</string>
     <string name="translator_pt_br_gabriel">Gabriel Campos (PT-BR)</string>
     <string name="about_translators">Translators</string>
-    <string name="translator_pl_pantin">pantinPL</string>
+    <string name="translator_pl_pantin">pantinPL (PL)</string>
 
 </resources>
