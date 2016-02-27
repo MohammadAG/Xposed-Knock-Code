@@ -109,7 +109,7 @@ public class MainActivity extends AppCompatPreferenceActivity implements OnShare
 
 	private void updateSwitchState(final boolean showToast) {
 		SwitchCompat master_switch = (SwitchCompat) MenuItemCompat.getActionView(mMenu.findItem(R.id.toolbar_master_switch));
-		master_switch.setChecked(!(new SettingsHelper(getApplicationContext()).isDisabled()));
+		master_switch.setChecked(!(new SettingsHelper(getApplicationContext()).isSwitchOff()));
 		if (!showToast)
 			return;
 		master_switch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {

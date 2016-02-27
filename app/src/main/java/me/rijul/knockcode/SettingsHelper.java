@@ -238,7 +238,9 @@ public class SettingsHelper {
 
 	public boolean failSafe() {return getBoolean("fail_safe", true); }
 
-	public boolean isDisabled() { return getPasscodeOrNull() == null || !getBoolean("switch", false);	}
+	public boolean isDisabled() {return getPasscodeOrNull() == null || isSwitchOff();}
+
+	public boolean isSwitchOff() {return !getBoolean("switch", false);}
 
 	public boolean showDots() {return getBoolean("show_dots", true); }
 
