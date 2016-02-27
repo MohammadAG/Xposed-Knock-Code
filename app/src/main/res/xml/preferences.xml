@@ -81,7 +81,8 @@
             android:title="@string/pref_title_show_emergency_text"
             android:summary="@string/pref_summary_show_emergency_text"
             android:summaryOn="@string/pref_summary_show_emergency_text_on"
-            android:summaryOff="@string/pref_summary_show_emergency_text_off"/>
+            android:summaryOff="@string/pref_summary_show_emergency_text_off"
+            android:dependency="show_emergency_button"/>
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/vibration">
