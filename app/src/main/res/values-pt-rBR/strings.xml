@@ -118,4 +118,5 @@
     <string name="reboot_unexpected">Por favor reinicie o celular para que as mudanças sejam efetudas, caso contrário não irá funcionar corretamente.</string>
     <string name="about_translators">Tradutores</string>
     <string name="translator_pt_br_gabriel">Gabriel Campos (PT-BR)</string>
+    <string name="translator_pl_pantin">pantinPL</string>
 </resources>
