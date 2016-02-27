@@ -48,6 +48,9 @@
             android:title="@string/translator_pt_br_gabriel"/>
         <Preference
             android:title="@string/translator_pl_pantin" />
+        <Preference
+            android:key="translator_es_mx_alan"
+            android:title="@string/translator_es_mx_alan"/>
     </PreferenceCategory>
 
     <PreferenceCategory android:key="hidden">

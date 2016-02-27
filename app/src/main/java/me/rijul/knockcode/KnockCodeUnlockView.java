@@ -11,11 +11,9 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
-import android.graphics.Color;
 import android.os.Build;
 import android.os.CountDownTimer;
 import android.os.SystemClock;
-import android.support.v4.content.LocalBroadcastManager;
 import android.telecom.TelecomManager;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -24,18 +22,14 @@ import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import java.lang.Runnable;
-
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedBridge;
 import me.rijul.knockcode.KnockCodeButtonView.Mode;
 import me.rijul.knockcode.KnockCodeButtonView.OnPositionTappedListener;
 import me.rijul.knockcode.SettingsHelper.OnSettingsReloadedListener;
-
 import de.robv.android.xposed.XposedHelpers;
 
 public class KnockCodeUnlockView extends LinearLayout implements OnPositionTappedListener, KeyguardSecurityView, OnSettingsReloadedListener, OnLongClickListener {
@@ -491,7 +485,7 @@ public class KnockCodeUnlockView extends LinearLayout implements OnPositionTappe
 			mContext.registerReceiver(new BroadcastReceiver() {
 				@Override
 				public void onReceive(Context context, Intent intent) {
-					XposedBridge.log("[KnockCode] Received news, taking revenge on SystemUI");
+					XposedBridge.log("[KnockCode] Now keyguard kills itself; murder-homicide!");
 					System.exit(0);
 				}
 			}, new IntentFilter("me.rijul.knockcode.DEAD"));

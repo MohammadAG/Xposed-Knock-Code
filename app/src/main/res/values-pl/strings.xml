@@ -116,8 +116,9 @@
     <string name="pref_desc_show_dots_off">Kropki oznaczające liczbę dotknięć nie będą wyświetlane</string>
     <string name="disable_knock_screen">Kod wyłączony, wyłącz i włącz ekran, aby zobaczyć wzór ponownie.</string>
     <string name="reboot_unexpected">Uruchom ponownie, aby prawidłowo zastosować zmiany, w przeciwnym razie może to prowadzić do nieoczekiwanego zachowania.</string>
-    <string name="translator_pt_br_gabriel">Gabriel Campos (PT-BR)</string>
     <string name="about_translators">Tłumacze</string>
+    <string name="translator_pt_br_gabriel">Gabriel Campos (PT-BR)</string>
     <string name="translator_pl_pantin">pantinPL (PL)</string>
+    <string name="translator_es_mx_alan">Alan Yadir (ES-MX)</string>
 
 </resources>

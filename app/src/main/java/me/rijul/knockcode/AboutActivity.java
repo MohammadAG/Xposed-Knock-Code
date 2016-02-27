@@ -22,6 +22,7 @@ import java.util.List;
 public class AboutActivity extends AppCompatPreferenceActivity {
     private static final String PROFILE_RIJUL = "rijul.ahuja";
     private static final String TRANSLATOR_PT_BR_GABRIEL = "zzzgabriel";
+    private static final String TRANSLATOR_ES_MX_ALAN = "alan.yadir.5";
 
     @Override
     @SuppressWarnings("deprecation")
@@ -69,6 +70,13 @@ public class AboutActivity extends AppCompatPreferenceActivity {
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 return viewFacebookProfile(TRANSLATOR_PT_BR_GABRIEL);
+            }
+        });
+
+        findPreference("translator_es_mx_alan").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                return viewFacebookProfile(TRANSLATOR_ES_MX_ALAN);
             }
         });
 

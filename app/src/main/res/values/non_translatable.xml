@@ -4,5 +4,7 @@
         <item>@string/about_mohammadag</item>
         <item>@string/about_rijul</item>
         <item>@string/translator_pt_br_gabriel</item>
+        <item>@string/translator_pl_pantin</item>
+        <item>@string/translator_es_mx_alan</item>
     </string-array>
 </resources>

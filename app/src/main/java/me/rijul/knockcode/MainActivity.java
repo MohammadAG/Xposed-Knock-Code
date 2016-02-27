@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatPreferenceActivity implements OnShare
 			public void onReceive(Context context, Intent intent) {
 				updateSwitchState(false);
 			}
-		}, new IntentFilter("me.rijul.knockcode.RELOAD_SWITCH_STATE"));
+		}, new IntentFilter("me.rijul.knockcode.DEAD"));
 	}
 
 	public MainActivity getActivity() {

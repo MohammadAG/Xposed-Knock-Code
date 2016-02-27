@@ -116,8 +116,8 @@
     <string name="pref_desc_show_dots_off">Dots indicating number of knocks will not be shown</string>
     <string name="disable_knock_screen">Disabled knock code, turn screen off and on to see pattern again.</string>
     <string name="reboot_unexpected">Please reboot to properly apply the changes, otherwise it will lead to unexpected behaviour.</string>
-    <string name="translator_pt_br_gabriel">Gabriel Campos (PT-BR)</string>
     <string name="about_translators">Translators</string>
+    <string name="translator_pt_br_gabriel">Gabriel Campos (PT-BR)</string>
     <string name="translator_pl_pantin">pantinPL (PL)</string>
-
+    <string name="translator_es_mx_alan">Alan Yadir (ES-MX)</string>
 </resources>

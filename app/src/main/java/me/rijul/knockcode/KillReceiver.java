@@ -15,8 +15,7 @@ public class KillReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         new SettingsHelper(context).edit().putBoolean("switch", false).commit();
-        XposedBridge.log("[KnockCode] SystemUI is killing us");
+        XposedBridge.log("[KnockCode] Keyguard is killing us");
         context.sendBroadcast(new Intent("me.rijul.knockcode.DEAD"));
-        context.sendBroadcast(new Intent("me.rijul.knockcode.RELOAD_SWITCH_STATE"));
     }
 }
