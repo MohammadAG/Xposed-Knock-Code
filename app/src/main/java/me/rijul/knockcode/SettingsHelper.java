@@ -238,7 +238,7 @@ public class SettingsHelper {
 
 	public boolean failSafe() {return getBoolean("fail_safe", true); }
 
-	public boolean isDisabled() { return !getBoolean("switch", false);	}
+	public boolean isDisabled() { return getPasscodeOrNull() == null || !getBoolean("switch", false);	}
 
 	public boolean showDots() {return getBoolean("show_dots", true); }
 
@@ -283,7 +283,7 @@ public class SettingsHelper {
 			if (su != null ){
 				try {
 					DataOutputStream os = new DataOutputStream(su.getOutputStream());
-					os.writeBytes("pkill " + packageToKill + "\n");
+					os.writeBytes("pkill -f " + packageToKill + "\n");
 					os.flush();
 					os.writeBytes("exit\n");
 					os.flush();
