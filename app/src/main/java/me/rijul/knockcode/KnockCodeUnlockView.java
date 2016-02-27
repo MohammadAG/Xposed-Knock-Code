@@ -54,6 +54,8 @@ public class KnockCodeUnlockView extends LinearLayout implements OnPositionTappe
 	private PasswordTextView mDotsView;
 	private SettingsHelper mSettingsHelper;
     private AppearAnimationUtils mAppearAnimationUtils;
+	private DisappearAnimationUtils mDisappearAnimationUtils;
+	private int mDisappearYTranslation;
 	protected XC_MethodHook.MethodHookParam mParam;
 	public Button mEmergencyButton;
 	public Object mKeyguardUpdateMonitor;
@@ -83,6 +85,13 @@ public class KnockCodeUnlockView extends LinearLayout implements OnPositionTappe
 			mLockPatternUtils = XposedHelpers.getObjectField(mParam.thisObject, "mLockUtils");
 		}
         mAppearAnimationUtils = new AppearAnimationUtils(mContext);
+		mDisappearAnimationUtils = new DisappearAnimationUtils(mContext,
+				125, 0.6f /* translationScale */,
+				0.45f /* delayScale */, AnimationUtils.loadInterpolator(
+				mContext, android.R.interpolator.fast_out_linear_in));
+		Resources res = ResourceHelper.getResourcesForPackage(mContext, mContext.getPackageName());
+		mDisappearYTranslation = res.getDimensionPixelSize(res.getIdentifier(
+				"disappear_y_translation", "dimen", mContext.getPackageName()));
         setSettingsHelper(settingsHelper);
 	}
 
@@ -496,14 +505,15 @@ public class KnockCodeUnlockView extends LinearLayout implements OnPositionTappe
 	}
 
 	public void startAppearAnimation() {
-        enableClipping(false);
-        setAlpha(1f);
-        setTranslationY(mAppearAnimationUtils.getStartTranslation());
-        animate()
-                .setDuration(500)
-                .setInterpolator(mAppearAnimationUtils.getInterpolator())
-                .translationY(0);
-        mAppearAnimationUtils.startAnimation(new View[]{mTextView, mDotsView, mKnockCodeUnlockView, mEmergencyButton},
+		XposedBridge.log("[KnockCode] Appear Animation!");
+		enableClipping(false);
+		setAlpha(1f);
+		setTranslationY(mAppearAnimationUtils.getStartTranslation());
+		animate()
+				.setDuration(500)
+				.setInterpolator(mAppearAnimationUtils.getInterpolator())
+				.translationY(0);
+		mAppearAnimationUtils.startAnimation(new View[]{mTextView, mDotsView, mKnockCodeUnlockView, mEmergencyButton},
 				new Runnable() {
 					@Override
 					public void run() {
@@ -514,9 +524,14 @@ public class KnockCodeUnlockView extends LinearLayout implements OnPositionTappe
 	}
 
 	public boolean startDisappearAnimation(final Runnable finishRunnable) {
-		setAlpha(0f);
-		if (finishRunnable!=null)
-			finishRunnable.run();
+		XposedBridge.log("[KnockCode] Disappear Animation!");
+		enableClipping(false);
+		animate()
+				.alpha(0f)
+				.translationY(mDisappearYTranslation)
+				.setInterpolator(mDisappearAnimationUtils.getInterpolator())
+				.setDuration(100)
+				.withEndAction(finishRunnable);
 		return true;
 	}
 
