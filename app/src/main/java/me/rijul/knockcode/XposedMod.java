@@ -37,7 +37,7 @@ public class XposedMod implements IXposedHookLoadPackage {
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)
 			return;
 		if (lpparam.packageName.equals("me.rijul.knockcode")) {
-			XposedHelpers.setStaticBooleanField(XposedHelpers.findClass("me.rijul.knockcode.MainActivity", lpparam.classLoader),
+			XposedHelpers.setStaticBooleanField(XposedHelpers.findClass("me.rijul.knockcode.SettingsActivity", lpparam.classLoader),
 					"MODULE_INACTIVE", false);
 		} else if (lpparam.packageName.equals("com.htc.lockscreen")) {
 			createHooksIfNeeded("com.htc.lockscreen.keyguard");

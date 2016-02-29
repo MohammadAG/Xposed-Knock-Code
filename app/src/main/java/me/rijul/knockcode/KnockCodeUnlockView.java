@@ -9,6 +9,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.os.Build;
@@ -280,17 +281,14 @@ public class KnockCodeUnlockView extends LinearLayout implements OnPositionTappe
 	}
 
 	private void verifyPasscodeAndUnlock() {
-        XposedBridge.log("[KnockCode] inside verifying");
+		mKnockCodeUnlockView.enableButtons(false);
 		if (Build.VERSION.SDK_INT == Build.VERSION_CODES.M) {
-            XposedBridge.log("[KnockCode] reporting unlock attempt");
 			XposedHelpers.callMethod(mCallback, "reportUnlockAttempt", true, 0);
 		}
 		else {
 			XposedHelpers.callMethod(mCallback, "reportUnlockAttempt", true);
 		}
-        XposedBridge.log("[KnockCode] dismissing");
         XposedHelpers.callMethod(mCallback, "dismiss", true);
-		XposedBridge.log("[KnockCode] dismissed");
 		mFailedPatternAttemptsSinceLastTimeout = 0;
 		mKnockCodeUnlockView.setMode(Mode.READY);
 	}
@@ -302,22 +300,23 @@ public class KnockCodeUnlockView extends LinearLayout implements OnPositionTappe
 		mTappedPositions.add(pos);
 		setDotsCount(mTappedPositions.size());
 		setText(mTextView, "");
-		if (mTappedPositions.size() == mPasscode.size()) {
+		if (mTappedPositions.size()<MainActivity.KNOCK_CODE_MIN_SIZE)
+			return;
+		String key = "package_" + getString(mTappedPositions);
+		if (mSettingsHelper.contains(key)) {
 			mKnockCodeUnlockView.enableButtons(false);
-
-			boolean correct = true;
-			for (int i = 0; i < mPasscode.size(); i++) {
-				if (mTappedPositions.get(i) != mPasscode.get(i)) {
-					correct = false;
-					break;
-				}
+			String value = mSettingsHelper.getString(key, null);
+			PackageManager pm = mContext.getPackageManager();
+			Intent launchIntent = pm.getLaunchIntentForPackage(value);
+			if (launchIntent==null) {
+				mKnockCodeUnlockView.enableButtons(true);
+				return;
 			}
-
-			mTappedPositions.clear();
-			if (correct) {
-                XposedBridge.log("[KnockCode] setting correct");
-				mKnockCodeUnlockView.setMode(Mode.CORRECT);
-                XposedBridge.log("[KnockCode] verifying");
+			mContext.startActivity(launchIntent);
+			verifyPasscodeAndUnlock();
+		} else if (mTappedPositions.size()==mPasscode.size()) {
+			mKnockCodeUnlockView.enableButtons(false);
+			if (mTappedPositions.equals(mPasscode)) {
 				verifyPasscodeAndUnlock();
 			} else {
 				mTotalFailedPatternAttempts++;
@@ -329,10 +328,19 @@ public class KnockCodeUnlockView extends LinearLayout implements OnPositionTappe
 				}
 				setText(mTextView, ResourceHelper.getString(getContext(), R.string.incorrect_pattern));
 			}
-		} else if (mTappedPositions.size() > mPasscode.size()) {
 			mTappedPositions.clear();
-			resetDots();
 		}
+	}
+
+	private String getString(ArrayList<Integer> passcode) {
+		String string = "";
+		for (int i = 0; i < passcode.size(); i++) {
+			string += String.valueOf(passcode.get(i));
+			if (i != passcode.size()-1) {
+				string += ",";
+			}
+		}
+		return string;
 	}
 
 	public boolean needsInput() {
@@ -393,7 +401,9 @@ public class KnockCodeUnlockView extends LinearLayout implements OnPositionTappe
     private void setUpDotsView() {
 		if (mDotsView == null)
 			mDotsView = new PasswordTextView(mContext);
-		mDotsView.setLayoutParams(getParams(0.03f));
+		LayoutParams params = getParams(0.03f);
+		params.bottomMargin += (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 5, getResources().getDisplayMetrics());
+		mDotsView.setLayoutParams(params);
 		addView(mDotsView);
     }
 
@@ -485,7 +495,6 @@ public class KnockCodeUnlockView extends LinearLayout implements OnPositionTappe
 			mContext.registerReceiver(new BroadcastReceiver() {
 				@Override
 				public void onReceive(Context context, Intent intent) {
-					XposedBridge.log("[KnockCode] Now keyguard kills itself; murder-homicide!");
 					System.exit(0);
 				}
 			}, new IntentFilter("me.rijul.knockcode.DEAD"));
@@ -499,7 +508,6 @@ public class KnockCodeUnlockView extends LinearLayout implements OnPositionTappe
 	}
 
 	public void startAppearAnimation() {
-		XposedBridge.log("[KnockCode] Appear Animation!");
 		enableClipping(false);
 		setAlpha(1f);
 		setTranslationY(mAppearAnimationUtils.getStartTranslation());
@@ -518,7 +526,6 @@ public class KnockCodeUnlockView extends LinearLayout implements OnPositionTappe
 	}
 
 	public boolean startDisappearAnimation(final Runnable finishRunnable) {
-		XposedBridge.log("[KnockCode] Disappear Animation!");
 		enableClipping(false);
 		animate()
 				.alpha(0f)

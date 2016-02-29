@@ -15,12 +15,14 @@
         android:text="@string/enter_new_knock_code"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
-    <me.rijul.knockcode.LineView
+    <LinearLayout
         android:id="@+id/lineView1"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="1dp"
         android:paddingLeft="10dp"
-        android:paddingRight="10dp" />
+        android:paddingRight="10dp"
+        android:orientation="horizontal"
+        android:background="@color/textColorPrimary"/>
 
     <me.rijul.knockcode.PasswordTextView
         android:id="@+id/passcodeDotView1"

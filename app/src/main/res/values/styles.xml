@@ -22,4 +22,8 @@
         <item name="android:colorControlActivated">@color/colorControlActivated</item>
     </style>
 
+    <style name="MyMaterialTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="MyMaterialTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
 </resources>

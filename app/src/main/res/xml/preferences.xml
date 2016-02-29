@@ -5,9 +5,15 @@
         android:key="change_knock_code"
         android:summary="@string/pref_description_change_code"
         android:title="@string/pref_title_change_code">
+    </Preference>
+
+    <Preference
+        android:title="@string/custom_shortcuts_title"
+        android:summary="@string/custom_shortcuts_desc"
+        android:key="key_custom_shortcuts">
         <intent android:action="android.intent.action.VIEW"
             android:targetPackage="me.rijul.knockcode"
-            android:targetClass="me.rijul.knockcode.ChangeKnockCodeActivity"/>
+            android:targetClass="me.rijul.knockcode.CustomShortcutActivity"/>
     </Preference>
 
     <CheckBoxPreference

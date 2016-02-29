@@ -1,138 +1,345 @@
 package me.rijul.knockcode;
 
-import android.content.BroadcastReceiver;
-import android.content.ComponentName;
-import android.content.Context;
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.preference.CheckBoxPreference;
-import android.preference.Preference;
-import android.preference.Preference.OnPreferenceChangeListener;
-import android.support.v4.view.MenuItemCompat;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.SwitchCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.CompoundButton;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.widget.NumberPicker;
+import android.widget.TextView;
 import android.widget.Toast;
 
-public class MainActivity extends AppCompatPreferenceActivity implements OnSharedPreferenceChangeListener  {
-	private static boolean MODULE_INACTIVE = true;
-	private Menu mMenu;
+import java.util.ArrayList;
 
-	@Override
-	public SharedPreferences getSharedPreferences(String name, int mode) {
-		return SettingsHelper.getWritablePreferences(getApplicationContext());
-	}
+import me.rijul.knockcode.KnockCodeButtonView.OnPositionTappedListener;
 
-	@Override
-	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-		Toast.makeText(getActivity(), R.string.reboot_required, Toast.LENGTH_LONG).show();
-	}
+/**
+ * Created by rijul on 29/2/16.
+ */
+public class MainActivity extends AppCompatActivity implements OnPositionTappedListener, OnClickListener,
+        DeleteAllShortcuts.AsyncResponse, View.OnLongClickListener, CheckPasswordValid.AsyncResponse {
+    public static int KNOCK_CODE_MAX_SIZE = 20;
+    public static final int KNOCK_CODE_MIN_SIZE = 3;
+    public static final int GRID_MAX_SIZE = 5;
+    public static final int GRID_MIN_SIZE = 2;
+    public static final int SET_NEW_PASSCODE = 1;
+    public static final int GET_A_CODE = 2;
 
-	@SuppressWarnings("deprecation")
-	@Override
-	protected void onPostCreate(Bundle savedInstanceState) {
-		super.onPostCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
-		addPreferencesFromResource(R.xml.preferences);
-		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-		setSupportActionBar(toolbar);
+    private KnockCodeButtonView mKnockCodeView;
+    private PasswordTextView mPasscodeDotView;
+    private TextView mHintTextView;
 
-		if (MODULE_INACTIVE) {
-			View moduleActive = findViewById(R.id.xposed_active);
-			moduleActive.setVisibility(View.VISIBLE);
-			moduleActive.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					new AlertDialog.Builder(getActivity())
-							.setTitle(R.string.module_inactive_dialog)
-							.setMessage(R.string.dialog_message_not_active)
-							.create()
-							.show();
-				}
-			});
-		}
+    private ArrayList<Integer> mFirstTappedPositions = new ArrayList<>();
+    private ArrayList<Integer> mSecondTappedPositions = new ArrayList<>();
 
-		findPreference("hide_app_from_launcher").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-			@Override
-			public boolean onPreferenceClick(Preference preference) {
-				if (((CheckBoxPreference) preference).isChecked()) {
-					ComponentName componentName = new ComponentName(getActivity(), "me.rijul.knockcode.MainActivity");
-					getActivity().getPackageManager().setComponentEnabledSetting(componentName, PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
-				} else {
-					ComponentName componentName = new ComponentName(getActivity(), "me.rijul.knockcode.MainActivity");
-					getActivity().getPackageManager().setComponentEnabledSetting(componentName, PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
-				}
-				return true;
-			}
-		});
+    private boolean mIsOldCode;
+    private SettingsHelper mSettingsHelper;
+    private int requestCode;
+    private boolean mIsConfirmationMode = false;
 
-		registerReceiver(new BroadcastReceiver() {
-			@Override
-			public void onReceive(Context context, Intent intent) {
-				updateSwitchState(false);
-			}
-		}, new IntentFilter("me.rijul.knockcode.DEAD"));
-	}
+    private ProgressDialog mProgressDialog;
 
-	public MainActivity getActivity() {
-		return this;
-	}
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_change_passcode);
 
-	@Override
-	protected void onPause() {
-		getSharedPreferences("", 0).unregisterOnSharedPreferenceChangeListener(this);
-		super.onPause();
-	}
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
-	@Override
-	protected void onResume() {
-		super.onResume();
-		getSharedPreferences("", 0).registerOnSharedPreferenceChangeListener(this);
-	}
+        mSettingsHelper = new SettingsHelper(MainActivity.this);
+        mKnockCodeView = (KnockCodeButtonView) findViewById(R.id.knockCodeView1);
+        mKnockCodeView.setOnLongClickListener(this);
+        mHintTextView = (TextView) findViewById(android.R.id.hint);
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		mMenu = menu;
-        getMenuInflater().inflate(R.menu.main, menu);
-		updateSwitchState(true);
+        if (getCallingActivity()==null) {
+            requestCode = -1;
+            mIsOldCode = (mSettingsHelper.getPasscodeOrNull() != null);
+            if (!mIsOldCode) {
+                startActivity(new Intent(MainActivity.this, SettingsActivity.class));
+                finish();
+            }
+            mHintTextView.setText(R.string.enter_previous_knock_code);
+        } else {
+            mIsOldCode = false;
+            Intent intent = getIntent();
+            requestCode = Integer.parseInt(intent.getStringExtra("requestCode"));
+            ActionBar actionBar = getSupportActionBar();
+            actionBar.setHomeButtonEnabled(true);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setDisplayShowHomeEnabled(true);
+            actionBar.setHomeAsUpIndicator(R.drawable.abc_ic_ab_back_mtrl_am_alpha);
+            if (requestCode==SET_NEW_PASSCODE) {
+                mHintTextView.setText(R.string.enter_new_knock_code);
+                getNewPatternSize();
+            } else if (requestCode==GET_A_CODE) {
+                mHintTextView.setText(R.string.enter_new_knock_code);
+                KNOCK_CODE_MAX_SIZE = mSettingsHelper.getPasscode().size()+1;
+            } else throw new IllegalArgumentException("Invalid request code!");
+        }
+
+        mKnockCodeView.setOnPositionTappedListener(this);
+
+        mPasscodeDotView = (PasswordTextView) findViewById(R.id.passcodeDotView1);
+        mPasscodeDotView.setPaintColor(Color.BLACK);
+
+        findViewById(R.id.retry_button).setOnClickListener(this);
+        findViewById(R.id.next_button).setOnClickListener(this);
+        findViewById(R.id.retry_button).setEnabled(false);
+
+        mKnockCodeView.setPatternSize(mSettingsHelper.getPatternSize());
+    }
+
+    @Override
+    public void onPositionTapped(int pos) {
+        mKnockCodeView.setMode(KnockCodeButtonView.Mode.READY);
+        findViewById(R.id.next_button).setEnabled(true);
+        findViewById(R.id.retry_button).setEnabled(true);
+
+        if (!mIsConfirmationMode) {
+            if (mFirstTappedPositions.size() < KNOCK_CODE_MAX_SIZE) {
+                mFirstTappedPositions.add(pos);
+                mPasscodeDotView.append('R');
+            }
+            if (mFirstTappedPositions.size() == KNOCK_CODE_MAX_SIZE && !mIsOldCode) {
+                Toast.makeText(MainActivity.this, R.string.size_exceeded, Toast.LENGTH_SHORT).show();
+                reset();
+            }
+        } else {
+            if (mSecondTappedPositions.size() < KNOCK_CODE_MAX_SIZE) {
+                mSecondTappedPositions.add(pos);
+                mPasscodeDotView.append('R');
+            }
+            if (mSecondTappedPositions.size() == KNOCK_CODE_MAX_SIZE) {
+                Toast.makeText(MainActivity.this, R.string.size_exceeded, Toast.LENGTH_SHORT).show();
+                reset();
+            }
+        }
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.retry_button:
+                mKnockCodeView.setMode(KnockCodeButtonView.Mode.READY);
+                reset();
+                break;
+            case R.id.next_button:
+                if (mIsOldCode) {
+                    if (mFirstTappedPositions.equals(mSettingsHelper.getPasscode())) {
+                        startActivity(new Intent(MainActivity.this, SettingsActivity.class));
+                        finish();
+                    }
+                    else {
+                        mKnockCodeView.setMode(KnockCodeButtonView.Mode.INCORRECT);
+                        reset();
+                    }
+                    return;
+                }
+                if (!mIsConfirmationMode) {
+                    if (mFirstTappedPositions.size()<KNOCK_CODE_MIN_SIZE) {
+                        Toast.makeText(MainActivity.this, getString(R.string.minimum_size, KNOCK_CODE_MIN_SIZE), Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    if (requestCode==GET_A_CODE) {
+                        if (mFirstTappedPositions.equals(mSettingsHelper.getPasscode())) {
+                            Toast.makeText(MainActivity.this, R.string.master_app_same, Toast.LENGTH_SHORT).show();
+                            reset();
+                            return;
+                        }
+                        if (needleStartsWithHaystack(mFirstTappedPositions, mSettingsHelper.getPasscode())) {
+                            Toast.makeText(MainActivity.this, R.string.master_app_start, Toast.LENGTH_SHORT).show();
+                            reset();
+                            return;
+                        }
+                        checkPasswordValid();
+                    } else
+                        allowNext();
+
+                } else {
+                    if (mFirstTappedPositions.equals(mSecondTappedPositions)) {
+                        knocksMatch();
+                    } else {
+                        knocksDoNotMatch();
+                    }
+                }
+                break;
+        }
+    }
+
+    private boolean needleStartsWithHaystack(ArrayList<Integer> needle, ArrayList<Integer> haystack) {
+        for(int i=0; i<needle.size(); ++i)
+            if (needle.get(i)!=haystack.get(i))
+                return false;
         return true;
-	}
-
-	private void updateSwitchState(final boolean showToast) {
-		SwitchCompat master_switch = (SwitchCompat) MenuItemCompat.getActionView(mMenu.findItem(R.id.toolbar_master_switch));
-		master_switch.setChecked(!(new SettingsHelper(getApplicationContext()).isSwitchOff()));
-		if (!showToast)
-			return;
-		master_switch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-			@Override
-			public void onCheckedChanged(CompoundButton button, boolean b) {
-				new SettingsHelper(getApplicationContext()).edit().putBoolean("switch", b).commit();
-			}
-		});
-	}
+    }
 
 
+    private void reset() {
+        if (mIsConfirmationMode) {
+            if (mSecondTappedPositions.size()!=0) {
+                mSecondTappedPositions.clear();
+                mHintTextView.setText(R.string.confirm_new_knock_code);
+            }
+            else {
+                mIsConfirmationMode = false;
+                mHintTextView.setText(mIsOldCode ? R.string.enter_previous_knock_code : R.string.enter_new_knock_code);
+                mFirstTappedPositions.clear();
+                findViewById(R.id.retry_button).setEnabled(false);
+            }
+        }
+        else {
+            mFirstTappedPositions.clear();
+            mHintTextView.setText(mIsOldCode ? R.string.enter_previous_knock_code : R.string.enter_new_knock_code);
+            findViewById(R.id.retry_button).setEnabled(false);
+        }
+        mPasscodeDotView.reset(true);
+        findViewById(R.id.next_button).setEnabled(false);
+    }
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		int id = item.getItemId();
-		if (id == R.id.action_about) {
-            startActivity(new Intent(MainActivity.this, AboutActivity.class));
-			return true;
-		}
-		else if (id == R.id.restart_systemui) {
-			SettingsHelper.killPackage();
-			return true;
-		}
-		return super.onOptionsItemSelected(item);
-	}
+    private void knocksMatch() {
+        mKnockCodeView.setMode(KnockCodeButtonView.Mode.CORRECT);
+        if (requestCode==SET_NEW_PASSCODE) {
+            mSettingsHelper.setPasscode(mSecondTappedPositions);
+            mSettingsHelper.storePatternSize(mKnockCodeView.mPatternSize);
+            Toast.makeText(this, R.string.successfully_changed_code, Toast.LENGTH_SHORT).show();
+            Intent returnIntent = getIntent();
+            setResult(this.RESULT_OK, returnIntent);
+            mProgressDialog = new ProgressDialog(this);
+            mProgressDialog.setCancelable(false);
+            mProgressDialog.setIndeterminate(true);
+            mProgressDialog.setMessage(getString(R.string.loading));
+            mProgressDialog.show();
+            (new DeleteAllShortcuts(this)).execute();
+        } else if (requestCode==GET_A_CODE) {
+            Intent returnIntent = getIntent();
+            returnIntent.putExtra("newCode", passcodeToString(mFirstTappedPositions));
+            setResult(this.RESULT_OK, returnIntent);
+            KNOCK_CODE_MAX_SIZE = 20;
+            finish();
+        }
+    }
+
+    private String passcodeToString(ArrayList<Integer> passcode) {
+        String string = "";
+        for (int i = 0; i < passcode.size(); i++) {
+            string += String.valueOf(passcode.get(i));
+            if (i != passcode.size()-1) {
+                string += ",";
+            }
+        }
+        return string;
+    }
+
+    private void knocksDoNotMatch() {
+        reset();
+        mKnockCodeView.setMode(KnockCodeButtonView.Mode.INCORRECT);
+    }
+
+    private void getNewPatternSize() {
+        ViewGroup numberPickerView = (ViewGroup) LayoutInflater.from(this).inflate(R.layout.grid_number_picker, null);
+        final NumberPicker npr,npc;
+        if (numberPickerView!=null) {
+            npr = (NumberPicker) numberPickerView.findViewById(R.id.numberPickerX);
+            if (npr!=null) {
+                npr.setMinValue(GRID_MIN_SIZE);
+                npr.setMaxValue(GRID_MAX_SIZE);
+                npr.setValue(mKnockCodeView.mPatternSize.numberOfRows);
+            }
+
+            npc = (NumberPicker) numberPickerView.findViewById(R.id.numberPickerY);
+            if (npc!=null) {
+                npc.setMinValue(GRID_MIN_SIZE);
+                npc.setMaxValue(GRID_MAX_SIZE);
+                npc.setValue(mKnockCodeView.mPatternSize.numberOfColumns);
+            }
+
+            new AlertDialog.Builder(this)
+                    .setTitle(R.string.pref_description_change_code_pick_size)
+                    .setView(numberPickerView)
+                    .setCancelable(false)
+                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            mKnockCodeView.setPatternSize(new Grid(npc.getValue(), npr.getValue()));
+                            dialog.dismiss();
+                        }
+                    })
+                    .create()
+                    .show();
+        }
+        return;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                if (requestCode==-1)
+                    onBackPressed();
+                else {
+                    Intent returnIntent = getIntent();
+                    setResult(this.RESULT_CANCELED, returnIntent);
+                    KNOCK_CODE_MAX_SIZE = 20;
+                    finish();
+                }
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    public void deleteShortcutsFinish() {
+        mProgressDialog.dismiss();
+        if (!mSettingsHelper.isSwitchOff())
+            SettingsHelper.killPackage();
+        finish();
+    }
+
+    @Override
+    public boolean onLongClick(View v) {
+        reset();
+        return true;
+    }
+
+    private void checkPasswordValid() {
+        if (mProgressDialog==null) {
+            mProgressDialog = new ProgressDialog(this);
+            mProgressDialog.setCancelable(false);
+            mProgressDialog.setIndeterminate(true);
+            mProgressDialog.setMessage(getString(R.string.loading));
+        }
+        mProgressDialog.show();
+        (new CheckPasswordValid(this)).execute(passcodeToString(mFirstTappedPositions));
+    }
+
+    @Override
+    public void isPasswordValid(String result) {
+        mProgressDialog.dismiss();
+        if (result==null)
+            allowNext();
+        else {
+            Toast.makeText(MainActivity.this, getString(R.string.shortcut_conflict, result), Toast.LENGTH_SHORT).show();
+            reset();
+        }
+    }
+
+    private void allowNext() {
+        mIsConfirmationMode = true;
+        if ((requestCode==SET_NEW_PASSCODE) && (!mSettingsHelper.isSwitchOff()))
+            Toast.makeText(MainActivity.this, R.string.will_restart_systemui, Toast.LENGTH_SHORT).show();
+        mHintTextView.setText(R.string.confirm_new_knock_code);
+        findViewById(R.id.next_button).setEnabled(false);
+        mPasscodeDotView.reset(true);
+    }
 }

@@ -119,5 +119,17 @@
     <string name="about_translators">Tradutores</string>
     <string name="translator_pt_br_gabriel">Gabriel Campos (PT-BR)</string>
     <string name="translator_pl_pantin">pantinPL (PL)</string>
-    <string name="translator_es_mx_alan">Alan Yadir (ES-MX)</string>
+    <string name="translator_es_mx_alan">Alan Yadir (ES)</string>
+    <string name="tap_delete_shortcut">Tap on an item to delete the shortcut</string>
+    <string name="select_app">Select the app</string>
+    <string name="custom_shortcuts_title">Custom Shortcuts</string>
+    <string name="custom_shortcuts_desc">Set up shortcuts to other apps directly from the lock screen</string>
+    <string name="master_app_same">Master password and app password cannot be same, resetting</string>
+    <string name="password_already_exists">This password already exists, resetting</string>
+    <string name="master_app_start">Master password must not start with app password</string>
+    <string name="minimum_size">Knock code must have minimum of %1$d taps</string>
+    <string name="set_knock_code_summary">Tap here to set up your knock code</string>
+    <string name="set_knock_code_title">Set knock code</string>
+    <string name="loading">Loading...</string>
+    <string name="shortcut_conflict">New shortcut conflicts with old (%1$s), resetting</string>
 </resources>
