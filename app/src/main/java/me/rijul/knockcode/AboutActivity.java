@@ -14,8 +14,6 @@ import android.view.Gravity;
 import android.view.MenuItem;
 import android.widget.TextView;
 
-import java.util.List;
-
 /**
  * Created by rijul on 16/12/15.
  */
@@ -28,7 +26,7 @@ public class AboutActivity extends AppCompatPreferenceActivity {
     @SuppressWarnings("deprecation")
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_settings);
         addPreferencesFromResource(R.xml.about);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);

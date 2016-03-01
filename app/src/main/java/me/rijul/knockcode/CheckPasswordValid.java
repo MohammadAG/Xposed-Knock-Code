@@ -31,8 +31,8 @@ public class CheckPasswordValid extends AsyncTask<String, Void, Void> {
         for(Map.Entry<String, ?> entry : allEntries.entrySet())
             //package_1,2,3,4 : com.whatsapp
             try {
-                if ((entry.getKey() != null) && (entry.getKey().startsWith("package_"))) {
-                    String oldPassword = ((String) entry.getKey()).substring(8);
+                if ((entry.getKey() != null) && (entry.getKey().startsWith("uri_"))) {
+                    String oldPassword = entry.getKey().substring(4);
                     if (oldPassword.equals(newPassword))
                         mResult = (String) entry.getValue();
                     else if (newPassword.startsWith(oldPassword))
@@ -48,16 +48,7 @@ public class CheckPasswordValid extends AsyncTask<String, Void, Void> {
     protected void onPostExecute(Void result2) {
         if (mResult==null)
             mDelegate.isPasswordValid(null);
-        else {
-            PackageManager packageManager = ((Context) mDelegate).getPackageManager();
-            ApplicationInfo applicationInfo;
-            try {
-                applicationInfo = packageManager.getApplicationInfo(mResult, 0);
-            } catch (PackageManager.NameNotFoundException e) {
-                applicationInfo = null;
-            }
-            String applicationLabel = (String) (applicationInfo == null ? null : packageManager.getApplicationLabel(applicationInfo));
-            mDelegate.isPasswordValid(applicationLabel);
-        }
+        else
+            mDelegate.isPasswordValid(mResult.split("\\|")[1]);
     }
 }

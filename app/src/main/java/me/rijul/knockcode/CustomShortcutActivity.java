@@ -2,53 +2,41 @@ package me.rijul.knockcode;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.ContextMenu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.text.TextUtils;
 
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Map;
 
-public class CustomShortcutActivity extends AppCompatActivity implements LoadShortcuts.AsyncResponse, LoadApps.AsyncResponse,
-        GetPackageNameForApp.AsyncResponse, GetKeyForValue.AsyncResponse {
+public class CustomShortcutActivity extends AppCompatActivity implements ShortcutPickHelper.OnPickListener {
+    private static final int MENU_ID_EDIT_CODE = 1, MENU_ID_EDIT_TARGET = 2, MENU_ID_DELETE = 3;
+
     ListView mListView;
-    ArrayList<Integer> mNewCode;
     ProgressDialog mProgressDialog;
+    ShortcutPickHelper mPicker;
+    SettingsHelper mSettingHelper;
+    ShortcutAdapter mAdapter;
+    ShortcutsLoadTask mTask;
 
-    ListView.OnItemClickListener appListener = new AdapterView.OnItemClickListener() {
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            String appName = (String) mListView.getItemAtPosition(position);
-            mProgressDialog.show();
-            (new GetPackageNameForApp(CustomShortcutActivity.this, GetPackageNameForApp.APP_LISTENER)).execute(appName);
+    private final Comparator<Shortcut> mSorter = new Comparator<Shortcut>() {
+        public int compare(Shortcut object1, Shortcut object2) {
+            return object1.friendlyName.compareTo(object2.friendlyName);
         }
     };
-
-    ListView.OnItemClickListener shortcutListener = new AdapterView.OnItemClickListener() {
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            String appName = (String) mListView.getItemAtPosition(position);
-            mProgressDialog.show();
-            (new GetPackageNameForApp(CustomShortcutActivity.this, GetPackageNameForApp.SHORTCUT_LISTENER)).execute(appName);
-        }
-    };
-
-    private String getString(ArrayList<Integer> passcode) {
-        String string = "";
-        for (int i = 0; i < passcode.size(); i++) {
-            string += String.valueOf(passcode.get(i));
-            if (i != passcode.size()-1) {
-                string += ",";
-            }
-        }
-        return string;
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,48 +50,55 @@ public class CustomShortcutActivity extends AppCompatActivity implements LoadSho
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivityForResult(new Intent(CustomShortcutActivity.this, MainActivity.class), MainActivity.GET_A_CODE);
+                //startActivityForResult(new Intent(CustomShortcutActivity.this, MainActivity.class), MainActivity.GET_A_CODE);
+                mProgressDialog.show();
+                mPicker.pickShortcut(null, null, 0);
             }
         });
 
-
+        mSettingHelper = new SettingsHelper(this);
         mListView = (ListView) findViewById(R.id.shortcuts);
+        mPicker = new ShortcutPickHelper(this, this);
+        mAdapter = new ShortcutAdapter(this);
+        mListView.setAdapter(mAdapter);
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                view.showContextMenu();
+            }
+        });
         mProgressDialog = new ProgressDialog(this);
-        mProgressDialog.setCancelable(false);
         mProgressDialog.setIndeterminate(true);
+        mProgressDialog.setCancelable(false);
         mProgressDialog.setMessage(getString(R.string.loading));
-        mProgressDialog.show();
-        (new LoadShortcuts(this)).execute();
+        registerForContextMenu(mListView);
+        loadShortcuts();
     }
 
-    @Override
-    public void shortcutsFinish(ArrayList<String> result) {
-        mProgressDialog.dismiss();
-        ((TextView) findViewById(R.id.shortcut_hint_text)).setText(R.string.tap_delete_shortcut);
-        findViewById(R.id.shortcut_hint).setVisibility(result.isEmpty() ? View.GONE : View.VISIBLE);
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, result);
-        findViewById(R.id.fab).setVisibility(View.VISIBLE);
-        mListView.setAdapter(arrayAdapter);
-        mListView.setOnItemClickListener(shortcutListener);
+    private void loadShortcuts() {
+        if (mTask != null && mTask.getStatus() != AsyncTask.Status.FINISHED) {
+            mTask.cancel(true);
+        }
+        mTask = (ShortcutsLoadTask) new ShortcutsLoadTask().execute();
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode==RESULT_OK) {
-            mNewCode = stringToPasscode(data.getExtras().getString("newCode"));
-            findViewById(R.id.fab).setVisibility(View.GONE);
-            mProgressDialog.show();
-            (new LoadApps(this)).execute();
+            switch (requestCode) {
+                case MainActivity.GET_A_CODE :
+                    Toast.makeText(CustomShortcutActivity.this, R.string.reboot_required, Toast.LENGTH_SHORT).show();
+                    loadShortcuts();
+                    break;
+                case ShortcutPickHelper.REQUEST_CREATE_SHORTCUT:
+                case ShortcutPickHelper.REQUEST_PICK_APPLICATION:
+                case ShortcutPickHelper.REQUEST_PICK_SHORTCUT:
+                    mPicker.onActivityResult(requestCode, resultCode, data);
+                    break;
+            }
         }
-    }
-
-    private ArrayList<Integer> stringToPasscode(String string) {
-        ArrayList<Integer> passcode = new ArrayList<>();
-        String[] integers = string.split(",");
-        for (String digitString : integers) {
-            passcode.add(Integer.parseInt(digitString));
-        }
-        return passcode;
+        else
+            mProgressDialog.dismiss();
     }
 
     @Override
@@ -113,36 +108,91 @@ public class CustomShortcutActivity extends AppCompatActivity implements LoadSho
     }
 
     @Override
-    public void appsFinish(ArrayList<String> result) {
-        mProgressDialog.dismiss();
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, result);
-        mListView.setAdapter(arrayAdapter);
-        mListView.setOnItemClickListener(appListener);
-        findViewById(R.id.shortcut_hint).setVisibility(View.VISIBLE);
-        ((TextView) findViewById(R.id.shortcut_hint_text)).setText(R.string.select_app);
+    public void shortcutPicked(String uri, String friendlyName, boolean isApplication) {
+        if (TextUtils.isEmpty(uri) || TextUtils.isEmpty(friendlyName)) {
+            return;
+        }
+        Intent intent = new Intent(CustomShortcutActivity.this, MainActivity.class);
+        intent.putExtra("uri", uri);
+        intent.putExtra("name", friendlyName);
+        startActivityForResult(intent, MainActivity.GET_A_CODE);
     }
 
-    @Override
-    public void foundPackageName(String packageName, int requestCode) {
-        mProgressDialog.dismiss();
-        if (requestCode==GetPackageNameForApp.APP_LISTENER) {
-            (new SettingsHelper(CustomShortcutActivity.this)).edit().putString("package_"
-                    + getString(mNewCode), packageName).commit();
-            Toast.makeText(CustomShortcutActivity.this, R.string.reboot_required, Toast.LENGTH_LONG).show();
+    private class ShortcutsLoadTask extends AsyncTask<Void, Shortcut, Integer> {
+        public static final int STATUS_CANCELLED = -1;
+        public static final int STATUS_OK = 1;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
             mProgressDialog.show();
-            (new LoadShortcuts(CustomShortcutActivity.this)).execute();
-        } else if (requestCode==GetPackageNameForApp.SHORTCUT_LISTENER) {
-            mProgressDialog.show();
-            (new GetKeyForValue(this)).execute(packageName);
+            mAdapter.setNotifyOnChange(false);
+            mAdapter.clear();
+            findViewById(R.id.fab).setEnabled(false);
+        }
+
+        @Override
+        protected Integer doInBackground(Void... params) {
+            if (isCancelled()) return STATUS_CANCELLED;
+            Map<String, ?> allEntries = mSettingHelper.getAll();
+            for(Map.Entry<String, ?> entry : allEntries.entrySet())
+                //uri_1,2,3,4 : (uri)|friendlyName
+                try {
+                    if ((entry.getKey()!=null) && (entry.getKey().startsWith("uri_"))) {
+                        Shortcut shortcut = new Shortcut(entry.getKey().substring(4),
+                                ((String) entry.getValue()).split("\\|")[0], ((String) entry.getValue()).split("\\|")[1]);
+                        publishProgress(shortcut);
+                    }
+                } catch (NullPointerException e) {
+                }
+            return STATUS_OK;
+        }
+
+        @Override
+        protected void onProgressUpdate(Shortcut... values) {
+            super.onProgressUpdate(values);
+            final ShortcutAdapter adapter = mAdapter;
+            adapter.setNotifyOnChange(false);
+            adapter.addAll(values);
+            adapter.sort(mSorter);
+            adapter.notifyDataSetChanged();
+        }
+
+        @Override
+        protected void onPostExecute(Integer result) {
+            super.onPostExecute(result);
+            mProgressDialog.dismiss();
+            findViewById(R.id.fab).setEnabled(true);
         }
     }
 
     @Override
-    public void foundKey(String key) {
-        mProgressDialog.dismiss();
-        (new SettingsHelper(CustomShortcutActivity.this)).edit().remove(key).commit();
-        Toast.makeText(CustomShortcutActivity.this, R.string.reboot_required, Toast.LENGTH_LONG).show();
-        mProgressDialog.show();
-        (new LoadShortcuts(CustomShortcutActivity.this)).execute();
+    public void onCreateContextMenu(ContextMenu menu, View v,
+                                    ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
+        menu.setHeaderTitle(((Shortcut) info.targetView.getTag()).friendlyName);
+        menu.add(0, MENU_ID_DELETE, 0, R.string.delete_shortcut);
+        Toast.makeText(CustomShortcutActivity.this, ((Shortcut) info.targetView.getTag()).uri, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        final AdapterView.AdapterContextMenuInfo menuInfo = (AdapterView.AdapterContextMenuInfo)
+                item.getMenuInfo();
+        final Shortcut shortcut = (Shortcut) menuInfo.targetView.getTag();
+        switch (item.getItemId()) {
+            case MENU_ID_DELETE:
+                deleteShortcut(shortcut);
+                return true;
+        }
+
+        return super.onContextItemSelected(item);
+    }
+
+    private void deleteShortcut(Shortcut shortcut) {
+        mSettingHelper.remove("uri_" + shortcut.passCode);
+        mAdapter.remove(shortcut);
+        loadShortcuts();
     }
 }

@@ -1,10 +1,12 @@
 package me.rijul.knockcode;
 
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.ActivityOptions;
+import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -12,6 +14,7 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
+import android.net.Uri;
 import android.os.Build;
 import android.os.CountDownTimer;
 import android.os.SystemClock;
@@ -30,10 +33,10 @@ import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedBridge;
 import me.rijul.knockcode.KnockCodeButtonView.Mode;
 import me.rijul.knockcode.KnockCodeButtonView.OnPositionTappedListener;
-import me.rijul.knockcode.SettingsHelper.OnSettingsReloadedListener;
 import de.robv.android.xposed.XposedHelpers;
 
-public class KnockCodeUnlockView extends LinearLayout implements OnPositionTappedListener, KeyguardSecurityView, OnSettingsReloadedListener, OnLongClickListener {
+public class KnockCodeUnlockView extends LinearLayout implements OnPositionTappedListener, KeyguardSecurityView,
+		OnLongClickListener {
 	private KnockCodeButtonView mKnockCodeUnlockView;
 	private Object mCallback;
 	private Object mLockPatternUtils;
@@ -302,18 +305,25 @@ public class KnockCodeUnlockView extends LinearLayout implements OnPositionTappe
 		setText(mTextView, "");
 		if (mTappedPositions.size()<MainActivity.KNOCK_CODE_MIN_SIZE)
 			return;
-		String key = "package_" + getString(mTappedPositions);
+		String key = "uri_" + Utils.passcodeToString(mTappedPositions);
 		if (mSettingsHelper.contains(key)) {
-			mKnockCodeUnlockView.enableButtons(false);
 			String value = mSettingsHelper.getString(key, null);
-			PackageManager pm = mContext.getPackageManager();
-			Intent launchIntent = pm.getLaunchIntentForPackage(value);
-			if (launchIntent==null) {
-				mKnockCodeUnlockView.enableButtons(true);
-				return;
+			String[] strings = value.split("\\|");
+			mKnockCodeUnlockView.enableButtons(false);
+			/*
+			Intent intent = Intent.parseUri(uri, 0);
++            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+			 */
+			try {
+				Intent launchIntent = Intent.parseUri(strings[0], 0);
+				launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+				mContext.startActivity(launchIntent);
+				verifyPasscodeAndUnlock();
+			} catch (ActivityNotFoundException e) {
+				XposedBridge.log("[KnockCode] Activity not found : " + strings[0]);
+			} catch (URISyntaxException e) {
+				XposedBridge.log("[KnockCode] URI syntax invalid : " + strings[0]);
 			}
-			mContext.startActivity(launchIntent);
-			verifyPasscodeAndUnlock();
 		} else if (mTappedPositions.size()==mPasscode.size()) {
 			mKnockCodeUnlockView.enableButtons(false);
 			if (mTappedPositions.equals(mPasscode)) {
@@ -330,17 +340,6 @@ public class KnockCodeUnlockView extends LinearLayout implements OnPositionTappe
 			}
 			mTappedPositions.clear();
 		}
-	}
-
-	private String getString(ArrayList<Integer> passcode) {
-		String string = "";
-		for (int i = 0; i < passcode.size(); i++) {
-			string += String.valueOf(passcode.get(i));
-			if (i != passcode.size()-1) {
-				string += ",";
-			}
-		}
-		return string;
 	}
 
 	public boolean needsInput() {
@@ -385,8 +384,6 @@ public class KnockCodeUnlockView extends LinearLayout implements OnPositionTappe
 		setUpViews();
 		onSettingsReloaded();
         mKnockCodeUnlockView.setSettingsHelper(settingsHelper);
-        mSettingsHelper.addInProcessListener(getContext());
-        mSettingsHelper.addOnReloadListener(this);
 	}
 
     private void setUpTextView() {
@@ -479,7 +476,6 @@ public class KnockCodeUnlockView extends LinearLayout implements OnPositionTappe
 		invalidate();
 	}
 
-	@Override
 	public void onSettingsReloaded() {
 		mPasscode.clear();
 		mPasscode.addAll(mSettingsHelper.getPasscode());

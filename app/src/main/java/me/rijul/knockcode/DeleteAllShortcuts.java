@@ -28,12 +28,12 @@ public class DeleteAllShortcuts extends AsyncTask<Void, Void, Void> {
         for(Map.Entry<String, ?> entry : allEntries.entrySet())
             //package_1,2,3,4 : com.whatsapp
             try {
-                if ((entry.getKey()!=null) && (entry.getKey().startsWith("package_"))) {
+                if ((entry.getKey()!=null) && (entry.getKey().startsWith("uri_"))) {
                     editor.remove(entry.getKey());
                 }
             } catch (NullPointerException e) {
             }
-        editor.commit();
+        editor.apply();
         return null;
     }
 

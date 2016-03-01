@@ -13,20 +13,4 @@
     local:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
     local:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
-    <TextView
-        android:id="@+id/xposed_active"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="?attr/colorPrimaryDark"
-        android:elevation="4dp"
-        android:gravity="center_horizontal"
-        android:paddingBottom="8dp"
-        android:paddingTop="8dp"
-        android:text="@string/module_inactive"
-        android:textColor="@color/windowBackground"
-        android:textSize="14sp"
-        android:textStyle="italic"
-        android:visibility="gone"
-        tools:ignore="UnusedAttribute" />
-
 </merge>

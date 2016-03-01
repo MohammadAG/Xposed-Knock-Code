@@ -14,8 +14,7 @@ import de.robv.android.xposed.XposedBridge;
 public class KillReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
-        new SettingsHelper(context).edit().putBoolean("switch", false).commit();
-        XposedBridge.log("[KnockCode] Keyguard is killing us");
+        new SettingsHelper(context).putBoolean("switch", false);
         context.sendBroadcast(new Intent("me.rijul.knockcode.DEAD"));
     }
 }

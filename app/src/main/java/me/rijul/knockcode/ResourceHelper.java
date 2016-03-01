@@ -26,6 +26,6 @@ public class ResourceHelper {
 	}
 
 	public static Resources getOwnResources(Context context) {
-		return getResourcesForPackage(context, "me.rijul.knockcode");
+		return getResourcesForPackage(context, BuildConfig.APPLICATION_ID);
 	}
 }

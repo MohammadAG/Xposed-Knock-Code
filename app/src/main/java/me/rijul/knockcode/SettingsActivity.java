@@ -11,6 +11,7 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.Preference;
+import android.provider.Settings;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.SwitchCompat;
@@ -45,7 +46,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements OnS
 	@Override
 	protected void onPostCreate(Bundle savedInstanceState) {
 		super.onPostCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
+		setContentView(R.layout.activity_settings);
 		addPreferencesFromResource(R.xml.preferences);
 		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
@@ -65,14 +66,14 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements OnS
 			});
 		}
 
-		findPreference("hide_app_from_launcher").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+        findPreference("hide_app_from_launcher").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
 			@Override
 			public boolean onPreferenceClick(Preference preference) {
 				if (((CheckBoxPreference) preference).isChecked()) {
-					ComponentName componentName = new ComponentName(SettingsActivity.this, "me.rijul.knockcode.MainActivity");
+					ComponentName componentName = new ComponentName(SettingsActivity.this, "me.rijul.knockcode.MainActivity-Alias");
 					SettingsActivity.this.getPackageManager().setComponentEnabledSetting(componentName, PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
 				} else {
-					ComponentName componentName = new ComponentName(SettingsActivity.this, "me.rijul.knockcode.MainActivity");
+					ComponentName componentName = new ComponentName(SettingsActivity.this, "me.rijul.knockcode.MainActivity-Alias");
 					SettingsActivity.this.getPackageManager().setComponentEnabledSetting(componentName, PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
 				}
 				return true;
@@ -111,7 +112,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements OnS
 			Preference pref = findPreference("change_knock_code");
 			pref.setTitle(R.string.pref_title_change_code);
 			pref.setSummary(R.string.pref_description_change_code);
-			if (new SettingsHelper(SettingsActivity.this).isSwitchOff())
+			if (!new SettingsHelper(SettingsActivity.this).isSwitchOff())
 				Toast.makeText(SettingsActivity.this, R.string.reboot_required, Toast.LENGTH_SHORT).show();
 		}
 	}
@@ -125,10 +126,26 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements OnS
 	}
 
 	@Override
+	@SuppressWarnings("deprecation")
 	protected void onResume() {
 		super.onResume();
 		getSharedPreferences("", 0).registerOnSharedPreferenceChangeListener(this);
 		registerReceiver(deadReceiver, new IntentFilter("me.rijul.knockcode.DEAD"));
+		try {
+			if (android.provider.Settings.Secure.getInt(getContentResolver(), Settings.Secure.LOCK_PATTERN_ENABLED) == 0) {
+				View patternActive = findViewById(R.id.pattern_active);
+				patternActive.setVisibility(View.VISIBLE);
+				patternActive.setOnClickListener(new View.OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						Intent intent = new Intent("android.app.action.SET_NEW_PASSWORD");
+						intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+						startActivity(intent);
+					}
+				});
+			} else
+				findViewById(R.id.pattern_active).setVisibility(View.GONE);
+		} catch (Settings.SettingNotFoundException e) {}
 	}
 
 	@Override
@@ -147,7 +164,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements OnS
 		master_switch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 			@Override
 			public void onCheckedChanged(CompoundButton button, boolean b) {
-				new SettingsHelper(getApplicationContext()).edit().putBoolean("switch", b).commit();
+				new SettingsHelper(getApplicationContext()).putBoolean("switch", b);
 			}
 		});
 	}
@@ -160,7 +177,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements OnS
 			return true;
 		}
 		else if (id == R.id.restart_systemui) {
-			SettingsHelper.killPackage();
+			Utils.killKeyguard(SettingsActivity.this);
 			return true;
 		}
 		return super.onOptionsItemSelected(item);

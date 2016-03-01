@@ -9,6 +9,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -40,18 +41,21 @@ public class MainActivity extends AppCompatActivity implements OnPositionTappedL
 
     private ArrayList<Integer> mFirstTappedPositions = new ArrayList<>();
     private ArrayList<Integer> mSecondTappedPositions = new ArrayList<>();
+    private ArrayList<Integer> mPasscode = null;
 
     private boolean mIsOldCode;
     private SettingsHelper mSettingsHelper;
     private int requestCode;
     private boolean mIsConfirmationMode = false;
 
+    private String mUri, mName;
+
     private ProgressDialog mProgressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_change_passcode);
+        setContentView(R.layout.activity_main);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -63,12 +67,14 @@ public class MainActivity extends AppCompatActivity implements OnPositionTappedL
 
         if (getCallingActivity()==null) {
             requestCode = -1;
-            mIsOldCode = (mSettingsHelper.getPasscodeOrNull() != null);
+            mPasscode = mSettingsHelper.getPasscodeOrNull();
+            mIsOldCode = (mPasscode != null);
             if (!mIsOldCode) {
                 startActivity(new Intent(MainActivity.this, SettingsActivity.class));
                 finish();
             }
             mHintTextView.setText(R.string.enter_previous_knock_code);
+            findViewById(R.id.bottom_buttons).setVisibility(View.GONE);
         } else {
             mIsOldCode = false;
             Intent intent = getIntent();
@@ -82,8 +88,11 @@ public class MainActivity extends AppCompatActivity implements OnPositionTappedL
                 mHintTextView.setText(R.string.enter_new_knock_code);
                 getNewPatternSize();
             } else if (requestCode==GET_A_CODE) {
-                mHintTextView.setText(R.string.enter_new_knock_code);
-                KNOCK_CODE_MAX_SIZE = mSettingsHelper.getPasscode().size()+1;
+                mUri = intent.getStringExtra("uri");
+                mName = intent.getStringExtra("name");
+                mHintTextView.setText(mName);
+                mPasscode = mSettingsHelper.getPasscode();
+                KNOCK_CODE_MAX_SIZE = mPasscode.size()+1;
             } else throw new IllegalArgumentException("Invalid request code!");
         }
 
@@ -114,6 +123,9 @@ public class MainActivity extends AppCompatActivity implements OnPositionTappedL
                 Toast.makeText(MainActivity.this, R.string.size_exceeded, Toast.LENGTH_SHORT).show();
                 reset();
             }
+            if ((mIsOldCode) && (mFirstTappedPositions.size()==mPasscode.size())) {
+                onClick(findViewById(R.id.next_button));
+            }
         } else {
             if (mSecondTappedPositions.size() < KNOCK_CODE_MAX_SIZE) {
                 mSecondTappedPositions.add(pos);
@@ -135,7 +147,7 @@ public class MainActivity extends AppCompatActivity implements OnPositionTappedL
                 break;
             case R.id.next_button:
                 if (mIsOldCode) {
-                    if (mFirstTappedPositions.equals(mSettingsHelper.getPasscode())) {
+                    if (mFirstTappedPositions.equals(mPasscode)) {
                         startActivity(new Intent(MainActivity.this, SettingsActivity.class));
                         finish();
                     }
@@ -151,12 +163,12 @@ public class MainActivity extends AppCompatActivity implements OnPositionTappedL
                         return;
                     }
                     if (requestCode==GET_A_CODE) {
-                        if (mFirstTappedPositions.equals(mSettingsHelper.getPasscode())) {
+                        if (mFirstTappedPositions.equals(mPasscode)) {
                             Toast.makeText(MainActivity.this, R.string.master_app_same, Toast.LENGTH_SHORT).show();
                             reset();
                             return;
                         }
-                        if (needleStartsWithHaystack(mFirstTappedPositions, mSettingsHelper.getPasscode())) {
+                        if (needleStartsWithHaystack(mFirstTappedPositions, mPasscode)) {
                             Toast.makeText(MainActivity.this, R.string.master_app_start, Toast.LENGTH_SHORT).show();
                             reset();
                             return;
@@ -192,18 +204,27 @@ public class MainActivity extends AppCompatActivity implements OnPositionTappedL
             }
             else {
                 mIsConfirmationMode = false;
-                mHintTextView.setText(mIsOldCode ? R.string.enter_previous_knock_code : R.string.enter_new_knock_code);
-                mFirstTappedPositions.clear();
-                findViewById(R.id.retry_button).setEnabled(false);
+                resetToFirst();
             }
         }
         else {
-            mFirstTappedPositions.clear();
-            mHintTextView.setText(mIsOldCode ? R.string.enter_previous_knock_code : R.string.enter_new_knock_code);
-            findViewById(R.id.retry_button).setEnabled(false);
+            resetToFirst();
         }
         mPasscodeDotView.reset(true);
         findViewById(R.id.next_button).setEnabled(false);
+    }
+
+    private void resetToFirst() {
+        if (mIsOldCode)
+            mHintTextView.setText(R.string.enter_previous_knock_code);
+        else {
+            if (requestCode==GET_A_CODE)
+                mHintTextView.setText(mName);
+            else
+                mHintTextView.setText(R.string.enter_new_knock_code);
+        }
+        mFirstTappedPositions.clear();
+        findViewById(R.id.retry_button).setEnabled(false);
     }
 
     private void knocksMatch() {
@@ -222,22 +243,11 @@ public class MainActivity extends AppCompatActivity implements OnPositionTappedL
             (new DeleteAllShortcuts(this)).execute();
         } else if (requestCode==GET_A_CODE) {
             Intent returnIntent = getIntent();
-            returnIntent.putExtra("newCode", passcodeToString(mFirstTappedPositions));
+            mSettingsHelper.storeShortcut(new Shortcut(Utils.passcodeToString(mFirstTappedPositions), mUri, mName));
             setResult(this.RESULT_OK, returnIntent);
             KNOCK_CODE_MAX_SIZE = 20;
             finish();
         }
-    }
-
-    private String passcodeToString(ArrayList<Integer> passcode) {
-        String string = "";
-        for (int i = 0; i < passcode.size(); i++) {
-            string += String.valueOf(passcode.get(i));
-            if (i != passcode.size()-1) {
-                string += ",";
-            }
-        }
-        return string;
     }
 
     private void knocksDoNotMatch() {
@@ -302,7 +312,7 @@ public class MainActivity extends AppCompatActivity implements OnPositionTappedL
     public void deleteShortcutsFinish() {
         mProgressDialog.dismiss();
         if (!mSettingsHelper.isSwitchOff())
-            SettingsHelper.killPackage();
+            Utils.killKeyguard(MainActivity.this);
         finish();
     }
 
@@ -320,7 +330,7 @@ public class MainActivity extends AppCompatActivity implements OnPositionTappedL
             mProgressDialog.setMessage(getString(R.string.loading));
         }
         mProgressDialog.show();
-        (new CheckPasswordValid(this)).execute(passcodeToString(mFirstTappedPositions));
+        (new CheckPasswordValid(this)).execute(Utils.passcodeToString(mFirstTappedPositions));
     }
 
     @Override
@@ -338,7 +348,10 @@ public class MainActivity extends AppCompatActivity implements OnPositionTappedL
         mIsConfirmationMode = true;
         if ((requestCode==SET_NEW_PASSCODE) && (!mSettingsHelper.isSwitchOff()))
             Toast.makeText(MainActivity.this, R.string.will_restart_systemui, Toast.LENGTH_SHORT).show();
-        mHintTextView.setText(R.string.confirm_new_knock_code);
+        if (requestCode==GET_A_CODE)
+            mHintTextView.setText(getString(R.string.confirm_shortcut, mName));
+        else
+            mHintTextView.setText(R.string.confirm_new_knock_code);
         findViewById(R.id.next_button).setEnabled(false);
         mPasscodeDotView.reset(true);
     }
