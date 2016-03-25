@@ -11,7 +11,7 @@
     <string name="main_conflict_shortcut">This code conflicts with %1$s, resetting!</string>
 
     <string name="about_disclaimer_title">Disclaimer</string>
-    <string name="about_disclaimer_message">THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE</string>
+    <string name="about_disclaimer_message" translatable="false">THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE</string>
 
     <string name="custom_shortcuts">Custom shortcuts</string>
     <string name="custom_shortcuts_add">Add</string>
@@ -40,13 +40,13 @@
     <string name="about_app_settings">Download App Settings Xposed Module</string>
     <string name="about_app_settings_desc">Used to open shortcuts over the lockscreen</string>
     <string name="about_license">License</string>
-    <string name="about_license_desc">GPL v3</string>
+    <string name="about_license_desc" translatable="false">GPL v3</string>
     <string name="about_disclaimer_desc">By using this module, you agree that the authors are not responsible for any damage</string>
     <string name="about_source_code">Source code</string>
     <string name="about_developers">Developers</string>
-    <string name="about_developers_mohammadag">Mohammad Abu-Garbeyyeh</string>
+    <string name="about_developers_mohammadag" translatable="false">Mohammad Abu-Garbeyyeh</string>
     <string name="about_developers_mohammadag_desc">Original author upto Kitkat</string>
-    <string name="about_developers_rijul">Rijul Ahuja</string>
+    <string name="about_developers_rijul" translatable="false">Rijul Ahuja</string>
     <string name="about_developers_rijul_desc">Developer for Marshmallow and Lollipop</string>
 
     <string name="settings_module_inactive">Module is inactive, touch for information</string>
