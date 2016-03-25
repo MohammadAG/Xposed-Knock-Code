@@ -1,66 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
-
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <Preference
-        android:key="help_key"
         android:summary="@string/about_help_description"
-        android:title="@string/about_help_title">
+        android:title="@string/about_help">
         <intent android:action="android.intent.action.VIEW"
             android:data="http://forum.xda-developers.com/xposed/modules/lp-knock-code-screen-t3272679"/>
     </Preference>
 
     <Preference
-        android:key="license_key"
-        android:title="@string/about_license_title"
-        android:summary="@string/about_license_description">
+        android:summary="@string/about_app_settings_desc"
+        android:title="@string/about_app_settings">
+        <intent android:action="android.intent.action.VIEW"
+            android:data="http://forum.xda-developers.com/showpost.php?p=63835421&amp;postcount=2040"/>
+    </Preference>
+
+    <Preference
+        android:title="@string/about_license"
+        android:summary="@string/about_license_desc">
         <intent android:action="android.intent.action.VIEW"
             android:data="https://www.gnu.org/licenses/gpl-3.0.txt"/>
     </Preference>
 
     <Preference
-        android:key="disclaimer_key"
+        android:key="about_disclaimer"
         android:title="@string/about_disclaimer_title"
-        android:summary="@string/about_disclaimer_description"/>
+        android:summary="@string/about_disclaimer_desc"/>
 
     <Preference
-        android:key="source_key"
-        android:title="@string/about_source_title">
+        android:title="@string/about_source_code">
         <intent android:action="android.intent.action.VIEW"
             android:data="https://github.com/Rijul-Ahuja/Xposed-Knock-Code"/>
     </Preference>
 
-    <PreferenceCategory android:title="@string/about_authors" >
+    <PreferenceCategory android:title="@string/about_developers" >
         <Preference
-            android:key="mohammad_key"
-            android:title="@string/about_mohammadag">
+            android:title="@string/about_developers_mohammadag"
+            android:summary="@string/about_developers_mohammadag_desc">
             <intent android:action="android.intent.action.VIEW"
                 android:data="https://mohammadag.xceleo.org/wiki"/>
         </Preference>
 
         <Preference
-            android:key="rijul_key"
-            android:title="@string/about_rijul"/>
+            android:key="about_rijul"
+            android:title="@string/about_developers_rijul"
+            android:summary="@string/about_developers_rijul_desc"/>
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="@string/about_translators" >
-        <Preference
-            android:key="translator_pt_br_gabriel"
-            android:title="@string/translator_pt_br_gabriel"/>
-        <Preference
-            android:title="@string/translator_pl_pantin" />
-        <Preference
-            android:key="translator_es_mx_alan"
-            android:title="@string/translator_es_mx_alan"/>
-    </PreferenceCategory>
-
-    <PreferenceCategory android:key="hidden">
-        <EditTextPreference
-            android:defaultValue="2"
-            android:numeric="integer"
-            android:key="pattern_size_columns"/>
-        <EditTextPreference
-            android:defaultValue="2"
-            android:numeric="integer"
-            android:key="pattern_size_rows"/>
-    </PreferenceCategory>
 </PreferenceScreen>

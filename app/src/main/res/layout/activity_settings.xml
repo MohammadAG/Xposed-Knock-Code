@@ -1,30 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_margin="0dp"
     android:orientation="vertical"
-    android:padding="0dp">
-    <include
-        android:id="@+id/toolbar"
-        layout="@layout/toolbar" />
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
     <TextView
-        android:id="@+id/xposed_active"
+        android:id="@+id/module_inactive"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?attr/colorPrimaryDark"
+        android:background="@color/colorPrimaryDark"
         android:elevation="4dp"
         android:gravity="center_horizontal"
         android:paddingBottom="8dp"
         android:paddingTop="8dp"
-        android:text="@string/module_inactive"
+        android:text="@string/settings_module_inactive"
         android:textColor="@color/windowBackground"
         android:textSize="14sp"
         android:textStyle="italic"
         android:visibility="gone"
         tools:ignore="UnusedAttribute" />
     <TextView
-        android:id="@+id/pattern_active"
+        android:id="@+id/pattern_inactive"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/colorPrimaryDarker"
@@ -32,14 +28,14 @@
         android:gravity="center_horizontal"
         android:paddingBottom="8dp"
         android:paddingTop="8dp"
-        android:text="@string/module_requires_pattern"
+        android:text="@string/settings_require_pattern"
         android:textColor="@color/windowBackground"
         android:textSize="14sp"
         android:textStyle="italic"
         android:visibility="gone"
         tools:ignore="UnusedAttribute" />
-    <ListView
-        android:id="@id/android:list"
+    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/fragment_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent" />
 </LinearLayout>

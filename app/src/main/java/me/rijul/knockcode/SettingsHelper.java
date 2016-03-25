@@ -6,176 +6,219 @@ import java.util.Set;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences.Editor;
+import android.graphics.Color;
 import android.provider.Settings.Secure;
+
 import de.robv.android.xposed.XSharedPreferences;
 
 public class SettingsHelper {
-	public static final String PACKAGE_NAME = BuildConfig.APPLICATION_ID;
-	private static final String PREFS_NAME = PACKAGE_NAME + "_preferences";
-	private XSharedPreferences mXPreferencesImpl = null;
-	private SecurePreferences mXPreferences = null;
-	private static SecurePreferences mPreferences = null;
-	private Context mContext;
-	private String mUuid;
+    //these are for xposed
+    private XSharedPreferences mXPreferences = null;
+    //this is to be stored for when xposed asks to reload
+    private String mUuid;
+    //these are xposed versions of secure preferences
+    private SecurePreferences mXSecurePreferences = null;
 
-	//Class Related stuff
-	public SettingsHelper(String uuid) {
-		mUuid = uuid;
-		mXPreferencesImpl = new XSharedPreferences(PACKAGE_NAME);
-		mXPreferencesImpl.makeWorldReadable();
-		mXPreferences = new SecurePreferences(mXPreferencesImpl, uuid);
-		reloadSettings();
-	}
+    //these are normal preferences, to be accessed via our app, they are automatically secure
+    private SecurePreferences mSecurePreferences = null;
 
-	public SettingsHelper(Context context) {
-		mContext = context;
-		mPreferences = getWritablePreferences(context);
-	}
+    //Xposed Constructor
+    public SettingsHelper(String uuid) {
+        mUuid = uuid;
 
-	public Context getContext() {
-		return mContext;
-	}
+        mXPreferences = new XSharedPreferences(BuildConfig.APPLICATION_ID);
+        mXPreferences.makeWorldReadable();
 
-	//Preferences related stuff
-	public void reloadSettings() {
-		mXPreferencesImpl.reload();
-		if (mUuid!=null)
-			mXPreferences = new SecurePreferences(mXPreferencesImpl, mUuid);
-	}
+        mXSecurePreferences = new SecurePreferences(mXPreferences, uuid);
+    }
 
-	@SuppressLint("WorldReadableFiles")
-	@SuppressWarnings("deprecation")
-	public static SecurePreferences getWritablePreferences(Context context) {
-		String uuid = Secure.getString(context.getContentResolver(),
-				Secure.ANDROID_ID);
-		if (mPreferences == null)
-			mPreferences = new SecurePreferences(context.getSharedPreferences(PREFS_NAME, Context.MODE_WORLD_READABLE), uuid);
-		return mPreferences;
-	}
+    public SettingsHelper(Context context) {
+        mSecurePreferences = getWritablePreferences(context, Utils.PREFERENCES_FILE);
+    }
 
-	public Editor edit() {
-		return mPreferences.edit();
-	}
+    //Preferences related stuff
+    public void reloadSettings() {
+        mXPreferences.reload();
 
-	public Map<String, ?> getAll() {
-		if (mPreferences != null) {
-			return mPreferences.getAll();
-		} else if (mXPreferences != null) {
-			return mXPreferences.getAll();
-		}
-		return null;
-	}
+        mXSecurePreferences = new SecurePreferences(mXPreferences, mUuid);
+    }
 
-	public boolean contains(String key) {
-		if (mPreferences != null)
-			return mPreferences.contains(key);
-		else if (mXPreferences != null)
-			return mXPreferences.contains(key);
+    @SuppressLint("WorldReadableFiles")
+    @SuppressWarnings("deprecation")
+    public static SecurePreferences getWritablePreferences(Context context, String fileName) {
+        return new SecurePreferences(context.getSharedPreferences(fileName, Context.MODE_WORLD_READABLE),
+                Secure.getString(context.getContentResolver(), Secure.ANDROID_ID));
+    }
 
-		return false;
-	}
+    public static SecurePreferences getWritablePreferences(Context context) {
+        return getWritablePreferences(context, Utils.PREFERENCES_FILE);
+    }
 
-	//Preferences getters - generic
-	public String getString(String key, String defaultValue) {
-		String returnResult = defaultValue;
-		if (mPreferences != null) {
-			returnResult = mPreferences.getString(key, defaultValue);
-		} else if (mXPreferences != null) {
-			returnResult = mXPreferences.getString(key, defaultValue);
-		}
-		return returnResult;
-	}
+    public Editor edit() {
+        return mSecurePreferences.edit();
+    }
 
-	public float getFloat(String key, float defaultValue) {
-		float returnResult = defaultValue;
-		if (mPreferences != null) {
-			returnResult = mPreferences.getFloat(key, defaultValue);
-		} else if (mXPreferences != null) {
-			returnResult = mXPreferences.getFloat(key, defaultValue);
-		}
-		return returnResult;
-	}
+    public boolean contains(String key) {
+        if (mSecurePreferences != null)
+            return mSecurePreferences.contains(key);
+        else if (mXPreferences != null)
+            return mXPreferences.contains(key);
+        return false;
+    }
 
-	public int getInt(String key, int defaultValue) {
-		int returnResult = defaultValue;
-		if (mPreferences != null) {
-			returnResult = mPreferences.getInt(key, defaultValue);
-		} else if (mXPreferences != null) {
-			returnResult = mXPreferences.getInt(key, defaultValue);
-		}
-		return returnResult;
-	}
+    public Map<String, ?> getAll() {
+        if (mSecurePreferences != null) {
+            return mSecurePreferences.getAll();
+        } else if (mXSecurePreferences != null) {
+            return mXSecurePreferences.getAll();
+        }
+        return null;
+    }
 
-	public boolean getBoolean(String key, boolean defaultValue) {
-		boolean returnResult = defaultValue;
-		if (mPreferences != null) {
-			returnResult = mPreferences.getBoolean(key, defaultValue);
-		} else if (mXPreferences != null) {
-			returnResult = mXPreferences.getBoolean(key, defaultValue);
-		}
-		return returnResult;
-	}
+    public boolean hasShortcut(String passcode) {
+        return contains(Utils.PREFIX_SHORTCUT + passcode);
+    }
 
-	public Set<String> getStringSet(String key, Set<String> defaultValue) {
-		Set<String> returnResult = defaultValue;
-		if (mPreferences != null) {
-			returnResult = mPreferences.getStringSet(key, defaultValue);
-		} else if (mXPreferences != null) {
-			returnResult = mXPreferences.getStringSet(key, defaultValue);
-		}
-		return returnResult;
-	}
+    public boolean hasShortcut(ArrayList<Integer> passcode) {
+        return hasShortcut(Utils.passcodeToString(passcode));
+    }
 
-	//Preferences getters - specific
-	public ArrayList<Integer> getPasscodeOrNull() {
-		String string = getString("passcode", null);
-		if (string == null)
-			return null;
-		return Utils.stringToPasscode(string);
-	}
+    //Preferences getters - generic
+    public String getString(String key, String defaultValue) {
+        String returnResult = defaultValue;
+        if (mSecurePreferences != null) {
+            returnResult = mSecurePreferences.getString(key, defaultValue);
+        } else if (mXSecurePreferences != null) {
+            returnResult = mXSecurePreferences.getString(key, defaultValue);
+        }
+        return returnResult;
+    }
 
-	public ArrayList<Integer> getPasscode() {
-		String string = getString("passcode", "1,2,3,4");
-		return Utils.stringToPasscode(string);
-	}
+    public int getInt(String key, int defaultValue) {
+        int returnResult = defaultValue;
+        if (mSecurePreferences != null) {
+            returnResult = mSecurePreferences.getInt(key, defaultValue);
+        } else if (mXSecurePreferences != null) {
+            returnResult = mXSecurePreferences.getInt(key, defaultValue);
+        }
+        return returnResult;
+    }
 
-	public boolean shouldDrawLines() {return getBoolean("should_draw_lines", true);}
-	public boolean shouldShowText() {return getBoolean("should_show_text", true);}
-	public boolean shouldDrawFill() {return getBoolean("should_draw_fill", true);}
-	public boolean shouldDisableDialog() {return !getBoolean("should_show_dialog", true);}
-	public boolean hideEmergencyButton() {return !getBoolean("show_emergency_button", true);}
-	public boolean hideEmergencyText() {return !getBoolean("show_emergency_text", true);}
-	public boolean vibrateOnLongPress() {return getBoolean("vibrate_long_press", true);}
-	public boolean vibrateOnTap() {return getBoolean("vibrate_tap", false);}
-	public boolean failSafe() {return getBoolean("fail_safe", true);}
-	public boolean isDisabled() {return getPasscodeOrNull() == null || isSwitchOff();}
-	public boolean isSwitchOff() {return !getBoolean("switch", false);}
-	public boolean showDots() {return getBoolean("show_dots", true); }
+    public boolean getBoolean(String key, boolean defaultValue) {
+        boolean returnResult = defaultValue;
+        if (mSecurePreferences != null) {
+            returnResult = mSecurePreferences.getBoolean(key, defaultValue);
+        } else if (mXSecurePreferences != null) {
+            returnResult = mXSecurePreferences.getBoolean(key, defaultValue);
+        }
+        return returnResult;
+    }
 
-	public Grid getPatternSize() {
-		int columns,rows;
-		columns = Integer.parseInt(getString("pattern_size_columns", "2"));
-		rows = Integer.parseInt(getString("pattern_size_rows", "2"));
-		return new Grid(columns,rows);
-	}
+    public float getFloat(String key, float defaultValue) {
+        float returnResult = defaultValue;
+        if (mSecurePreferences != null) {
+            returnResult = mSecurePreferences.getFloat(key, defaultValue);
+        } else if (mXSecurePreferences != null) {
+            returnResult = mXSecurePreferences.getFloat(key, defaultValue);
+        }
+        return returnResult;
+    }
 
-	//preferences putters - generic
-	public void putInt(String key, int value) {edit().putInt(key, value).apply();}
-	public void putString(String key, String value) {edit().putString(key, value).apply();}
-	public void putFloat(String key, float value) {edit().putFloat(key, value).apply();}
-	public void putBoolean(String key, boolean value) {edit().putBoolean(key, value).apply();}
-	public void putStringSet(String key, Set<String> value) {edit().putStringSet(key, value).apply();}
+    public String getShortcut(String key) {
+        return getString(Utils.PREFIX_SHORTCUT + key, null);
+    }
 
-	//preference putters - specific
-	public void setPasscode(ArrayList<Integer> passcode) {putString("passcode", Utils.passcodeToString(passcode));}
-	public void storePatternSize(Grid g) {
-		putString("pattern_size_columns", "" + g.numberOfColumns);
-		putString("pattern_size_rows", "" + g.numberOfRows);
-	}
-	public void storeShortcut(Shortcut shortcut) {
-		putString("uri_" + shortcut.passCode, shortcut.uri + "|" + shortcut.friendlyName);
-	}
+    public String getShortcut(ArrayList<Integer> passcode) {
+        return getShortcut(Utils.passcodeToString(passcode));
+    }
 
-	public void remove(String key) {edit().remove(key).apply();}
+    public Set<String> getStringSet(String key, Set<String> defaultValue) {
+        Set<String> returnResult = defaultValue;
+        if (mSecurePreferences != null) {
+            returnResult = mSecurePreferences.getStringSet(key, defaultValue);
+        } else if (mXSecurePreferences != null) {
+            returnResult = mXSecurePreferences.getStringSet(key, defaultValue);
+        }
+        return returnResult;
+    }
 
+    //Preferences getters - specific
+    public ArrayList<Integer> getPasscodeOrNull() {
+        String string = getString(Utils.SETTINGS_PASSCODE, null);
+        if (string == null)
+            return null;
+        return Utils.stringToPasscode(string);
+    }
+    public boolean isVirgin() {return  getPasscodeOrNull()==null;}
+    public boolean isSwitchOff() {return !getBoolean(Utils.SETTINGS_SWITCH, false);}
+    public boolean isDisabled() {return isVirgin() || isSwitchOff();}
+    public boolean failSafe() {return getBoolean(Utils.SETTINGS_FAILSAFE, true);}
+
+    public boolean customShortcutsDontUnlock() {return getBoolean(Utils.SETTINGS_CUSTOM_SHORTCUTS_DONT_UNLOCK, false);}
+
+    //these are done via hooks, so they will check if enabled
+
+    //fullscreen is stored unencrypted
+    public static boolean fullScreen() {return (new XSharedPreferences(BuildConfig.APPLICATION_ID)).
+            getBoolean(Utils.SETTINGS_CODE_FULLSCREEN, false);}
+    public boolean showDialog() {return getBoolean(Utils.SETTINGS_CODE_DIALOG, true) && !isDisabled();}
+    public boolean directlyShowCodeEntry() {return getBoolean(Utils.SETTINGS_CODE_DIRECT_ENTRY, false) && !isDisabled();}
+
+    //these are done after making sure that enabled is on, so don't give a shit
+    public boolean showText() {return getBoolean(Utils.SETTINGS_CODE_TEXT, true);}
+    public boolean showBackground() {return getBoolean(Utils.SETTINGS_CODE_BACKGROUND, false);}
+    public int getBackgroundColor() {return getInt(Utils.SETTINGS_CODE_BACKGROUND_COLOR, 0x4C000000);}
+    public boolean showButtonTaps() {return getBoolean(Utils.SETTINGS_CODE_TAPS_VISIBLE, true);}
+
+    public boolean showLines() {return getBoolean(Utils.SETTINGS_CODE_LINES_VISIBLE, true);}
+    public int getLinesReadyColor() {return getInt(Utils.SETTINGS_CODE_LINES_COLOR_READY, 0xFFFAFAFA);}
+    public boolean showLinesCorrect() {return getBoolean(Utils.SETTINGS_CODE_LINES_CORRECT, true);}
+    public int getLinesCorrectColor() {return getInt(Utils.SETTINGS_CODE_LINES_COLOR_CORRECT, 0xFF4CAF50);}
+    public boolean showLinesError() {return getBoolean(Utils.SETTINGS_CODE_LINES_ERROR, true);}
+    public int getLinesErrorColor() {return getInt(Utils.SETTINGS_CODE_LINES_COLOR_ERROR, 0xFff44336);}
+    public boolean showLinesDisabled() {return getBoolean(Utils.SETTINGS_CODE_LINES_DISABLED, true);}
+    public int getLinesDisabledColor() {return getInt(Utils.SETTINGS_CODE_LINES_COLOR_DISABLED, Color.DKGRAY);}
+
+    public boolean showDots() {return getBoolean(Utils.SETTINGS_CODE_DOTS_VISIBLE, true);}
+    public int getDotsReadyColor() {return getInt(Utils.SETTINGS_CODE_DOTS_COLOR_READY, 0xFFFAFAFA);}
+    public boolean showDotsCorrect() {return getBoolean(Utils.SETTINGS_CODE_DOTS_CORRECT, false);}
+    public int getDotsCorrectColor() {return getInt(Utils.SETTINGS_CODE_DOTS_COLOR_CORRECT, 0xFF4CAF50);}
+    public boolean showDotsError() {return getBoolean(Utils.SETTINGS_CODE_DOTS_ERROR, false);}
+    public int getDotsWrongColor() {return getInt(Utils.SETTINGS_CODE_DOTS_COLOR_ERROR, 0xFff44336);}
+
+    public boolean showEmergencyButton() {return getBoolean(Utils.SETTINGS_EMERGENCY_BUTTON, true);}
+    public boolean showEmergencyText() {return getBoolean(Utils.SETTINGS_EMERGENCY_TEXT, true);}
+
+    public boolean vibrateOnTap() {return getBoolean(Utils.SETTINGS_VIBRATE_TAP, false);}
+    public boolean vibrateOnLongPress() {return getBoolean(Utils.SETTINGS_VIBRATE_LONG_PRESS, true);}
+
+    public Grid getPatternSize() {
+        int columns,rows;
+        columns = Integer.parseInt(getString(Utils.SETTINGS_CODE_SIZE_COLUMNS, "2"));
+        rows = Integer.parseInt(getString(Utils.SETTINGS_CODE_SIZE_ROWS, "2"));
+        return new Grid(columns,rows);
+    }
+
+    //preferences putters - generic
+    public void putString(String key, String value) {edit().putString(key, value).apply();}
+    public void putBoolean(String key, boolean value) {edit().putBoolean(key, value).apply();}
+
+    //preference putters - specific
+    public void setPasscode(ArrayList<Integer> passcode) {
+        putString(Utils.SETTINGS_PASSCODE, Utils.passcodeToString(passcode));
+    }
+    public void storePatternSize(Grid g) {
+        putString(Utils.SETTINGS_CODE_SIZE_COLUMNS, String.valueOf(g.numberOfColumns));
+        putString(Utils.SETTINGS_CODE_SIZE_ROWS, String.valueOf(g.numberOfRows));
+    }
+    public void putShortcut(String passcode, String target) {
+        putString(Utils.PREFIX_SHORTCUT + passcode, target);
+    }
+    public void putShortcut(ArrayList<Integer> passcode, String uri, String name) {
+        putShortcut(Utils.passcodeToString(passcode), uri + "|" + name);
+    }
+
+    public void remove(String key) {edit().remove(key).apply();}
+    public void removeShortcut(String passcode) {remove(Utils.PREFIX_SHORTCUT + passcode);}
+    public void removeShortcut(ArrayList<Integer> passcode) {removeShortcut(Utils.passcodeToString(passcode));}
 }

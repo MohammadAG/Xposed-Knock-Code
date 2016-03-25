@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="replace_keyguard_security_max_height">3000dp</dimen>
+    <dimen name="replace_keyguard_security_view_margin">0dp</dimen>
+</resources>

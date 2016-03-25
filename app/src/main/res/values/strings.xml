@@ -1,142 +1,111 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
     <string name="app_name">Knock Code</string>
+    <string name="loading">Loading…</string>
 
-    <string name="action_toggle">Turn On Knock Code</string>
+    <string name="main_retry">Retry</string>
+    <string name="main_next">Next</string>
+    <string name="main_select_grid_size">Select your grid size</string>
+    <string name="main_shortcuts_will_delete">Once the code is changed, all existing shortcuts will be deleted</string>
+    <string name="main_too_many_taps">Too many taps, resetting!</string>
+    <string name="main_conflict_shortcut">This code conflicts with %1$s, resetting!</string>
 
-    <!--About-->
-    <string name="about_help_title">Help</string>
-    <string name="about_help_description">Before looking for help, activate 3x3 pattern in system settings and ensure that the module is active.</string>
-    <string name="about_license_title">License</string>
-    <string name="about_license_description">This app is licensed under the GPLv3</string>
     <string name="about_disclaimer_title">Disclaimer</string>
-    <string name="about_disclaimer_description">By using this app, you agree that the authors should not be held responsible if anything breaks.</string>
     <string name="about_disclaimer_message">THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE</string>
-    <string name="about_source_title">Source code</string>
-    <string name="about_authors">Authors</string>
-    <string name="about_mohammadag">Mohammad Abu-Garbeyyeh</string>
-    <string name="about_rijul">Rijul Ahuja</string>
 
-    <!-- Misc -->
-    <string name="action_settings">Settings</string>
+    <string name="custom_shortcuts">Custom shortcuts</string>
+    <string name="custom_shortcuts_add">Add</string>
+    <string name="custom_shortcuts_edit">Edit</string>
+    <string name="custom_shortcuts_delete">Delete</string>
 
-    <!-- Categories -->
-    <string name="appearance">Appearance</string>
-    <string name="emergency_button">Emergency Button</string>
-
-    <!-- Pattern change -->
-    <string name="enter_new_knock_code">Enter new knock code</string>
-    <string name="enter_previous_knock_code">Enter current knock code</string>
-    <string name="confirm_new_knock_code">Confirm new knock code</string>
-    <string name="successfully_changed_code">Code changed successfully</string>
-    <string name="next">Next</string>
-    <string name="retry">Retry</string>
-    <string name="size_exceeded">Maximum size exceeded, resetting.</string>
-    <string name="pref_description_change_code_pick_size">Choose the size for your pattern</string>
-    <string name="will_restart_systemui">The keyguard will automatically be restarted, and the custom shortcuts will be deleted after the code is set.</string>
-
-    <!-- Preferences -->
-    <string name="pref_about_title">About</string>
-    <string name="pref_about_description">Help, licensing, authors, disclaimer, source</string>
-    <string name="pref_restart_systemui">Restart keyguard</string>
-
-    <string name="module_inactive">Module is inactive, tap here for information</string>
-    <string name="module_inactive_dialog">Knock Code is inactive</string>
-
-    <string name="pref_title_change_code">Change knock code</string>
-    <string name="pref_description_change_code">Tap here to change your knock code</string>
-
-    <string name="hide_from_launcher">Hide app</string>
-    <string name="hide_from_launcher_on">Hidden from launcher</string>
-    <string name="hide_from_launcher_off">Visible in launcher</string>
-    <string name="reboot_required">A reboot or a keyguard restart is required to apply the changes</string>
-
-    <string name="fail_safe">Failsafe</string>
-    <string name="fail_safe_summary">You will not see this</string>
-    <string name="fail_safe_summary_on">Five continuous long presses will kill the knock code and restore your pattern</string>
-    <string name="fail_safe_summary_off">Keep it off at your own risk</string>
-
-    <string name="pref_title_draw_fill">Draw fill</string>
-    <string name="pref_description_draw_fill">Whether or not taps should be shown</string>
-    <string name="pref_description_draw_fill_on">Taps will be shown</string>
-    <string name="pref_description_draw_fill_off">Taps will be hidden</string>
-
-    <string name="pref_title_draw_lines">Draw lines</string>
-    <string name="pref_description_draw_lines">Whether or not the inner lines should be drawn</string>
-    <string name="pref_description_draw_lines_on">Inner lines will be drawn</string>
-    <string name="pref_description_draw_lines_off">Inner lines will be hidden</string>
-
-    <string name="pref_title_show_text">Show text</string>
-    <string name="pref_summary_show_text">Whether text indicating the lockscreen state should be shown</string>
-    <string name="pref_summary_show_text_on">Text indicating the lockscreen state will be shown</string>
-    <string name="pref_summary_show_text_off">Text indicating the lockscreen state will be hidden</string>
+    <string name="knock_enter_code">Enter your code</string>
+    <string name="knock_enter_new_code">Enter your new code</string>
+    <string name="knock_confirm_code">Confirm your new code</string>
+    <string name="knock_code_correct">Correct</string>
+    <string name="knock_code_wrong">Incorrect</string>
+    <string name="knock_code_enabling">Device disabled, try again in %1$d seconds</string>
+    <string name="knock_code_longpress_cleared">Long pressed, pattern cleared!</string>
+    <string name="knock_code_confirm_shortcut">Confirm %1$s</string>
+    <string name="knock_no_match">Codes do not match</string>
+    <string name="knock_match">Codes match, success!</string>
 
 
-    <string name="pref_title_show_dialog">Show dialog</string>
-    <string name="pref_summary_show_dialog">Uncheck this to prevent the dialog which shows up on lockscreen if you make too many incorrect attempts</string>
-    <string name="pref_summary_show_dialog_on">Dialog will be shown on too many incorrect attempts</string>
-    <string name="pref_summary_show_dialog_off">Dialog will not be shown on too many incorrect attempts</string>
+    <string name="shortcut_helper_apps">Apps</string>
+    <string name="shortcut_helper_activities">Activities</string>
+    <string name="shortcut_helper_target">Select the target</string>
 
-    <string name="pref_title_show_emergency_button">Show emergency call button</string>
-    <string name="pref_summary_show_emergency_button">Uncheck to disable the button</string>
-    <string name="pref_summary_show_emergency_button_on">Button is enabled</string>
-    <string name="pref_summary_show_emergency_button_off">Button is disabled (use with caution!)</string>
+    <string name="about">About</string>
+    <string name="about_help">Help</string>
+    <string name="about_help_description">Before looking for help, ensure that the module is active and pattern is enabled in stock settings</string>
+    <string name="about_app_settings">Download App Settings Xposed Module</string>
+    <string name="about_app_settings_desc">Used to open shortcuts over the lockscreen</string>
+    <string name="about_license">License</string>
+    <string name="about_license_desc">GPL v3</string>
+    <string name="about_disclaimer_desc">By using this module, you agree that the authors are not responsible for any damage</string>
+    <string name="about_source_code">Source code</string>
+    <string name="about_developers">Developers</string>
+    <string name="about_developers_mohammadag">Mohammad Abu-Garbeyyeh</string>
+    <string name="about_developers_mohammadag_desc">Original author upto Kitkat</string>
+    <string name="about_developers_rijul">Rijul Ahuja</string>
+    <string name="about_developers_rijul_desc">Developer for Marshmallow and Lollipop</string>
 
-    <string name="pref_title_show_emergency_text">Show emergency call text</string>
-    <string name="pref_summary_show_emergency_text">Uncheck to hide the text, clicking the button will still work</string>
-    <string name="pref_summary_show_emergency_text_on">Text will be shown</string>
-    <string name="pref_summary_show_emergency_text_off">Text will be hidden, but button taps will still work</string>
-
-    <string name="vibration">Vibration (ignores system settings)</string>
-    <string name="pref_title_vibrate_long_press">Long press</string>
-    <string name="pref_description_vibrate_long_press">You should not see this</string>
-    <string name="pref_description_vibrate_long_press_on">Enabled</string>
-    <string name="pref_description_vibrate_long_press_off">Disabled</string>
-
-    <string name="pref_title_vibrate_tap">Tap</string>
-    <string name="pref_description_vibrate_tap">You should not see this</string>
-    <string name="pref_description_vibrate_tap_on">Enabled</string>
-    <string name="pref_description_vibrate_tap_off">Disabled</string>
-
-    <!-- Lockscreen -->
-    <string name="device_disabled">Device disabled, try again in %1$d seconds</string>
-    <string name="minimum_size">Knock code must have minimum of %1$d taps</string>
-    <string name="incorrect_pattern">Incorrect pattern</string>
-    <string name="long_pressed_hint">Long pressed, pattern cleared</string>
-    <string name="lockscreen_return_to_call">Return to Call</string>
-    <string name="lockscreen_emergency_call">Emergency is this</string>
-
-    <string name="dialog_message_not_active">Knock Code could not hook the Android System methods needed for it to work. This may have several reasons:\n
+    <string name="settings_module_inactive">Module is inactive, touch for information</string>
+    <string name="settings_require_pattern">Knock code requires pattern unlock, touch here to set up</string>
+    <string name="settings_module_inactive_title">Knock code is inactive</string>
+    <string name="settings_module_inactive_message">Knock Code could not hook the Android System methods needed for it to work. This may have several reasons:\n
     &#x2022; <i>Xposed Framework is not installed</i>\n
     &#x2022; <i>Xposed is installed and active, but you didn\'t enable Knock Code in Xposed installer (\"Modules\" tab) or didn\'t reboot afterwards.</i>\n
     &#x2022; <i>Xposed Framework got disabled by Xposed safemode. Look at the Xposed Thread on XDA for further information.</i>\n
-    &#x2022; <i>Knock Code may have encountered a crash. You should send me a bug report on the XDA thread (Hamburger menu -> About -> Help).</i></string>
-    <string name="pref_show_dots_title">Show dots</string>
-    <string name="pref_desc_show_dots_on">Dots indicating number of knocks will be shown</string>
-    <string name="pref_desc_show_dots_off">Dots indicating number of knocks will not be shown</string>
-    <string name="disable_knock_screen">Disabled knock code, turn screen off and on to see pattern again.</string>
-    <string name="reboot_unexpected">Please reboot to properly apply the changes, otherwise it will lead to unexpected behaviour.</string>
-    <string name="about_translators">Translators</string>
-    <string name="translator_pt_br_gabriel">Gabriel Campos (PT-BR)</string>
-    <string name="translator_pl_pantin">pantinPL (PL)</string>
-    <string name="translator_es_mx_alan">Alan Yadir (ES-MX)</string>
-    <string name="tap_delete_shortcut">Tap on an item to delete the shortcut</string>
-    <string name="select_app">Select the app</string>
-    <string name="custom_shortcuts_title">Custom Shortcuts</string>
-    <string name="custom_shortcuts_desc">Set up shortcuts to other apps directly from the lock screen</string>
-    <string name="master_app_same">Master password and app password cannot be same, resetting</string>
-    <string name="password_already_exists">This password already exists, resetting</string>
-    <string name="master_app_start">Master password must not start with app password</string>
-    <string name="set_knock_code_summary">Tap here to set up your knock code</string>
-    <string name="set_knock_code_title">Set knock code</string>
-    <string name="loading">Loading...</string>
-    <string name="shortcut_conflict">New shortcut conflicts with old (%1$s), resetting</string>
-    <string name="module_requires_pattern">Knock code requires a pattern lock enabled, touch here to set up</string>
-    <string name="delete_shortcut">Delete</string>
-    <string name="confirm_shortcut">Confirm %1$s</string>
-    <string name="shortcut_helper_apps">Apps</string>
-    <string name="shortcut_helper_activities">Activities</string>
-    <string name="shortcut_helper_target">Select target</string>
-    <string name="shortcut_helper_select_activity">Select custom activity</string>
+&#x2022; <i>Knock Code may have encountered a crash. You should send me a bug report on the XDA thread (Hamburger menu -> About -> Help).</i></string>
+    <string name="settings_change_code">Change knock code</string>
+    <string name="settings_reboot_required">A reboot or keyguard restart is required</string>
+    <string name="settings_set_code">Set up knock code</string>
+    <string name="settings_custom_shortcuts_desc">Launch shortcuts directly from the lockscreen</string>
+    <string name="settings_custom_shortcuts_dont_unlock">Shortcuts over lockscreen</string>
+    <string name="settings_custom_shortcuts_summary_off">If enabled, the shortcuts will be launched without unlocking the device and leaving them will take you back to the lockscreen</string>
+    <string name="settings_custom_shortcuts_summary_on">To use this feature, please install App Settings Xposed (link available in About), and mark the corresponding app to be shown over the lockscreen</string>
+    <string name="settings_about_desc">Help, source code, licensing, authors, etc</string>
+    <string name="settings_restart_keyguard">Restart keyguard</string>
+    <string name="settings_visibility">Visibility</string>
+    <string name="settings_app">App settings</string>
+    <string name="settings_hide_launcher">Hidden from launcher</string>
+    <string name="settings_failsafe">Failsafe</string>
+    <string name="settings_failsafe_summary_on">Five consecutive long presses will kill the knock code and restore your stock pattern</string>
+    <string name="settings_failsafe_summary_off">Disable at your own risk</string>
+    <string name="settings_code_fullscreen">Fullscreen knock code</string>
+    <string name="settings_code_dialog">Show dialog</string>
+    <string name="settings_code_dialog_summary">On too many incorrect attempts</string>
+    <string name="settings_code_direct_entry">Directly show knock code entry</string>
+    <string name="settings_code_direct_entry_summary">Avoid the notification screen, if any</string>
+    <string name="settings_code_text">Show text</string>
+    <string name="settings_code_text_summary">Enter, correct, incorrect, etc</string>
+    <string name="settings_code_taps_visible">Show button taps</string>
+    <string name="settings_code_background">Show background</string>
+    <string name="settings_code_background_color">Background color</string>
+    <string name="settings_code_lines">Lines</string>
+    <string name="settings_code_lines_visible">Show lines</string>
+    <string name="settings_code_lines_color_ready">Default color for lines</string>
+    <string name="settings_code_lines_correct">Show lines correct</string>
+    <string name="settings_code_lines_color_correct">Lines correct color</string>
+    <string name="settings_code_lines_error">Show lines error</string>
+    <string name="settings_code_lines_color_error">Lines error color</string>
+    <string name="settings_code_lines_disabled">Show lines disabled</string>
+    <string name="settings_code_lines_color_disabled">Lines disabled color</string>
+    <string name="settings_code_dots">Dots</string>
+    <string name="settings_code_dots_visible">Show dots</string>
+    <string name="settings_code_dots_color_ready">Default color for dots</string>
+    <string name="settings_code_dots_correct">Show dots correct</string>
+    <string name="settings_code_dots_summary_on">Will cause unlocking lag</string>
+    <string name="settings_code_dots_color_correct">Dots correct color</string>
+    <string name="settings_code_dots_error">Show dots error</string>
+    <string name="settings_code_dots_color_error">Dots error color</string>
+    <string name="settings_emergency_button">Emergency button</string>
+    <string name="settings_show_emergency_button">Show emergency button</string>
+    <string name="settings_show_emergency_button_summary_off">Disable at your own risk</string>
+    <string name="settings_emergency_text">Show emergency text</string>
+    <string name="settings_emergency_text_summary_off">Button taps will still work</string>
+    <string name="settings_vibration">Vibration (ignores system settings)</string>
+    <string name="settings_vibrate_tap">Vibrate on tap</string>
+    <string name="settings_vibrate_long_press">Vibrate on long press</string>
+    <string name="settings">Settings</string>
 </resources>

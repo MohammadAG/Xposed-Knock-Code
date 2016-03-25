@@ -155,7 +155,7 @@ public class ShortcutPickHelper {
                 Builder builder = new Builder(mParent);
                 builder.setView(appListView);
                 mAlertDialog = builder.create();
-                mAlertDialog.setTitle(mParent.getString(R.string.shortcut_helper_select_activity));
+                mAlertDialog.setTitle(mParent.getString(R.string.shortcut_helper_target));
                 mAlertDialog.show();
                 mAlertDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
                     @Override
