@@ -228,13 +228,13 @@ public class MainActivity extends Activity {
                                             public void run() {
                                                 deleteShortcuts();
                                             }
-                                        }, XposedMod.RESET_WAIT_DURATION_CORRECT);
+                                        }, mSettingsHelper.getDotsCorrectLag(), true);
                             } else {
                                 mLockButtonView.setMode(LockButtonView.Mode.Incorrect);
                                 mLockButtonView.enableButtons(false);
                                 mDotsView.animateBetween(Utils.getOwnResources(getActivity()).getColor(R.color.textColorPrimary),
                                         Utils.getOwnResources(getActivity()).getColor(R.color.colorWrong), mFailRunnable
-                                        , XposedMod.RESET_WAIT_DURATION_CORRECT);
+                                        , mSettingsHelper.getDotsErrorLag(), true);
                             }
                         } else {
                             if (mFirstTappedPositions.equals(mSecondTappedPositions)) {
@@ -243,7 +243,7 @@ public class MainActivity extends Activity {
                                 mLockButtonView.enableButtons(false);
                                 mDotsView.animateBetween(Utils.getOwnResources(getActivity()).getColor(R.color.textColorPrimary),
                                         Utils.getOwnResources(getActivity()).getColor(R.color.colorCorrect), mFinishRunnable,
-                                        XposedMod.RESET_WAIT_DURATION_CORRECT);
+                                        mSettingsHelper.getDotsCorrectLag(), true);
                                 mSettingsHelper.putShortcut(mFirstTappedPositions, mUri, mName);
                                 if (mOriginalPasscode!=null)
                                     mSettingsHelper.removeShortcut(mOriginalPasscode);
@@ -252,7 +252,7 @@ public class MainActivity extends Activity {
                                 mLockButtonView.enableButtons(false);
                                 mDotsView.animateBetween(Utils.getOwnResources(getActivity()).getColor(R.color.textColorPrimary),
                                         Utils.getOwnResources(getActivity()).getColor(R.color.colorWrong), mFailRunnable
-                                        , XposedMod.RESET_WAIT_DURATION_CORRECT);
+                                        , mSettingsHelper.getDotsErrorLag(), true);
                             }
                         }
                     }
@@ -337,7 +337,7 @@ public class MainActivity extends Activity {
                         ((TextView) getView().findViewById(android.R.id.hint)).setText(R.string.knock_code_correct);
                         mDotsView.animateBetween(Utils.getOwnResources(getActivity()).getColor(R.color.textColorPrimary),
                                 Utils.getOwnResources(getActivity()).getColor(R.color.colorCorrect), mFinishRunnable,
-                                XposedMod.RESET_WAIT_DURATION_CORRECT);
+                                mSettingsHelper.getDotsCorrectLag(), true);
                         mLockButtonView.setMode(LockButtonView.Mode.Correct);
                     } else {
                         mLockButtonView.setMode(LockButtonView.Mode.Incorrect);
@@ -345,7 +345,7 @@ public class MainActivity extends Activity {
                         ((TextView) getView().findViewById(android.R.id.hint)).setText(R.string.knock_code_wrong);
                         mDotsView.animateBetween(Utils.getOwnResources(getActivity()).getColor(R.color.textColorPrimary),
                                 Utils.getOwnResources(getActivity()).getColor(R.color.colorWrong), mFailRunnable
-                                , XposedMod.RESET_WAIT_DURATION_CORRECT);
+                                , mSettingsHelper.getDotsErrorLag(), true);
                     }
                 }
                 return;

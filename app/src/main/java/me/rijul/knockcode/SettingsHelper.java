@@ -183,8 +183,10 @@ public class SettingsHelper {
     public int getDotsReadyColor() {return getInt(Utils.SETTINGS_CODE_DOTS_COLOR_READY, 0xFFFAFAFA);}
     public boolean showDotsCorrect() {return getBoolean(Utils.SETTINGS_CODE_DOTS_CORRECT, false);}
     public int getDotsCorrectColor() {return getInt(Utils.SETTINGS_CODE_DOTS_COLOR_CORRECT, 0xFF4CAF50);}
+    public int getDotsCorrectLag() {return getInt(Utils.SETTINGS_CODE_DOTS_LAG_CORRECT, 50);}
     public boolean showDotsError() {return getBoolean(Utils.SETTINGS_CODE_DOTS_ERROR, false);}
     public int getDotsWrongColor() {return getInt(Utils.SETTINGS_CODE_DOTS_COLOR_ERROR, 0xFff44336);}
+    public int getDotsErrorLag() {return getInt(Utils.SETTINGS_CODE_DOTS_LAG_ERROR, 200);}
 
     public boolean showEmergencyButton() {return getBoolean(Utils.SETTINGS_EMERGENCY_BUTTON, true);}
     public boolean showEmergencyText() {return getBoolean(Utils.SETTINGS_EMERGENCY_TEXT, true);}
@@ -221,4 +223,12 @@ public class SettingsHelper {
     public void remove(String key) {edit().remove(key).apply();}
     public void removeShortcut(String passcode) {remove(Utils.PREFIX_SHORTCUT + passcode);}
     public void removeShortcut(ArrayList<Integer> passcode) {removeShortcut(Utils.passcodeToString(passcode));}
+
+    public int getTextLag() {
+        return getInt(Utils.SETTINGS_CODE_TEXT_LAG, 200);
+    }
+
+    public int getLinesErrorLag() {
+        return getInt(Utils.SETTINGS_CODE_LINES_LAG_ERROR, 200);
+    }
 }

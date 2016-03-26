@@ -22,6 +22,7 @@ import android.animation.AnimatorSet;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.Typeface;
@@ -122,15 +123,13 @@ public class DotsView extends View {
         invalidate();
     }
 
-    public void animateBetween(int initial, int end, final Runnable finishRunnable, int duration) {
+    public void animateBetween(int initial, int end, final Runnable finishRunnable, final int duration, final boolean animateDotsUp) {
         ValueAnimator anim = ValueAnimator.ofArgb(initial, end);
-        anim.setDuration(duration);
+        anim.setDuration(duration/(animateDotsUp ? 2 : 1));
         anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
                 setPaintColor((int) animation.getAnimatedValue());
-                setTranslationY(animation.getAnimatedFraction()*getHeight());
-                setAlpha(1-animation.getAnimatedFraction());
             }
         });
         anim.addListener(new Animator.AnimatorListener() {
@@ -140,10 +139,9 @@ public class DotsView extends View {
 
             @Override
             public void onAnimationEnd(Animator animation) {
-                reset(false);
-                setTranslationY(0);
-                setAlpha(1.0f);
-                if (finishRunnable!=null)
+                if (animateDotsUp)
+                    animateDotsUp(finishRunnable, duration/2);
+                else if (finishRunnable!=null)
                     finishRunnable.run();
             }
 
@@ -156,6 +154,28 @@ public class DotsView extends View {
             }
         });
         anim.setStartDelay(DOT_APPEAR_DURATION_OVERSHOOT);
+        anim.setRepeatCount(0);
+        anim.start();
+    }
+
+    public void animateDotsUp(final Runnable finishRunnable, int duration) {
+        ValueAnimator anim = ValueAnimator.ofFloat(0.0f, 1.0f);
+        anim.setDuration(duration);
+        anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                setTranslationY(-animation.getAnimatedFraction() * getHeight()/2);
+                setAlpha(1 - animation.getAnimatedFraction());
+                if (animation.getAnimatedFraction() == 1.0f) {
+                    setPaintColor(Color.TRANSPARENT);
+                    reset(false);
+                    setTranslationY(0);
+                    setAlpha(1.0f);
+                    if (finishRunnable != null)
+                        finishRunnable.run();
+                }
+            }
+        });
         anim.setRepeatCount(0);
         anim.start();
     }

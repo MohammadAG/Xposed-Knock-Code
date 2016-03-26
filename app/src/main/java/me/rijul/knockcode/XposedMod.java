@@ -4,7 +4,10 @@ import static de.robv.android.xposed.XposedHelpers.callMethod;
 import static de.robv.android.xposed.XposedHelpers.findAndHookMethod;
 import static de.robv.android.xposed.XposedHelpers.getObjectField;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.XModuleResources;
 import android.os.Build;
 import android.provider.Settings.Secure;
@@ -23,9 +26,6 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
 
 public class XposedMod implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXposedHookInitPackageResources {
 
-    public static final int RESET_WAIT_DURATION_CORRECT = 200;
-    public static final int RESET_WAIT_DURATION_WRONG = 200;
-
     private XC_MethodHook mUpdateSecurityViewHook;
     private XC_MethodHook mShowSecurityScreenHook;
     private XC_MethodHook mKeyguardHostViewInitHook;
@@ -40,6 +40,13 @@ public class XposedMod implements IXposedHookLoadPackage, IXposedHookZygoteInit,
     private XC_MethodHook mOnScreenTurnedOnHook;
     private String modulePath;
     private XC_MethodHook mOnResumeHook;
+    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (mSettingsHelper!=null)
+                mSettingsHelper.reloadSettings();
+        }
+    };
 
     @Override
     public void initZygote(StartupParam startupParam) throws Throwable {
@@ -197,6 +204,8 @@ public class XposedMod implements IXposedHookLoadPackage, IXposedHookZygoteInit,
         mShowSecurityScreenHook = new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                Context mContext = ((FrameLayout) param.thisObject).getContext();
+                mContext.registerReceiver(broadcastReceiver, new IntentFilter(Utils.SETTINGS_CHANGED));
                 if ((mSettingsHelper==null) || (mSettingsHelper.isDisabled())) {
                     mKnockCodeView = null;
                     return;
@@ -215,7 +224,6 @@ public class XposedMod implements IXposedHookLoadPackage, IXposedHookZygoteInit,
                     return;
                 }
 
-                Context mContext = ((FrameLayout) param.thisObject).getContext();
                 View oldView = (View) callMethod(param.thisObject, "getSecurityView", mCurrentSecuritySelection);
                 //LinearLayout eca = (LinearLayout) XposedHelpers.
                 //	newInstance(XposedHelpers.findClass(keyguardPackageName + ".EmergencyCarrierArea", param.thisObject.getClass().getClassLoader()), mContext);

@@ -68,6 +68,17 @@
             android:key="settings_code_text"
             android:title="@string/settings_code_text"
             android:summary="@string/settings_code_text_summary"/>
+        <me.rijul.knockcode.SeekBarPreference
+            android:key="settings_code_text_lag"
+            android:title="@string/settings_code_text_lag"
+            android:summary="@string/settings_code_text_lag_summary"
+            minimum="50"
+            maximum="1000"
+            interval="50"
+            android:defaultValue="200"
+            monitorBoxEnabled="true"
+            monitorBoxUnit="ms"
+            android:dependency="settings_code_text"/>
         <SwitchPreference
             android:defaultValue="true"
             android:key="settings_code_taps_visible"
@@ -118,6 +129,17 @@
                 alphaSlider="true"
                 hexValue="true"
                 android:dependency="settings_code_lines_error"/>
+            <me.rijul.knockcode.SeekBarPreference
+                android:key="settings_code_lines_lag_error"
+                android:title="@string/settings_code_lines_lag_error"
+                android:summary="@string/settings_code_lines_lag_error_summary"
+                minimum="50"
+                maximum="1000"
+                interval="50"
+                android:defaultValue="200"
+                monitorBoxEnabled="true"
+                monitorBoxUnit="ms"
+                android:dependency="settings_code_lines_error"/>
             <SwitchPreference
                 android:defaultValue="true"
                 android:key="settings_code_lines_disabled"
@@ -155,6 +177,16 @@
                 alphaSlider="true"
                 hexValue="true"
                 android:dependency="settings_code_dots_correct"/>
+            <me.rijul.knockcode.SeekBarPreference
+                android:key="settings_code_dots_lag_correct"
+                android:title="@string/settings_code_dots_lag_correct"
+                minimum="50"
+                maximum="1000"
+                interval="50"
+                android:defaultValue="50"
+                monitorBoxEnabled="true"
+                monitorBoxUnit="ms"
+                android:dependency="settings_code_dots_correct"/>
             <SwitchPreference
                 android:defaultValue="true"
                 android:key="settings_code_dots_error"
@@ -165,6 +197,16 @@
                 android:defaultValue="@color/colorWrong"
                 alphaSlider="true"
                 hexValue="true"
+                android:dependency="settings_code_dots_error"/>
+            <me.rijul.knockcode.SeekBarPreference
+                android:key="settings_code_dots_lag_error"
+                android:title="@string/settings_code_dots_lag_error"
+                minimum="50"
+                maximum="1000"
+                interval="50"
+                android:defaultValue="200"
+                monitorBoxEnabled="true"
+                monitorBoxUnit="ms"
                 android:dependency="settings_code_dots_error"/>
         </PreferenceScreen>
     </PreferenceCategory>

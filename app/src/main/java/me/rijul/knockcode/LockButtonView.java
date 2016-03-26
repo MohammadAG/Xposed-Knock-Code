@@ -159,11 +159,13 @@ public class LockButtonView extends LinearLayout implements View.OnClickListener
         errorColor = settingsHelper.getLinesErrorColor();
         correctColor = settingsHelper.getLinesCorrectColor();
         disabledColor = settingsHelper.getLinesDisabledColor();
+        Grid patternSizeNew = settingsHelper.getPatternSize();
+        if (!patternSizeNew.equals(mPatternSize))
+            setPatternSize(settingsHelper.getPatternSize());
         if (settingsHelper.showBackground())
             setBackgroundColor(settingsHelper.getBackgroundColor());
         showLines(settingsHelper.showLines());
         showButtonTaps(settingsHelper.showButtonTaps());
-        setPatternSize(settingsHelper.getPatternSize());
     }
 
     public void setPatternSize(Grid g) {

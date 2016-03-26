@@ -3,7 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/app/libs/ColorPickerPreference/ColorPickerPreference.iml" filepath="$PROJECT_DIR$/app/libs/ColorPickerPreference/ColorPickerPreference.iml" />
-      <module fileurl="file://$PROJECT_DIR$/KnockCode2.iml" filepath="$PROJECT_DIR$/KnockCode2.iml" />
+      <module fileurl="file://$PROJECT_DIR$/KnockCode.iml" filepath="$PROJECT_DIR$/KnockCode.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>
