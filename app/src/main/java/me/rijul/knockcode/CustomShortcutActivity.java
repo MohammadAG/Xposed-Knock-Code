@@ -2,6 +2,7 @@ package me.rijul.knockcode;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ListFragment;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -18,6 +19,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -38,6 +42,26 @@ public class CustomShortcutActivity extends Activity {
         ActionBar actionBar = getActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         getFragmentManager().beginTransaction().replace(R.id.fragment_container, new CustomShortcutFragment()).commit();
+        if (mSettingsHelper.shouldShowCustomShortcutInstructions()) {
+            View checkBoxView = View.inflate(this, R.layout.dialog_checkbox, null);
+            CheckBox checkBox = (CheckBox) checkBoxView.findViewById(R.id.checkbox);
+            checkBox.setText(R.string.custom_shortcut_never_again);
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage(R.string.custom_shortcuts_instructions)
+                    .setView(checkBoxView)
+                    .setCancelable(true)
+                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            mSettingsHelper.putBoolean(Utils.SHOW_CUSTOM_SHORTCUT_INSTRUCTIONS,
+                                    !((CheckBox) ((AlertDialog) dialog).findViewById(R.id.checkbox)).isChecked());
+                            dialog.dismiss();
+                        }
+                    }).show();
+        }
+
+        CustomLogger.log(this, "CustomShortcutActivity", "App", "Opened custom shortcuts", null, -1);
+
     }
 
     @Override
@@ -54,6 +78,12 @@ public class CustomShortcutActivity extends Activity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        sendBroadcast(new Intent(Utils.SETTINGS_CHANGED));
     }
 
     @Override
@@ -200,6 +230,7 @@ public class CustomShortcutActivity extends Activity {
             intent.putExtra("uri", shortcut.uri);
             intent.putExtra("name", shortcut.name);
             intent.putExtra("passcode", Utils.passcodeToString(shortcut.passcode));
+            intent.putExtra("unlockOnLaunch", shortcut.unlockOnLaunch);
             startActivityForResult(intent, MainActivity.NEW_SHORTCUT);
         }
 
@@ -219,6 +250,7 @@ public class CustomShortcutActivity extends Activity {
             ArrayList<Integer> passcode;
             String name;
             String uri;
+            boolean unlockOnLaunch;
         }
 
         private class ShortcutAdapter extends ArrayAdapter<NamedShortcut> {
@@ -232,12 +264,24 @@ public class CustomShortcutActivity extends Activity {
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
                 if (convertView == null) {
-                    convertView = mInflater.inflate(android.R.layout.simple_list_item_1, parent, false);
+                    convertView = mInflater.inflate(R.layout.custom_shortcut_row, parent, false);
                 }
                 final NamedShortcut namedGesture = getItem(position);
-                final TextView label = (TextView) convertView;
-                label.setTag(namedGesture);
+                final TextView label = (TextView) convertView.findViewById(android.R.id.text1);
+                convertView.setTag(namedGesture);
                 label.setText(namedGesture.name);
+
+                Switch switchView = (Switch) convertView.findViewById(R.id.custom_shortcut_switch);
+                switchView.setChecked(!namedGesture.unlockOnLaunch);
+                switchView.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        namedGesture.unlockOnLaunch = !isChecked;
+                        mSettingsHelper.putShortcut(namedGesture.passcode, namedGesture.uri,
+                                namedGesture.name, namedGesture.unlockOnLaunch);
+                    }
+                });
+
                 return convertView;
             }
         }
@@ -266,8 +310,10 @@ public class CustomShortcutActivity extends Activity {
                             if (separator == -1)
                                 continue;
                             NamedShortcut namedShortcut = new NamedShortcut();
-                            namedShortcut.uri = value.substring(0, separator);
-                            namedShortcut.name = value.substring(separator + 1);
+                            String[] splitString = value.split("\\|");
+                            namedShortcut.uri = splitString[0];
+                            namedShortcut.name = splitString[1];
+                            namedShortcut.unlockOnLaunch = Boolean.valueOf(splitString[2]);
                             namedShortcut.passcode = Utils.stringToPasscode(entry.getKey().substring(9));
                             publishProgress(namedShortcut);
                         }

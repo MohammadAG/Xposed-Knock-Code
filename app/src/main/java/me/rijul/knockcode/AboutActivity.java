@@ -26,6 +26,7 @@ public class AboutActivity extends Activity {
         ActionBar actionBar = getActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         getFragmentManager().beginTransaction().replace(R.id.fragment_container, new AboutFragment()).commit();
+        CustomLogger.log(this, "AboutActivity", "App", "Opened About", null, -1);
     }
 
     @Override

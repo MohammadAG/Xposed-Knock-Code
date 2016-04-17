@@ -16,7 +16,7 @@ public class LockButtonView extends LinearLayout implements View.OnClickListener
         Ready, Correct, Incorrect, Disabled
     }
 
-    public static int KNOCK_CODE_MAX_SIZE = 10, KNOCK_CODE_MIN_SIZE = 3;
+    public static int KNOCK_CODE_MAX_SIZE = 12+1, KNOCK_CODE_MIN_SIZE = 3;
     public static int GRID_MIN_SIZE = 2, GRID_MAX_SIZE = 5;
 
     private Grid mPatternSize = new Grid(2,2);
@@ -26,6 +26,8 @@ public class LockButtonView extends LinearLayout implements View.OnClickListener
     private List<Button> mButtons = new ArrayList<Button>();
     private List<View> mHors = new ArrayList<View>();
     private List<View> mVers = new ArrayList<View>();
+
+    public ArrayList<ArrayList<View>> mOutputArray = new ArrayList<>();
 
     private int readyColor;
     private int correctColor;
@@ -64,6 +66,7 @@ public class LockButtonView extends LinearLayout implements View.OnClickListener
         mButtons.clear();
         mHors.clear();
         mVers.clear();
+        mOutputArray.clear();
         this.removeAllViews();
 
         float mLineWidth = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 1, getContext().getResources().getDisplayMetrics());
@@ -71,6 +74,8 @@ public class LockButtonView extends LinearLayout implements View.OnClickListener
         getContext().getTheme().resolveAttribute(android.R.attr.selectableItemBackground, outValue, true);
 
         for(int currentRow=1; currentRow<=mPatternSize.numberOfRows; ++currentRow) {
+            ArrayList<View> row = new ArrayList<>();
+
             LinearLayout horizontalLayout = new LinearLayout(getContext());
             LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1);
             horizontalLayout.setLayoutParams(layoutParams);
@@ -83,6 +88,7 @@ public class LockButtonView extends LinearLayout implements View.OnClickListener
                 horizontalLine.setBackgroundColor(readyColor);
                 mHors.add(horizontalLine);
                 this.addView(horizontalLine);
+                row.add(horizontalLine);
             }
 
             for(int currentColumn=1; currentColumn<=mPatternSize.numberOfColumns; ++currentColumn) {
@@ -107,6 +113,8 @@ public class LockButtonView extends LinearLayout implements View.OnClickListener
             }
 
             this.addView(horizontalLayout);
+            row.add(horizontalLayout);
+            mOutputArray.add(row);
         }
         invalidate();
     }
@@ -127,9 +135,10 @@ public class LockButtonView extends LinearLayout implements View.OnClickListener
         invalidate();
     }
 
-    public void showButtonTaps(boolean show) {
+    public void showButtonTaps(boolean show, boolean borderless) {
         TypedValue outValue = new TypedValue();
-        getContext().getTheme().resolveAttribute(android.R.attr.selectableItemBackground, outValue, true);
+        getContext().getTheme().resolveAttribute(borderless ? android.R.attr.selectableItemBackgroundBorderless :
+                android.R.attr.selectableItemBackground, outValue, true);
         for(Button btn : mButtons)
             btn.setBackgroundResource(show ? outValue.resourceId : 0);
         invalidate();
@@ -165,7 +174,7 @@ public class LockButtonView extends LinearLayout implements View.OnClickListener
         if (settingsHelper.showBackground())
             setBackgroundColor(settingsHelper.getBackgroundColor());
         showLines(settingsHelper.showLines());
-        showButtonTaps(settingsHelper.showButtonTaps());
+        showButtonTaps(settingsHelper.showButtonTaps(), settingsHelper.borderlessTaps());
     }
 
     public void setPatternSize(Grid g) {

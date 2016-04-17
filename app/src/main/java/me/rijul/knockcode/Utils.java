@@ -15,6 +15,9 @@ import java.util.ArrayList;
 public class Utils {
     public static final String PREFERENCES_FILE = BuildConfig.APPLICATION_ID + "_preferences";
     public static final String PREFIX_SHORTCUT = "shortcut_";
+    public static final String LAST_VERSION = "last_version";
+    public static final String SHOW_CUSTOM_SHORTCUT_INSTRUCTIONS = "show_custom_shortcut_instructions";
+    public static final String CUSTOM_LOG_INTENT = BuildConfig.APPLICATION_ID + "_CUSTOM_LOG";
 
     public static final String SETTINGS_PASSCODE = "settings_passcode";
     public static final String SETTINGS_SWITCH = "settings_switch";
@@ -29,11 +32,23 @@ public class Utils {
     public static final String SETTINGS_CODE_FULLSCREEN = "settings_code_fullscreen";
     public static final String SETTINGS_CODE_DIALOG = "settings_code_dialog";
     public static final String SETTINGS_CODE_DIRECT_ENTRY = "settings_code_direct_entry";
-    public static final String SETTINGS_CODE_TEXT = "settings_code_text";
-    public static final String SETTINGS_CODE_TEXT_LAG = "settings_code_text_lag";
+    public static final String SETTINGS_CODE_DIRECT_ENTRY_POLICY = "settings_code_direct_entry_policy";
     public static final String SETTINGS_CODE_BACKGROUND = "settings_code_background";
     public static final String SETTINGS_CODE_BACKGROUND_COLOR = "settings_code_background_color";
     public static final String SETTINGS_CODE_TAPS_VISIBLE = "settings_code_taps_visible";
+    public static final String SETTINGS_CODE_TAPS_VISIBLE_BORDERLESS = "settings_code_taps_visible_borderless";
+
+    public static final String SETTINGS_CODE_TEXT_COLOR = "settings_code_text_color";
+    public static final String SETTINGS_CODE_TEXT_READY = "settings_code_text_ready";
+    public static final String SETTINGS_CODE_TEXT_READY_VALUE = "settings_code_text_ready_value";
+    public static final String SETTINGS_CODE_TEXT_CORRECT = "settings_code_text_correct";
+    public static final String SETTINGS_CODE_TEXT_CORRECT_VALUE = "settings_code_text_correct_value";
+    public static final String SETTINGS_CODE_TEXT_ERROR = "settings_code_text_error";
+    public static final String SETTINGS_CODE_TEXT_ERROR_VALUE = "settings_code_text_error_value";
+    public static final String SETTINGS_CODE_TEXT_RESET = "settings_code_text_reset";
+    public static final String SETTINGS_CODE_TEXT_RESET_VALUE = "settings_code_text_reset_value";
+    public static final String SETTINGS_CODE_TEXT_DISABLED = "settings_code_text_disabled";
+    public static final String SETTINGS_CODE_TEXT_DISABLED_VALUE = "settings_code_text_disabled_value";
 
     public static final String SETTINGS_CODE_LINES_VISIBLE = "settings_code_lines_visible";
     public static final String SETTINGS_CODE_LINES_COLOR_READY = "settings_code_lines_color_ready";
@@ -41,7 +56,6 @@ public class Utils {
     public static final String SETTINGS_CODE_LINES_COLOR_CORRECT = "settings_code_lines_color_correct";
     public static final String SETTINGS_CODE_LINES_ERROR = "settings_code_lines_error";
     public static final String SETTINGS_CODE_LINES_COLOR_ERROR = "settings_code_lines_color_error";
-    public static final String SETTINGS_CODE_LINES_LAG_ERROR = "settings_code_lines_lag_error";
     public static final String SETTINGS_CODE_LINES_DISABLED = "settings_code_lines_disabled";
     public static final String SETTINGS_CODE_LINES_COLOR_DISABLED = "settings_code_lines_color_disabled";
 
@@ -49,10 +63,7 @@ public class Utils {
     public static final String SETTINGS_CODE_DOTS_COLOR_READY = "settings_code_dots_color_ready";
     public static final String SETTINGS_CODE_DOTS_CORRECT = "settings_code_dots_correct";
     public static final String SETTINGS_CODE_DOTS_COLOR_CORRECT = "settings_code_dots_color_correct";
-    public static final String SETTINGS_CODE_DOTS_LAG_CORRECT = "settings_code_dots_lag_correct";
     public static final String SETTINGS_CODE_DOTS_ERROR = "settings_code_dots_error";
-    public static final String SETTINGS_CODE_DOTS_COLOR_ERROR = "settings_code_dots_color_error";
-    public static final String SETTINGS_CODE_DOTS_LAG_ERROR = "settings_code_dots_lag_error";
 
     public static final String SETTINGS_CODE_SIZE_COLUMNS = "settings_code_size_columns";
     public static final String SETTINGS_CODE_SIZE_ROWS = "settings_code_size_rows";
@@ -61,9 +72,15 @@ public class Utils {
 
     public static final String SETTINGS_EMERGENCY_BUTTON = "settings_emergency_button";
     public static final String SETTINGS_EMERGENCY_TEXT = "settings_emergency_text";
+    public static final String SETTINGS_EMERGENCY_BACKGROUND = "settings_emergency_background";
 
     public static final String SETTINGS_VIBRATE_TAP = "settings_vibrate_tap";
     public static final String SETTINGS_VIBRATE_LONG_PRESS = "settings_vibrate_long_press";
+    public static final String SETTINGS_VIBRATE_ERROR = "settings_vibrate_error";
+
+    public static final String SETTINGS_CORRECT_DURATION = "settings_correct_duration";
+    public static final String SETTINGS_ERROR_DURATION = "settings_error_duration";
+    public static final String SETTINGS_CODE_WAIT_LAST_DOT = "settings_code_wait_last_dot";
 
     public static final String ABOUT_DISCLAIMER = "about_disclaimer";
     public static final String ABOUT_RIJUL = "about_rijul";

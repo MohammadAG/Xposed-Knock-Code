@@ -13,6 +13,7 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.CountDownTimer;
 import android.os.SystemClock;
+import android.os.Vibrator;
 import android.telecom.TelecomManager;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -23,6 +24,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import de.robv.android.xposed.XC_MethodHook;
@@ -56,22 +58,26 @@ public class KeyguardKnockView extends LinearLayout implements LockButtonView.On
     //variables made by us
     private SettingsHelper mSettingsHelper;
     private XC_MethodHook.MethodHookParam mParam;
-    //runnables to clear or unlock
+
     private Runnable mCancelRunnable = new Runnable() {
         public void run() {
-            mLockButtonView.showLines(mSettingsHelper.showLines());
+            if (mSettingsHelper.showReadyText())
+                mTextView.setText(mSettingsHelper.getReadyText());
+            else
+                mTextView.setText("");
             mDotsView.setPaintColor(mSettingsHelper.showDots() ? mSettingsHelper.getDotsReadyColor() : Color.TRANSPARENT);
             mDotsView.reset(true);
-            mLockButtonView.enableButtons(true);
+            mLockButtonView.showLines(mSettingsHelper.showLines());
             mLockButtonView.setMode(LockButtonView.Mode.Ready);
+            mLockButtonView.enableButtons(true);
             mTappedPositions.clear();
-            mTextView.setText("");
         }
     };
+
     private Runnable mUnlockRunnable = new Runnable() {
         @Override
         public void run() {
-            unlock();
+                unlock();
         }
     };
     //settings changed receiver
@@ -83,6 +89,15 @@ public class KeyguardKnockView extends LinearLayout implements LockButtonView.On
     };
     //actual passcode and tapped positions
     private ArrayList<Integer> mPasscode, mTappedPositions = new ArrayList<Integer>();
+    private Vibrator mVibrator;
+    private Runnable mVibrateRunnable = new Runnable() {
+        @Override
+        public void run() {
+            if (mVibrator.hasVibrator())
+                mVibrator.vibrate((long) mSettingsHelper.errorDuration());
+        }
+    };
+
     public KeyguardKnockView(Context context, XC_MethodHook.MethodHookParam param,
                                SettingsHelper settingsHelper, String keyguardPackageName) {
         super(context);
@@ -96,7 +111,10 @@ public class KeyguardKnockView extends LinearLayout implements LockButtonView.On
             //HTC!
             mLockPatternUtils = XposedHelpers.getObjectField(mParam.thisObject, "mLockUtils");
         }
-        mAppearAnimationUtils = new AppearAnimationUtils(getContext());
+        mAppearAnimationUtils = new AppearAnimationUtils(getContext(),
+                AppearAnimationUtils.DEFAULT_APPEAR_DURATION, 1.5f /* translationScale */,
+                2.0f /* delayScale */, AnimationUtils.loadInterpolator(
+                getContext(), android.R.interpolator.fast_out_linear_in));
         mDisappearAnimationUtils = new DisappearAnimationUtils(getContext(),
                 125, 1.2f /* translationScale */,
                 0.8f /* delayScale */, AnimationUtils.loadInterpolator(
@@ -104,7 +122,9 @@ public class KeyguardKnockView extends LinearLayout implements LockButtonView.On
         Resources res = Utils.getResourcesForPackage(getContext(), getContext().getPackageName());
         mDisappearYTranslation = res.getDimensionPixelSize(res.getIdentifier(
                 "disappear_y_translation", "dimen", getContext().getPackageName()));
+        mVibrator = (Vibrator) getContext().getSystemService(Context.VIBRATOR_SERVICE);
         setSettingsHelper(settingsHelper);
+
     }
 
     private void setSettingsHelper(SettingsHelper settingsHelper) {
@@ -308,12 +328,22 @@ public class KeyguardKnockView extends LinearLayout implements LockButtonView.On
     public void onSettingsReloaded() {
         mSettingsHelper.reloadSettings();
         mPasscode = mSettingsHelper.getPasscodeOrNull();
-        if (mTextView!=null)
-            mTextView.setVisibility(mSettingsHelper.showText() ? View.VISIBLE : View.GONE);
-        if (mDotsView!=null)
+        if (mTextView!=null) {
+            mTextView.setVisibility(mSettingsHelper.showCorrectText() || mSettingsHelper.showDisabledText() ||
+                    mSettingsHelper.showErrorText() || mSettingsHelper.showResetText() ? View.VISIBLE : View.GONE);
+            mTextView.setTextColor(mSettingsHelper.getTextColor());
+        }
+        if (mDotsView!=null) {
             mDotsView.setPaintColor(mSettingsHelper.showDots() ? mSettingsHelper.getDotsReadyColor() : Color.TRANSPARENT);
-        if (mEmergencyButton!=null)
+            mDotsView.setVisibility(mSettingsHelper.showDots() || mSettingsHelper.showDotsCorrect() || mSettingsHelper.showDotsError()
+            ? View.VISIBLE : View.GONE);
+        }
+        if (mEmergencyButton!=null) {
             mEmergencyButton.setVisibility(mSettingsHelper.showEmergencyButton() ? View.VISIBLE : View.GONE);
+            TypedValue outValue = new TypedValue();
+            getContext().getTheme().resolveAttribute(android.R.attr.selectableItemBackground, outValue, true);
+            mEmergencyButton.setBackgroundResource(mSettingsHelper.showEmergencyBackground() ? outValue.resourceId : 0);
+        }
         if (mLockButtonView!=null) {
             mLockButtonView.updateViewState(mSettingsHelper);
         }
@@ -334,9 +364,10 @@ public class KeyguardKnockView extends LinearLayout implements LockButtonView.On
         if (mTappedPositions.size() >= LockButtonView.KNOCK_CODE_MIN_SIZE) {
             final String value = mSettingsHelper.getShortcut(mTappedPositions);
             if (value!=null) {
-                final int separator = value.indexOf('|');
-                final String uri = value.substring(0, separator);
-                String name = value.substring(separator + 1);
+                String[] splitString = value.split("\\|");
+                final String uri = splitString[0];
+                final String name = splitString[1];
+                final boolean unlockOnLaunch = Boolean.valueOf(splitString[2]);
                 Runnable runnable = new Runnable() {
                     @Override
                     public void run() {
@@ -344,9 +375,12 @@ public class KeyguardKnockView extends LinearLayout implements LockButtonView.On
                             Intent intent = Intent.parseUri(uri, 0);
                             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                             getContext().startActivity(intent);
-                            if (!mSettingsHelper.customShortcutsDontUnlock())
+                            if (unlockOnLaunch) {
                                 mUnlockRunnable.run();
+                                CustomLogger.log(getContext(), "Lockscreen", "Success", "Unlocked", "Launched " + name, -1);
+                            }
                             else {
+                                CustomLogger.log(getContext(), "Lockscreen", "Success", "Did not unlock", "Launched " + name, -1);
                                 startDisappearAnimation(mCancelRunnable);
                             }
                         } catch (URISyntaxException e) {
@@ -361,37 +395,50 @@ public class KeyguardKnockView extends LinearLayout implements LockButtonView.On
                         }
                     }
                 };
-                mTextView.setText(name);
+                mLockButtonView.enableButtons(false);
+                if (mSettingsHelper.showCorrectText())
+                    mTextView.setText(name);
                 mLockButtonView.setMode(mSettingsHelper.showLinesCorrect() ? LockButtonView.Mode.Correct : LockButtonView.Mode.Ready);
                 mLockButtonView.showLines(mSettingsHelper.showLines() || mSettingsHelper.showLinesCorrect());
                 if (mSettingsHelper.showDots()) {
                     if (mSettingsHelper.showDotsCorrect())
-                        mDotsView.animateBetween(mSettingsHelper.getDotsReadyColor(), mSettingsHelper.getDotsCorrectColor(), runnable, mSettingsHelper.getDotsCorrectLag(), false);
-                    else
-                        runnable.run();
-                }
-                else {
+                        mDotsView.animateBetween(mSettingsHelper.getDotsReadyColor(), mSettingsHelper.getDotsCorrectColor(),
+                                runnable, mSettingsHelper.correctDuration(), mSettingsHelper.waitForLastDot());
+                        else
+                            mDotsView.postDelayed(runnable, mSettingsHelper.correctDuration() + (mSettingsHelper.waitForLastDot() ?
+                                    DotsView.DOT_APPEAR_DURATION_OVERSHOOT : 0));
+                } else {
                     if (mSettingsHelper.showDotsCorrect())
-                        mDotsView.animateBetween(Color.TRANSPARENT, mSettingsHelper.getDotsCorrectColor(), runnable, mSettingsHelper.getDotsCorrectLag(), false);
+                        mDotsView.animateBetween(Color.TRANSPARENT, mSettingsHelper.getDotsCorrectColor(),
+                                runnable, mSettingsHelper.correctDuration(), mSettingsHelper.waitForLastDot());
                     else
-                        runnable.run();
-                    }
+                        mDotsView.postDelayed(runnable, mSettingsHelper.correctDuration() + (mSettingsHelper.waitForLastDot() ?
+                                DotsView.DOT_APPEAR_DURATION_OVERSHOOT : 0));
+                }
             } else if (mTappedPositions.size()==mPasscode.size()) {
                 if (mTappedPositions.equals(mPasscode)) {
-                    mTextView.setText(Utils.getString(getContext(), R.string.knock_code_correct));
+                    CustomLogger.log(getContext(), "Lockscreen", "Success", "Unlocked", "Launched nothing", -1);
+                    mLockButtonView.enableButtons(false);
+                    if (mSettingsHelper.showCorrectText())
+                        mTextView.setText(mSettingsHelper.getCorrectText());
                     mLockButtonView.setMode(mSettingsHelper.showLinesCorrect() ? LockButtonView.Mode.Correct : LockButtonView.Mode.Ready);
                     mLockButtonView.showLines(mSettingsHelper.showLines() || mSettingsHelper.showLinesCorrect());
                     if (mSettingsHelper.showDots()) {
                         if (mSettingsHelper.showDotsCorrect())
-                            mDotsView.animateBetween(mSettingsHelper.getDotsReadyColor(), mSettingsHelper.getDotsCorrectColor(), mUnlockRunnable, mSettingsHelper.getDotsCorrectLag(), false);
+                            mDotsView.animateBetween(mSettingsHelper.getDotsReadyColor(), mSettingsHelper.getDotsCorrectColor(),
+                                    mUnlockRunnable, mSettingsHelper.correctDuration(), mSettingsHelper.waitForLastDot());
                         else
-                            mUnlockRunnable.run();
-                    }
-                    else {
+                            mDotsView.postDelayed(mUnlockRunnable,
+                                    mSettingsHelper.correctDuration() + (mSettingsHelper.waitForLastDot() ?
+                                            DotsView.DOT_APPEAR_DURATION_OVERSHOOT : 0));
+                    } else {
                         if (mSettingsHelper.showDotsCorrect())
-                            mDotsView.animateBetween(Color.TRANSPARENT, mSettingsHelper.getDotsCorrectColor(), mUnlockRunnable, mSettingsHelper.getDotsCorrectLag(), false);
+                            mDotsView.animateBetween(Color.TRANSPARENT, mSettingsHelper.getDotsCorrectColor(),
+                                    mUnlockRunnable, mSettingsHelper.correctDuration(), mSettingsHelper.waitForLastDot());
                         else
-                            mUnlockRunnable.run();
+                            mDotsView.postDelayed(mUnlockRunnable,
+                                    mSettingsHelper.correctDuration() + (mSettingsHelper.waitForLastDot() ?
+                                            DotsView.DOT_APPEAR_DURATION_OVERSHOOT : 0));
                     }
                 }
                 else
@@ -407,26 +454,31 @@ public class KeyguardKnockView extends LinearLayout implements LockButtonView.On
         if (mFailedPatternAttemptsSinceLastTimeout >= 5) {
             handleAttemptLockout(setLockoutAttemptDeadline());
         } else {
-            mTextView.setText(Utils.getString(getContext(), R.string.knock_code_wrong));
+            CustomLogger.log(getContext(), "Lockscreen", "Failure", "Not disabling", null, mTotalFailedPatternAttempts);
+            mLockButtonView.enableButtons(false);
+            if (mSettingsHelper.showErrorText())
+                mTextView.setText(mSettingsHelper.getErrorText());
             mLockButtonView.setMode(mSettingsHelper.showLinesError() ? LockButtonView.Mode.Incorrect : LockButtonView.Mode.Ready);
             mLockButtonView.showLines(mSettingsHelper.showLines() || mSettingsHelper.showLinesError());
-            mLockButtonView.enableButtons(false);
+            if (mSettingsHelper.vibrateOnError()) {
+                mDotsView.postDelayed(mVibrateRunnable, DotsView.DOT_APPEAR_DURATION_OVERSHOOT);
+            }
             if (mSettingsHelper.showDots()) {
                 if (mSettingsHelper.showDotsError())
-                    mDotsView.animateBetween(mSettingsHelper.getDotsReadyColor(), mSettingsHelper.getDotsWrongColor(), mCancelRunnable, mSettingsHelper.getDotsErrorLag(), true);
+                    mDotsView.shake(mCancelRunnable, mSettingsHelper.errorDuration(), mSettingsHelper.waitForLastDot());
                 else
-                    mDotsView.postDelayed(mCancelRunnable,
-                            mSettingsHelper.showText() ?
-                                    (mSettingsHelper.showLinesError() ? mSettingsHelper.getLinesErrorLag() :
-                                            mSettingsHelper.getTextLag()) : 0);
+                    mDotsView.postDelayed(mCancelRunnable, mSettingsHelper.errorDuration() + (mSettingsHelper.waitForLastDot() ?
+                            DotsView.DOT_APPEAR_DURATION_OVERSHOOT : 0));
             } else {
-                if (mSettingsHelper.showDotsError())
-                    mDotsView.animateBetween(Color.TRANSPARENT, mSettingsHelper.getDotsWrongColor(), mCancelRunnable, mSettingsHelper.getDotsErrorLag(), true);
-                else
-                    mDotsView.postDelayed(mCancelRunnable,
-                            mSettingsHelper.showText() ?
-                                    (mSettingsHelper.showLinesError() ? mSettingsHelper.getLinesErrorLag() :
-                                            mSettingsHelper.getTextLag()) : 0);
+                if (mSettingsHelper.showDotsError()) {
+                    //show the dots from transparent to white
+                    mDotsView.animateBetween(Color.TRANSPARENT, mSettingsHelper.getDotsReadyColor(), null,
+                            mSettingsHelper.errorDuration()/2, mSettingsHelper.waitForLastDot());
+                    //shake em
+                    mDotsView.shake(mCancelRunnable, mSettingsHelper.errorDuration()/2, mSettingsHelper.waitForLastDot());
+                } else
+                    mDotsView.postDelayed(mCancelRunnable, mSettingsHelper.errorDuration() + (mSettingsHelper.waitForLastDot() ?
+                            DotsView.DOT_APPEAR_DURATION_OVERSHOOT : 0));
             }
         }
     }
@@ -440,16 +492,18 @@ public class KeyguardKnockView extends LinearLayout implements LockButtonView.On
             }
             public void onTick(long millisUntilFinished) {
                 int secs = (int) (millisUntilFinished / 1000L);
-                mTextView.setText(getEnablingInSecs(secs));
+                if (mSettingsHelper.showDisabledText())
+                    mTextView.setText(getEnablingInSecs(secs));
             }
         }.start();
     }
 
     private String getEnablingInSecs(int secs) {
-        return Utils.getString(getContext(), R.string.knock_code_enabling, secs);
+        return mSettingsHelper.getDisabledText().replace("%1$d", String.valueOf(secs));
     }
 
     protected void onAttemptLockoutEnd() {
+        CustomLogger.log(getContext(), "Lockscreen", "Failure", "Disabling", null, mTotalFailedPatternAttempts);
         mFailedPatternAttemptsSinceLastTimeout = 0;
         mLockButtonView.showLines(mSettingsHelper.showLines());
         mDotsView.setPaintColor(mSettingsHelper.showDots() ? mSettingsHelper.getDotsReadyColor() : Color.TRANSPARENT);
@@ -457,21 +511,35 @@ public class KeyguardKnockView extends LinearLayout implements LockButtonView.On
         mLockButtonView.enableButtons(true);
         mLockButtonView.setMode(LockButtonView.Mode.Ready);
         mTappedPositions.clear();
-        mTextView.setText("");
+        if (mSettingsHelper.showReadyText())
+            mTextView.setText(mSettingsHelper.getReadyText());
+        else
+            mTextView.setText("");
     }
 
     protected void onAttemptLockoutStart() {
         mLockButtonView.enableButtons(false);
         mLockButtonView.setMode(mSettingsHelper.showLinesDisabled() ? LockButtonView.Mode.Disabled : LockButtonView.Mode.Ready);
         mLockButtonView.showLines(mSettingsHelper.showLines() || mSettingsHelper.showLinesDisabled());
+        if (mSettingsHelper.vibrateOnError()) {
+            mDotsView.postDelayed(mVibrateRunnable, DotsView.DOT_APPEAR_DURATION_OVERSHOOT);
+        }
         if (mSettingsHelper.showDots()) {
             if (mSettingsHelper.showDotsError())
-                mDotsView.animateBetween(mSettingsHelper.getDotsReadyColor(), mSettingsHelper.getDotsWrongColor(), null, mSettingsHelper.getDotsErrorLag(), true);
+                mDotsView.shake(null, mSettingsHelper.errorDuration(), mSettingsHelper.waitForLastDot());
             else
                 mDotsView.reset(true);
         } else {
-            if (mSettingsHelper.showDotsError())
-                mDotsView.animateBetween(Color.TRANSPARENT, mSettingsHelper.getDotsWrongColor(), null, mSettingsHelper.getDotsErrorLag(), true);
+            if (mSettingsHelper.showDotsError()) {
+                mDotsView.animateBetween(Color.TRANSPARENT, mSettingsHelper.getDotsReadyColor(), null,
+                        mSettingsHelper.errorDuration()/2, mSettingsHelper.waitForLastDot());
+                mDotsView.shake(new Runnable() {
+                    @Override
+                    public void run() {
+                        mDotsView.reset(true);
+                    }
+                }, mSettingsHelper.errorDuration()/2, mSettingsHelper.waitForLastDot());
+            }
             else
                 mDotsView.reset(false);
         }
@@ -517,22 +585,23 @@ public class KeyguardKnockView extends LinearLayout implements LockButtonView.On
     }
 
     public void onPause() {
-        if (mFailedPatternAttemptsSinceLastTimeout>=5)
-            return;
-        mLockButtonView.setMode(LockButtonView.Mode.Ready);
-        mTextView.setText("");
-        mLongPress = 0;
         try {
             getContext().unregisterReceiver(mBroadcastReceiver);
-        } catch (IllegalArgumentException e) {}
+        } catch (IllegalArgumentException ignored) {}
+        if (mFailedPatternAttemptsSinceLastTimeout>=5)
+            return;
+        mLongPress = 0;
+        mLockButtonView.setMode(LockButtonView.Mode.Ready);
+        mTappedPositions.clear();
+        mDotsView.reset(false);
+        if (mSettingsHelper.showReadyText())
+            mTextView.setText(mSettingsHelper.getReadyText());
+        else
+            mTextView.setText("");
+        mLongPress = 0;
     }
 
     public void onResume(int paramInt) {
-        if (mFailedPatternAttemptsSinceLastTimeout>=5)
-            return;
-        mLockButtonView.setMode(LockButtonView.Mode.Ready);
-        mTextView.setText("");
-        mLongPress = 0;
         getContext().registerReceiver(mBroadcastReceiver, new IntentFilter(Utils.SETTINGS_CHANGED));
     }
 
@@ -544,6 +613,17 @@ public class KeyguardKnockView extends LinearLayout implements LockButtonView.On
 
     }
 
+    private View[][] getViews() {
+        View[][] views = new View[mLockButtonView.mOutputArray.size()+3][];
+        int i;
+        views[0] = new View[] {mTextView};
+        views[1] = new View[] {mDotsView};
+        for(i=0; i<mLockButtonView.mOutputArray.size(); ++i)
+            views[2+i] = mLockButtonView.mOutputArray.get(i).toArray(new View[mLockButtonView.mOutputArray.get(i).size()]);
+        views[2+i] = new View[] {mEmergencyButton};
+        return views;
+    }
+
     public void startAppearAnimation() {
         enableClipping(false);
         setAlpha(1f);
@@ -552,7 +632,7 @@ public class KeyguardKnockView extends LinearLayout implements LockButtonView.On
                 .setDuration(500)
                 .setInterpolator(mAppearAnimationUtils.getInterpolator())
                 .translationY(0);
-        mAppearAnimationUtils.startAnimation(new View[]{mTextView, mDotsView, mLockButtonView, mEmergencyButton},
+        mAppearAnimationUtils.startAnimation(getViews(),
                 new Runnable() {
                     @Override
                     public void run() {
@@ -561,14 +641,23 @@ public class KeyguardKnockView extends LinearLayout implements LockButtonView.On
                 });
     }
 
-    public boolean startDisappearAnimation(Runnable finishRunnable) {
+    public boolean startDisappearAnimation(final Runnable finishRunnable) {
         enableClipping(false);
+        setTranslationY(0);
         animate()
-                .alpha(0f)
-                .translationY(mDisappearYTranslation)
+                .setDuration(280)
                 .setInterpolator(mDisappearAnimationUtils.getInterpolator())
-                .setDuration(100)
-                .withEndAction(finishRunnable);
+                .translationY(mDisappearYTranslation);
+        mDisappearAnimationUtils.startAnimation(getViews(),
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        enableClipping(true);
+                        if (finishRunnable != null) {
+                            finishRunnable.run();
+                        }
+                    }
+                });
         return true;
     }
 
@@ -599,8 +688,20 @@ public class KeyguardKnockView extends LinearLayout implements LockButtonView.On
                             System.exit(0);
                         }
                     }, new IntentFilter(BuildConfig.APPLICATION_ID + ".DEAD"));
+            CustomLogger.log(getContext(), "Lockscreen", "Failsafe", "Killed knock code", null, -1);
             }
-        mTextView.setText(Utils.getString(getContext(), R.string.knock_code_longpress_cleared));
+        if (mSettingsHelper.showResetText()) {
+            mTextView.setText(mSettingsHelper.getResetText());
+            mTextView.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    if (mSettingsHelper.showReadyText())
+                        mTextView.setText(mSettingsHelper.getReadyText());
+                    else
+                        mTextView.setText("");
+                }
+            }, 600);
+        }
         mTappedPositions.clear();
         mDotsView.reset(true);
         mLockButtonView.setMode(LockButtonView.Mode.Ready);

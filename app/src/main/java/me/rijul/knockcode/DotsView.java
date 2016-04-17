@@ -19,6 +19,7 @@ package me.rijul.knockcode;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -123,7 +124,8 @@ public class DotsView extends View {
         invalidate();
     }
 
-    public void animateBetween(int initial, int end, final Runnable finishRunnable, final int duration, final boolean animateDotsUp) {
+    public void animateBetween(int initial, int end, final Runnable finishRunnable, final int duration, final boolean animateDotsUp,
+                               boolean wait) {
         ValueAnimator anim = ValueAnimator.ofArgb(initial, end);
         anim.setDuration(duration/(animateDotsUp ? 2 : 1));
         anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
@@ -153,9 +155,13 @@ public class DotsView extends View {
             public void onAnimationRepeat(Animator animation) {
             }
         });
-        anim.setStartDelay(DOT_APPEAR_DURATION_OVERSHOOT);
+        anim.setStartDelay(wait ? DOT_APPEAR_DURATION_OVERSHOOT : 0);
         anim.setRepeatCount(0);
         anim.start();
+    }
+
+    public void animateBetween(int initial, int end, final Runnable finishRunnable, final int duration, boolean wait) {
+        animateBetween(initial, end, finishRunnable, duration, false, wait);
     }
 
     public void animateDotsUp(final Runnable finishRunnable, int duration) {
@@ -178,6 +184,36 @@ public class DotsView extends View {
         });
         anim.setRepeatCount(0);
         anim.start();
+    }
+
+    public void shake(final Runnable finishRunnable, int duration, boolean wait) {
+        ObjectAnimator animator = ObjectAnimator
+                .ofFloat(this, "translationX", 0, 25, -25, 25, -25, 15, -15, 6, -6, 0);
+        animator.setDuration(duration);
+        animator.setStartDelay(wait ? DOT_APPEAR_DURATION_OVERSHOOT : 0);
+        animator.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                reset(true);
+                if (finishRunnable!=null)
+                    finishRunnable.run();
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+
+            }
+        });
+        animator.start();
     }
 
     @Override

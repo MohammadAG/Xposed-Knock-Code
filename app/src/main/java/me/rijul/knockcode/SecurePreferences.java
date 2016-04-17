@@ -193,7 +193,7 @@ public class SecurePreferences implements SharedPreferences {
         }
     }
 
-    private static String decrypt(String ciphertext) {
+    public static String decrypt(String ciphertext) {
         if (ciphertext == null || ciphertext.length() == 0) {
             return ciphertext;
         }

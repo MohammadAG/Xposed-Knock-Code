@@ -149,6 +149,12 @@ public class SettingsHelper {
             return null;
         return Utils.stringToPasscode(string);
     }
+
+    public int lastInstalledVersion() {return getInt(Utils.LAST_VERSION, 0);}
+    public void saveThisVersion() {edit().putInt(Utils.LAST_VERSION, BuildConfig.VERSION_CODE).apply();}
+    public boolean shouldShowCustomShortcutInstructions()
+        {return getBoolean(Utils.SHOW_CUSTOM_SHORTCUT_INSTRUCTIONS, true);}
+
     public boolean isVirgin() {return  getPasscodeOrNull()==null;}
     public boolean isSwitchOff() {return !getBoolean(Utils.SETTINGS_SWITCH, false);}
     public boolean isDisabled() {return isVirgin() || isSwitchOff();}
@@ -162,13 +168,27 @@ public class SettingsHelper {
     public static boolean fullScreen() {return (new XSharedPreferences(BuildConfig.APPLICATION_ID)).
             getBoolean(Utils.SETTINGS_CODE_FULLSCREEN, false);}
     public boolean showDialog() {return getBoolean(Utils.SETTINGS_CODE_DIALOG, true) && !isDisabled();}
-    public boolean directlyShowCodeEntry() {return getBoolean(Utils.SETTINGS_CODE_DIRECT_ENTRY, false) && !isDisabled();}
+    public XposedMod.UnlockPolicy getPolicy() {
+        return XposedMod.UnlockPolicy.valueOf(getString(Utils.SETTINGS_CODE_DIRECT_ENTRY_POLICY, "DEFAULT"));
+    }
 
     //these are done after making sure that enabled is on, so don't give a shit
-    public boolean showText() {return getBoolean(Utils.SETTINGS_CODE_TEXT, true);}
     public boolean showBackground() {return getBoolean(Utils.SETTINGS_CODE_BACKGROUND, false);}
     public int getBackgroundColor() {return getInt(Utils.SETTINGS_CODE_BACKGROUND_COLOR, 0x4C000000);}
     public boolean showButtonTaps() {return getBoolean(Utils.SETTINGS_CODE_TAPS_VISIBLE, true);}
+    public boolean borderlessTaps() {return getBoolean(Utils.SETTINGS_CODE_TAPS_VISIBLE_BORDERLESS, false);}
+
+    public int getTextColor() {return getInt(Utils.SETTINGS_CODE_TEXT_COLOR, 0xFFFAFAFA);}
+    public boolean showReadyText() {return getBoolean(Utils.SETTINGS_CODE_TEXT_READY, true);}
+    public String getReadyText() {return getString(Utils.SETTINGS_CODE_TEXT_READY_VALUE, "");}
+    public boolean showCorrectText() {return getBoolean(Utils.SETTINGS_CODE_TEXT_CORRECT, true);}
+    public String getCorrectText() {return getString(Utils.SETTINGS_CODE_TEXT_CORRECT_VALUE, "");}
+    public boolean showErrorText() {return getBoolean(Utils.SETTINGS_CODE_TEXT_ERROR, true);}
+    public String getErrorText() {return getString(Utils.SETTINGS_CODE_TEXT_ERROR_VALUE, "");}
+    public boolean showResetText() {return getBoolean(Utils.SETTINGS_CODE_TEXT_RESET, true);}
+    public String getResetText() {return getString(Utils.SETTINGS_CODE_TEXT_RESET_VALUE, "");}
+    public boolean showDisabledText() {return getBoolean(Utils.SETTINGS_CODE_TEXT_DISABLED, true);}
+    public String getDisabledText() {return getString(Utils.SETTINGS_CODE_TEXT_DISABLED_VALUE, "");}
 
     public boolean showLines() {return getBoolean(Utils.SETTINGS_CODE_LINES_VISIBLE, true);}
     public int getLinesReadyColor() {return getInt(Utils.SETTINGS_CODE_LINES_COLOR_READY, 0xFFFAFAFA);}
@@ -183,16 +203,19 @@ public class SettingsHelper {
     public int getDotsReadyColor() {return getInt(Utils.SETTINGS_CODE_DOTS_COLOR_READY, 0xFFFAFAFA);}
     public boolean showDotsCorrect() {return getBoolean(Utils.SETTINGS_CODE_DOTS_CORRECT, false);}
     public int getDotsCorrectColor() {return getInt(Utils.SETTINGS_CODE_DOTS_COLOR_CORRECT, 0xFF4CAF50);}
-    public int getDotsCorrectLag() {return getInt(Utils.SETTINGS_CODE_DOTS_LAG_CORRECT, 50);}
     public boolean showDotsError() {return getBoolean(Utils.SETTINGS_CODE_DOTS_ERROR, false);}
-    public int getDotsWrongColor() {return getInt(Utils.SETTINGS_CODE_DOTS_COLOR_ERROR, 0xFff44336);}
-    public int getDotsErrorLag() {return getInt(Utils.SETTINGS_CODE_DOTS_LAG_ERROR, 200);}
 
     public boolean showEmergencyButton() {return getBoolean(Utils.SETTINGS_EMERGENCY_BUTTON, true);}
     public boolean showEmergencyText() {return getBoolean(Utils.SETTINGS_EMERGENCY_TEXT, true);}
+    public boolean showEmergencyBackground() {return getBoolean(Utils.SETTINGS_EMERGENCY_BACKGROUND, true);}
 
     public boolean vibrateOnTap() {return getBoolean(Utils.SETTINGS_VIBRATE_TAP, false);}
     public boolean vibrateOnLongPress() {return getBoolean(Utils.SETTINGS_VIBRATE_LONG_PRESS, true);}
+    public boolean vibrateOnError() {return getBoolean(Utils.SETTINGS_VIBRATE_ERROR, false);}
+
+    public int correctDuration() {return getInt(Utils.SETTINGS_CORRECT_DURATION, 50);}
+    public int errorDuration() {return getInt(Utils.SETTINGS_ERROR_DURATION, 400);}
+    public boolean waitForLastDot() {return getBoolean(Utils.SETTINGS_CODE_WAIT_LAST_DOT, true);}
 
     public Grid getPatternSize() {
         int columns,rows;
@@ -216,19 +239,11 @@ public class SettingsHelper {
     public void putShortcut(String passcode, String target) {
         putString(Utils.PREFIX_SHORTCUT + passcode, target);
     }
-    public void putShortcut(ArrayList<Integer> passcode, String uri, String name) {
-        putShortcut(Utils.passcodeToString(passcode), uri + "|" + name);
+    public void putShortcut(ArrayList<Integer> passcode, String uri, String name, boolean unlock) {
+        putShortcut(Utils.passcodeToString(passcode), uri + "|" + name + "|" + String.valueOf(unlock));
     }
 
     public void remove(String key) {edit().remove(key).apply();}
     public void removeShortcut(String passcode) {remove(Utils.PREFIX_SHORTCUT + passcode);}
     public void removeShortcut(ArrayList<Integer> passcode) {removeShortcut(Utils.passcodeToString(passcode));}
-
-    public int getTextLag() {
-        return getInt(Utils.SETTINGS_CODE_TEXT_LAG, 200);
-    }
-
-    public int getLinesErrorLag() {
-        return getInt(Utils.SETTINGS_CODE_LINES_LAG_ERROR, 200);
-    }
 }

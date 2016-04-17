@@ -46,4 +46,11 @@
             android:summary="@string/about_developers_rijul_desc"/>
     </PreferenceCategory>
 
+    <PreferenceCategory android:title="@string/about_translators">
+        <Preference
+            android:title="@string/about_translator_polish_pantin" />
+        <Preference
+            android:title="@string/about_translator_russian_julia"/>
+    </PreferenceCategory>
+
 </PreferenceScreen>

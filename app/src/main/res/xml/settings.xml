@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:sample="http://schemas.android.com/apk/res-auto">
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <Preference
         android:key="settings_change_code"
@@ -14,13 +13,6 @@
             android:targetPackage="me.rijul.knockcode"
             android:targetClass="me.rijul.knockcode.CustomShortcutActivity"/>
     </Preference>
-    <SwitchPreference
-        android:defaultValue="false"
-        android:key="settings_custom_shortcuts_dont_unlock"
-        android:title="@string/settings_custom_shortcuts_dont_unlock"
-        android:summaryOff="@string/settings_custom_shortcuts_summary_off"
-        android:summaryOn="@string/settings_custom_shortcuts_summary_on"
-        android:dependency="settings_custom_shortcuts"/>
     <Preference
         android:title="@string/about"
         android:summary="@string/settings_about_desc">
@@ -58,31 +50,23 @@
             android:key="settings_code_dialog"
             android:title="@string/settings_code_dialog"
             android:summary="@string/settings_code_dialog_summary"/>
-        <SwitchPreference
-            android:defaultValue="false"
-            android:key="settings_code_direct_entry"
+        <ListPreference
+            android:key="settings_code_direct_entry_policy"
+            android:defaultValue="NEVER"
             android:title="@string/settings_code_direct_entry"
-            android:summary="@string/settings_code_direct_entry_summary"/>
-        <SwitchPreference
-            android:defaultValue="true"
-            android:key="settings_code_text"
-            android:title="@string/settings_code_text"
-            android:summary="@string/settings_code_text_summary"/>
-        <me.rijul.knockcode.SeekBarPreference
-            android:key="settings_code_text_lag"
-            android:title="@string/settings_code_text_lag"
-            android:summary="@string/settings_code_text_lag_summary"
-            minimum="50"
-            maximum="1000"
-            interval="50"
-            android:defaultValue="200"
-            monitorBoxEnabled="true"
-            monitorBoxUnit="ms"
-            android:dependency="settings_code_text"/>
+            android:entries="@array/settings_code_direct_entry_entries"
+            android:entryValues="@array/settings_code_direct_entry_values"
+            android:summary="%1$s"
+            android:dependency="settings_code_direct_entry"/>
         <SwitchPreference
             android:defaultValue="true"
             android:key="settings_code_taps_visible"
             android:title="@string/settings_code_taps_visible" />
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="settings_code_taps_visible_borderless"
+            android:title="@string/settings_code_taps_visible_borderless"
+            android:dependency="settings_code_taps_visible"/>
         <SwitchPreference
             android:defaultValue="false"
             android:key="settings_code_background"
@@ -94,6 +78,96 @@
             alphaSlider="true"
             hexValue="true"
             android:dependency="settings_code_background"/>
+        <PreferenceScreen
+            android:title="@string/settings_code_text">
+            <net.margaritov.preference.colorpicker.ColorPickerPreference
+                android:key="settings_code_text_color"
+                android:title="@string/settings_code_text_color"
+                android:defaultValue="@color/windowBackground"
+                alphaSlider="true"
+                hexValue="true" />
+            <SwitchPreference
+                android:defaultValue="true"
+                android:key="settings_code_text_ready"
+                android:title="@string/settings_code_text_ready"/>
+            <EditTextPreference
+                android:defaultValue="@string/knock_enter_code"
+                android:summary="@string/knock_enter_code"
+                android:key="settings_code_text_ready_value"
+                android:title="@string/settings_code_text_ready_value"
+                android:dependency="settings_code_text_ready"/>
+            <SwitchPreference
+                android:defaultValue="true"
+                android:key="settings_code_text_correct"
+                android:title="@string/settings_code_text_correct"/>
+            <EditTextPreference
+                android:defaultValue="@string/knock_code_correct"
+                android:summary="@string/knock_code_correct"
+                android:key="settings_code_text_correct_value"
+                android:title="@string/settings_code_text_correct_value"
+                android:dependency="settings_code_text_correct"/>
+            <SwitchPreference
+                android:defaultValue="true"
+                android:key="settings_code_text_error"
+                android:title="@string/settings_code_text_error"/>
+            <EditTextPreference
+                android:summary="@string/knock_code_wrong"
+                android:defaultValue="@string/knock_code_wrong"
+                android:key="settings_code_text_error_value"
+                android:title="@string/settings_code_text_error_summary"
+                android:dependency="settings_code_text_error"/>
+            <SwitchPreference
+                android:defaultValue="true"
+                android:key="settings_code_text_reset"
+                android:title="@string/settings_code_text_reset"
+                android:summary="@string/settings_code_text_reset_summary"/>
+            <EditTextPreference
+                android:summary="@string/knock_code_longpress_cleared"
+                android:defaultValue="@string/knock_code_longpress_cleared"
+                android:key="settings_code_text_reset_value"
+                android:title="@string/settings_code_text_reset_value"
+                android:dependency="settings_code_text_reset"/>
+            <SwitchPreference
+                android:defaultValue="true"
+                android:key="settings_code_text_disabled"
+                android:title="@string/settings_code_text_disabled"
+                android:summaryOn="@string/settings_code_text_disabled_summary"/>
+            <EditTextPreference
+                android:summary="@string/knock_code_enabling"
+                android:defaultValue="@string/knock_code_enabling"
+                android:key="settings_code_text_disabled_value"
+                android:title="@string/settings_code_text_disabled_value"
+                android:dependency="settings_code_text_disabled"/>
+        </PreferenceScreen>
+        <PreferenceScreen
+            android:title="@string/settings_code_dots">
+            <SwitchPreference
+                android:defaultValue="true"
+                android:key="settings_code_dots_visible"
+                android:title="@string/settings_code_dots_visible" />
+            <net.margaritov.preference.colorpicker.ColorPickerPreference
+                android:key="settings_code_dots_color_ready"
+                android:title="@string/settings_code_dots_color_ready"
+                android:defaultValue="@color/windowBackground"
+                alphaSlider="true"
+                hexValue="true"
+                android:dependency="settings_code_dots_visible"/>
+            <SwitchPreference
+                android:defaultValue="false"
+                android:key="settings_code_dots_correct"
+                android:title="@string/settings_code_dots_correct" />
+            <net.margaritov.preference.colorpicker.ColorPickerPreference
+                android:key="settings_code_dots_color_correct"
+                android:title="@string/settings_code_dots_color_correct"
+                android:defaultValue="@color/colorCorrect"
+                alphaSlider="true"
+                hexValue="true"
+                android:dependency="settings_code_dots_correct"/>
+            <SwitchPreference
+                android:defaultValue="true"
+                android:key="settings_code_dots_error"
+                android:title="@string/settings_code_dots_error" />
+        </PreferenceScreen>
         <PreferenceScreen
             android:title="@string/settings_code_lines">
             <SwitchPreference
@@ -129,17 +203,6 @@
                 alphaSlider="true"
                 hexValue="true"
                 android:dependency="settings_code_lines_error"/>
-            <me.rijul.knockcode.SeekBarPreference
-                android:key="settings_code_lines_lag_error"
-                android:title="@string/settings_code_lines_lag_error"
-                android:summary="@string/settings_code_lines_lag_error_summary"
-                minimum="50"
-                maximum="1000"
-                interval="50"
-                android:defaultValue="200"
-                monitorBoxEnabled="true"
-                monitorBoxUnit="ms"
-                android:dependency="settings_code_lines_error"/>
             <SwitchPreference
                 android:defaultValue="true"
                 android:key="settings_code_lines_disabled"
@@ -153,61 +216,33 @@
                 android:dependency="settings_code_lines_disabled"/>
         </PreferenceScreen>
         <PreferenceScreen
-            android:title="@string/settings_code_dots">
-            <SwitchPreference
-                android:defaultValue="true"
-                android:key="settings_code_dots_visible"
-                android:title="@string/settings_code_dots_visible" />
-            <net.margaritov.preference.colorpicker.ColorPickerPreference
-                android:key="settings_code_dots_color_ready"
-                android:title="@string/settings_code_dots_color_ready"
-                android:defaultValue="@color/windowBackground"
-                alphaSlider="true"
-                hexValue="true"
-                android:dependency="settings_code_dots_visible"/>
-            <SwitchPreference
-                android:defaultValue="false"
-                android:key="settings_code_dots_correct"
-                android:title="@string/settings_code_dots_correct"
-                android:summaryOn="@string/settings_code_dots_summary_on"/>
-            <net.margaritov.preference.colorpicker.ColorPickerPreference
-                android:key="settings_code_dots_color_correct"
-                android:title="@string/settings_code_dots_color_correct"
-                android:defaultValue="@color/colorCorrect"
-                alphaSlider="true"
-                hexValue="true"
-                android:dependency="settings_code_dots_correct"/>
+            android:title="@string/settings_code_duration"
+            android:summary="@string/settings_code_duration_summary">
             <me.rijul.knockcode.SeekBarPreference
-                android:key="settings_code_dots_lag_correct"
-                android:title="@string/settings_code_dots_lag_correct"
-                minimum="50"
+                android:key="settings_correct_duration"
+                android:title="@string/settings_correct_duration"
+                android:summary="@string/settings_correct_duration_summary"
+                minimum="0"
                 maximum="1000"
                 interval="50"
                 android:defaultValue="50"
                 monitorBoxEnabled="true"
-                monitorBoxUnit="ms"
-                android:dependency="settings_code_dots_correct"/>
-            <SwitchPreference
-                android:defaultValue="true"
-                android:key="settings_code_dots_error"
-                android:title="@string/settings_code_dots_error" />
-            <net.margaritov.preference.colorpicker.ColorPickerPreference
-                android:key="settings_code_dots_color_error"
-                android:title="@string/settings_code_dots_color_error"
-                android:defaultValue="@color/colorWrong"
-                alphaSlider="true"
-                hexValue="true"
-                android:dependency="settings_code_dots_error"/>
+                monitorBoxUnit="ms" />
             <me.rijul.knockcode.SeekBarPreference
-                android:key="settings_code_dots_lag_error"
-                android:title="@string/settings_code_dots_lag_error"
-                minimum="50"
+                android:key="settings_error_duration"
+                android:title="@string/settings_error_duration"
+                android:summary="@string/settings_error_duration_summary"
+                minimum="0"
                 maximum="1000"
                 interval="50"
-                android:defaultValue="200"
+                android:defaultValue="400"
                 monitorBoxEnabled="true"
-                monitorBoxUnit="ms"
-                android:dependency="settings_code_dots_error"/>
+                monitorBoxUnit="ms" />
+            <SwitchPreference
+                android:defaultValue="true"
+                android:key="settings_code_wait_last_dot"
+                android:title="@string/settings_code_wait_last_dot"
+                android:summary="@string/settings_code_wait_last_dot_summary"/>
         </PreferenceScreen>
     </PreferenceCategory>
 
@@ -224,6 +259,12 @@
             android:title="@string/settings_emergency_text"
             android:summaryOff="@string/settings_emergency_text_summary_off"
             android:dependency="settings_emergency_button"/>
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="settings_emergency_background"
+            android:title="@string/settings_emergency_background"
+            android:summaryOff="@string/settings_emergency_text_summary_off"
+            android:dependency="settings_emergency_button"/>
     </PreferenceCategory>
 
     <PreferenceCategory
@@ -236,6 +277,10 @@
             android:defaultValue="true"
             android:key="settings_vibrate_long_press"
             android:title="@string/settings_vibrate_long_press" />
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="settings_vibrate_error"
+            android:title="@string/settings_vibrate_error"/>
     </PreferenceCategory>
 
 </PreferenceScreen>

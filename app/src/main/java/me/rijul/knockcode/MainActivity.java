@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.preference.PreferenceFragment;
 import android.view.HapticFeedbackConstants;
 import android.view.LayoutInflater;
@@ -31,6 +32,7 @@ public class MainActivity extends Activity {
     private static SettingsHelper mSettingsHelper;
     private static ArrayList<Integer> mPasscode;
     private static ProgressDialog mProgressDialog;
+    private static Vibrator mVibrator;
 
     @Override
     public SharedPreferences getSharedPreferences(String name, int mode) {
@@ -43,11 +45,14 @@ public class MainActivity extends Activity {
         setContentView(R.layout.main);
         mSettingsHelper = new SettingsHelper(this);
         mPasscode = mSettingsHelper.getPasscodeOrNull();
+        mVibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
         if (getCallingActivity()==null) {
             if (mPasscode == null) {
                 startActivity(new Intent(this, SettingsActivity.class));
+                CustomLogger.log(this, "MainActivity", "App", "First run", null, -1);
                 finish();
             } else {
+                CustomLogger.log(this, "MainActivity", "App", "Default run", null, -1);
                 getFragmentManager().beginTransaction().replace(R.id.fragment_container, new MainFragment()).commit();
             }
         } else {
@@ -55,6 +60,7 @@ public class MainActivity extends Activity {
             MainFragment fragment = new MainFragment();
             fragment.setArguments(bundle);
             getFragmentManager().beginTransaction().replace(R.id.fragment_container, fragment).commit();
+            CustomLogger.log(this, "MainActivity", "App", "Called for result", null, Integer.parseInt(bundle.getString("requestCode")));
         }
     }
 
@@ -83,6 +89,7 @@ public class MainActivity extends Activity {
         private int mRequestCode;
         private String mUri, mName, mOriginalPasscode;
         private boolean mConfirmationMode = false;
+        private boolean mUnlockOnLaunch;
         private ArrayList<Integer> mFirstTappedPositions = new ArrayList<>(), mSecondTappedPositions = new ArrayList<>();
         private Runnable mFinishRunnable = new Runnable() {
             @Override
@@ -116,6 +123,7 @@ public class MainActivity extends Activity {
             mLockButtonView.setOnPositionTappedListener(this);
             mLockButtonView.setOnLongClickListener(this);
             rootView.findViewById(R.id.next_button).setOnClickListener(this);
+            rootView.findViewById(R.id.next_button).setEnabled(false);
             rootView.findViewById(R.id.retry_button).setOnClickListener(this);
             rootView.findViewById(R.id.retry_button).setEnabled(false);
             try {
@@ -138,6 +146,7 @@ public class MainActivity extends Activity {
                     mUri = bundle.getString("uri");
                     mName = bundle.getString("name");
                     mOriginalPasscode = bundle.getString("passcode");
+                    mUnlockOnLaunch = bundle.getBoolean("unlockOnLaunch", true);
                     ((TextView) rootView.findViewById(android.R.id.hint)).setText(mName);
                     maxSize = mPasscode.size() + 1;
                 }
@@ -228,13 +237,14 @@ public class MainActivity extends Activity {
                                             public void run() {
                                                 deleteShortcuts();
                                             }
-                                        }, mSettingsHelper.getDotsCorrectLag(), true);
+                                        }, 50, true, true);
                             } else {
+                                ((TextView) getView().findViewById(android.R.id.hint)).setText(R.string.knock_no_match);
                                 mLockButtonView.setMode(LockButtonView.Mode.Incorrect);
                                 mLockButtonView.enableButtons(false);
-                                mDotsView.animateBetween(Utils.getOwnResources(getActivity()).getColor(R.color.textColorPrimary),
-                                        Utils.getOwnResources(getActivity()).getColor(R.color.colorWrong), mFailRunnable
-                                        , mSettingsHelper.getDotsErrorLag(), true);
+                                mDotsView.shake(mFailRunnable, 400, true);
+                                if (mVibrator.hasVibrator())
+                                    mVibrator.vibrate(400L);
                             }
                         } else {
                             if (mFirstTappedPositions.equals(mSecondTappedPositions)) {
@@ -243,16 +253,17 @@ public class MainActivity extends Activity {
                                 mLockButtonView.enableButtons(false);
                                 mDotsView.animateBetween(Utils.getOwnResources(getActivity()).getColor(R.color.textColorPrimary),
                                         Utils.getOwnResources(getActivity()).getColor(R.color.colorCorrect), mFinishRunnable,
-                                        mSettingsHelper.getDotsCorrectLag(), true);
-                                mSettingsHelper.putShortcut(mFirstTappedPositions, mUri, mName);
+                                        50, true, true);
+                                mSettingsHelper.putShortcut(mFirstTappedPositions, mUri, mName, mUnlockOnLaunch);
                                 if (mOriginalPasscode!=null)
                                     mSettingsHelper.removeShortcut(mOriginalPasscode);
                             } else {
                                 mLockButtonView.setMode(LockButtonView.Mode.Incorrect);
+                                ((TextView) getView().findViewById(android.R.id.hint)).setText(R.string.knock_no_match);
                                 mLockButtonView.enableButtons(false);
-                                mDotsView.animateBetween(Utils.getOwnResources(getActivity()).getColor(R.color.textColorPrimary),
-                                        Utils.getOwnResources(getActivity()).getColor(R.color.colorWrong), mFailRunnable
-                                        , mSettingsHelper.getDotsErrorLag(), true);
+                                if (mVibrator.hasVibrator())
+                                    mVibrator.vibrate(400L);
+                                mDotsView.shake(mFailRunnable, 400, true);
                             }
                         }
                     }
@@ -337,15 +348,15 @@ public class MainActivity extends Activity {
                         ((TextView) getView().findViewById(android.R.id.hint)).setText(R.string.knock_code_correct);
                         mDotsView.animateBetween(Utils.getOwnResources(getActivity()).getColor(R.color.textColorPrimary),
                                 Utils.getOwnResources(getActivity()).getColor(R.color.colorCorrect), mFinishRunnable,
-                                mSettingsHelper.getDotsCorrectLag(), true);
+                                50, true, true);
                         mLockButtonView.setMode(LockButtonView.Mode.Correct);
                     } else {
                         mLockButtonView.setMode(LockButtonView.Mode.Incorrect);
                         mLockButtonView.enableButtons(false);
                         ((TextView) getView().findViewById(android.R.id.hint)).setText(R.string.knock_code_wrong);
-                        mDotsView.animateBetween(Utils.getOwnResources(getActivity()).getColor(R.color.textColorPrimary),
-                                Utils.getOwnResources(getActivity()).getColor(R.color.colorWrong), mFailRunnable
-                                , mSettingsHelper.getDotsErrorLag(), true);
+                        if (mVibrator.hasVibrator())
+                            mVibrator.vibrate(400L);
+                        mDotsView.shake(mFailRunnable, 400, true);
                     }
                 }
                 return;

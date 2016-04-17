@@ -12,6 +12,7 @@ import android.content.res.XModuleResources;
 import android.os.Build;
 import android.provider.Settings.Secure;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ViewFlipper;
 
@@ -19,6 +20,7 @@ import de.robv.android.xposed.IXposedHookInitPackageResources;
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.IXposedHookZygoteInit;
 import de.robv.android.xposed.XC_MethodHook;
+import de.robv.android.xposed.XC_MethodReplacement;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_InitPackageResources;
@@ -32,14 +34,15 @@ public class XposedMod implements IXposedHookLoadPackage, IXposedHookZygoteInit,
     private XC_MethodHook mStartAppearAnimHook;
     private XC_MethodHook mStartDisAppearAnimHook;
     private XC_MethodHook mOnPauseHook;
+    private XC_MethodHook mOnResumeHook;
     private XC_MethodHook mOnSimStateChangedHook;
     private XC_MethodHook mOnPhoneStateChangedHook;
     private XC_MethodHook mShowTimeoutDialogHook;
+    private XC_MethodHook mOnScreenTurnedOnHook;
+    private XC_MethodHook mOnScreenTurnedOffHook;
     protected static KeyguardKnockView mKnockCodeView;
     private static SettingsHelper mSettingsHelper;
-    private XC_MethodHook mOnScreenTurnedOnHook;
     private String modulePath;
-    private XC_MethodHook mOnResumeHook;
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -47,6 +50,8 @@ public class XposedMod implements IXposedHookLoadPackage, IXposedHookZygoteInit,
                 mSettingsHelper.reloadSettings();
         }
     };
+
+    public enum UnlockPolicy { NEVER, ALWAYS, NO_CLEARABLE_NOTIF, NO_NOTIF };
 
     @Override
     public void initZygote(StartupParam startupParam) throws Throwable {
@@ -58,6 +63,7 @@ public class XposedMod implements IXposedHookLoadPackage, IXposedHookZygoteInit,
         if ((resParam.packageName.contains("android.keyguard")) || (resParam.packageName.contains("com.android.systemui"))) {
             XModuleResources modRes = XModuleResources.createInstance(modulePath, resParam.res);
             if (SettingsHelper.fullScreen()) {
+                XposedBridge.log("[KnockCode] Setting fullscreen!");
                 resParam.res.setReplacement(resParam.packageName, "dimen", "keyguard_security_height", modRes.fwd(R.dimen.replace_keyguard_security_max_height));
                 resParam.res.setReplacement(resParam.packageName, "dimen", "keyguard_security_view_margin", modRes.fwd(R.dimen.replace_keyguard_security_view_margin));
                 resParam.res.setReplacement(resParam.packageName, "dimen", "keyguard_security_width", modRes.fwd(R.dimen.replace_keyguard_security_max_height));
@@ -70,8 +76,10 @@ public class XposedMod implements IXposedHookLoadPackage, IXposedHookZygoteInit,
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)
             return;
         if (lpparam.packageName.equals("me.rijul.knockcode")) {
-            XposedHelpers.setStaticBooleanField(XposedHelpers.findClass("me.rijul.knockcode.SettingsActivity", lpparam.classLoader),
-                    "MODULE_INACTIVE", false);
+            Class<?> SettingsActivityClazz = XposedHelpers.findClass("me.rijul.knockcode.SettingsActivity", lpparam.classLoader);
+            XposedHelpers.setStaticBooleanField(SettingsActivityClazz, "MODULE_INACTIVE", false);
+            XposedHelpers.findAndHookMethod(SettingsActivityClazz, "getXposedVersionCode",
+                    XC_MethodReplacement.returnConstant(BuildConfig.VERSION_CODE));
         } else if (lpparam.packageName.equals("com.htc.lockscreen")) {
             XposedBridge.log("[KnockCode] HTC Device");
             createHooksIfNeeded("com.htc.lockscreen.keyguard");
@@ -116,6 +124,7 @@ public class XposedMod implements IXposedHookLoadPackage, IXposedHookZygoteInit,
             Class<?> keyguardViewManager = XposedHelpers.findClass("com.android.systemui.statusbar.phone.StatusBarKeyguardViewManager",
                     lpparam.classLoader);
             XposedBridge.hookAllMethods(keyguardViewManager, "onScreenTurnedOn", mOnScreenTurnedOnHook);
+            XposedBridge.hookAllMethods(keyguardViewManager, "onScreenTurnedOff", mOnScreenTurnedOffHook);
         } catch (NoSuchMethodError e) {
             XposedBridge.log(e);
         }
@@ -292,7 +301,7 @@ public class XposedMod implements IXposedHookLoadPackage, IXposedHookZygoteInit,
             }
         };
 
-        mOnPauseHook= new XC_MethodHook() {
+        mOnPauseHook = new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                 if ((mSettingsHelper==null) || (mSettingsHelper.isDisabled()))
@@ -320,10 +329,50 @@ public class XposedMod implements IXposedHookLoadPackage, IXposedHookZygoteInit,
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 super.afterHookedMethod(param);
-                if (mSettingsHelper==null || !mSettingsHelper.directlyShowCodeEntry() || mKnockCodeView==null || mKnockCodeView.isInCall())
+                //means either not init or not pattern, so we don't track it
+                if (mSettingsHelper==null || mKnockCodeView==null)
                     return;
-                XposedHelpers.callMethod(param.thisObject, "showBouncer");
+                CustomLogger.log(((Context) XposedHelpers.getObjectField(param.thisObject, "mContext")), "Lockscreen", "Device", "Screen turned on", null, -1);
+                if (mKnockCodeView.isInCall())
+                    return;
+                if (shouldUnlock(param))
+                    XposedHelpers.callMethod(param.thisObject, "showBouncer");
             }
         };
+
+        mOnScreenTurnedOffHook = new XC_MethodHook() {
+            @Override
+            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                super.afterHookedMethod(param);
+                //means either not init or not pattern, so we don't track it
+                if (mSettingsHelper==null || mKnockCodeView==null)
+                    return;
+                CustomLogger.log(((Context) XposedHelpers.getObjectField(param.thisObject, "mContext")), "Lockscreen", "Device", "Screen turned off", null, -1);
+            }
+        };
+    }
+
+    private boolean shouldUnlock(XC_MethodHook.MethodHookParam param) {
+        UnlockPolicy currentPolicy = mSettingsHelper.getPolicy();
+        if (currentPolicy.equals(UnlockPolicy.NEVER))
+            return false;
+        if (currentPolicy.equals(UnlockPolicy.ALWAYS))
+            return true;
+        Object mPhoneStatusBar = XposedHelpers.getObjectField(param.thisObject, "mPhoneStatusBar");
+        ViewGroup stack = (ViewGroup) XposedHelpers.getObjectField(mPhoneStatusBar, "mStackScroller");
+        int childCount = stack.getChildCount();
+        int notifCount = 0;
+        int notifClearableCount = 0;
+        for (int i=0; i<childCount; i++) {
+            View v = stack.getChildAt(i);
+            if (v.getVisibility() != View.VISIBLE ||
+                    !v.getClass().getName().equals("com.android.systemui.statusbar.ExpandableNotificationRow"))
+                continue;
+            notifCount++;
+            if ((boolean) XposedHelpers.callMethod(v, "isClearable")) {
+                notifClearableCount++;
+            }
+        }
+        return (mSettingsHelper.getPolicy() == UnlockPolicy.NO_CLEARABLE_NOTIF ? notifClearableCount==0 : notifCount==0);
     }
 }

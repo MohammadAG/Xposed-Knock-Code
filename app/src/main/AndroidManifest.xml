@@ -1,6 +1,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="me.rijul.knockcode">
 
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.VIBRATE"/>
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -51,6 +55,15 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="me.rijul.knockcode.KILL" />
+            </intent-filter>
+        </receiver>
+
+        <receiver
+            android:name=".CustomLogger"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="me.rijul.knockcode_CUSTOM_LOG" />
             </intent-filter>
         </receiver>
 
