@@ -66,7 +66,7 @@
     &#x2022; <i>Xposed Framework is not installed</i>\n
     &#x2022; <i>Xposed is installed and active, but you didn\'t enable Knock Code in Xposed installer (\"Modules\" tab) or didn\'t reboot afterwards.</i>\n
     &#x2022; <i>Xposed Framework got disabled by Xposed safemode. Look at the Xposed Thread on XDA for further information.</i>\n
-&#x2022; <i>Knock Code may have encountered a crash. You should send me a bug report on the XDA thread (Hamburger menu -> About -> Help).</i></string>
+&#x2022; <i>Knock Code may have encountered a crash. You should send me a bug report on the XDA thread (About -> Help).</i></string>
     <string name="settings_require_pattern">Knock code requires pattern unlock, touch here to set up</string>
     <string name="settings_reboot_upgrade">A reboot is required to complete the upgrade</string>
 

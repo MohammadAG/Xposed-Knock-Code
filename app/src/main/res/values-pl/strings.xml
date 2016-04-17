@@ -71,7 +71,6 @@
     <string name="settings_code_dialog">Pokazuj dialog</string>
     <string name="settings_code_dialog_summary">Na zbyt wiele nieudanych prÃ³b</string>
     <string name="settings_code_direct_entry">BezpoÅ›rednio pokazuj wprowadzanie kodu</string>
-    <string name="settings_code_direct_entry_summary">Unikaj ewentualnie ekranu powiadomienia</string>
     <string name="settings_code_text">Pokazuj tekst</string>
     <string name="settings_code_taps_visible">Pokazuj dotkniÄ™cia</string>
     <string name="settings_code_background">Pokazuj tÅ‚o</string>

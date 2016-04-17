@@ -56,8 +56,7 @@
             android:title="@string/settings_code_direct_entry"
             android:entries="@array/settings_code_direct_entry_entries"
             android:entryValues="@array/settings_code_direct_entry_values"
-            android:summary="%1$s"
-            android:dependency="settings_code_direct_entry"/>
+            android:summary="%1$s" />
         <SwitchPreference
             android:defaultValue="true"
             android:key="settings_code_taps_visible"
