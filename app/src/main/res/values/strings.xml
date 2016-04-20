@@ -13,6 +13,7 @@
     <string name="about_disclaimer_message" translatable="false">THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE</string>
     <string name="about_translators">Translators</string>
     <string name="about_translator_polish_pantin">pantinPL (Polish)</string>
+    <string name="about_translator_russian_julia">Ms_Julia (Russian)</string>
 
     <string name="custom_shortcuts">Custom shortcuts</string>
     <string name="custom_shortcuts_add">Add</string>
@@ -136,7 +137,7 @@
     <string name="settings_code_lines_color_disabled">Lines disabled color</string>
 
     <string name="settings_code_duration">Duration</string>
-    <string name="settings_code_duration_summary">Change the visibility duration for success and error</string>
+    <string name="settings_code_duration_summary">Change the visibility duration for success and error, and animation durations</string>
     <string name="settings_correct_duration">Correct duration</string>
     <string name="settings_correct_duration_summary">Time between correct code entry and unlocking; used to show text, lines and animate dots. \nWill cause unlocking lag!</string>
     <string name="settings_error_duration">Error duration</string>
@@ -155,4 +156,6 @@
     <string name="settings_vibrate_tap">Vibrate on tap</string>
     <string name="settings_vibrate_long_press">Vibrate on long press</string>
     <string name="settings_vibrate_error">Vibrate on error</string>
+    <string name="settings_appear_anim">Appear animation</string>
+    <string name="settings_disappear_anim">Disappear animation</string>
 </resources>

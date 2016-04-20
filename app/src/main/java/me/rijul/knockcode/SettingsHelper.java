@@ -10,6 +10,7 @@ import android.graphics.Color;
 import android.provider.Settings.Secure;
 
 import de.robv.android.xposed.XSharedPreferences;
+import de.robv.android.xposed.XposedBridge;
 
 public class SettingsHelper {
     //these are for xposed
@@ -171,6 +172,7 @@ public class SettingsHelper {
     public XposedMod.UnlockPolicy getPolicy() {
         return XposedMod.UnlockPolicy.valueOf(getString(Utils.SETTINGS_CODE_DIRECT_ENTRY_POLICY, "DEFAULT"));
     }
+    public boolean forceNone() {return getBoolean(Utils.SETTINGS_CODE_FORCE_NONE, false) && !isDisabled();}
 
     //these are done after making sure that enabled is on, so don't give a shit
     public boolean showBackground() {return getBoolean(Utils.SETTINGS_CODE_BACKGROUND, false);}
@@ -216,6 +218,8 @@ public class SettingsHelper {
     public int correctDuration() {return getInt(Utils.SETTINGS_CORRECT_DURATION, 50);}
     public int errorDuration() {return getInt(Utils.SETTINGS_ERROR_DURATION, 400);}
     public boolean waitForLastDot() {return getBoolean(Utils.SETTINGS_CODE_WAIT_LAST_DOT, true);}
+    public int appearDuration() {return getInt(Utils.SETTINGS_APPEAR_DURATION, 500);}
+    public int disappearDuration() {return getInt(Utils.SETTINGS_DISAPPEAR_DURATION, 300);}
 
     public Grid getPatternSize() {
         int columns,rows;

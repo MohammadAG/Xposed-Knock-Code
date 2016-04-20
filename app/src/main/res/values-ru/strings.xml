@@ -1,0 +1,100 @@
+﻿<resources>
+
+    <string name="app_name">KnockCode</string>
+    <string name="loading">Загрузка…</string>
+
+    <string name="main_retry">Ввести заново</string>
+    <string name="main_next">Далее</string>
+    <string name="main_select_grid_size">Выберите размер сетки</string>
+    <string name="main_shortcuts_will_delete">После того, как код будет изменен, все существующие ярлыки будут удалены</string>
+    <string name="main_too_many_taps">Слишком много тапов, перенастройие!</string>
+    <string name="main_conflict_shortcut">Этот код находится в противоречии с %1$s, перенастройте!</string>
+
+    <string name="about_disclaimer_title">Отказ от ответственности</string>
+
+    <string name="custom_shortcuts">Пользовательские ярлыки</string>
+    <string name="custom_shortcuts_add">Добавить</string>
+    <string name="custom_shortcuts_edit">Редактировать</string>
+    <string name="custom_shortcuts_delete">Удалить</string>
+
+    <string name="knock_enter_code">Введите код</string>
+    <string name="knock_enter_new_code">Введите новый код</string>
+    <string name="knock_confirm_code">Подтвердите новый код</string>
+    <string name="knock_code_correct">Корректный</string>
+    <string name="knock_code_wrong">Некорректный</string>
+    <string name="knock_code_enabling">Попробуйте еще раз в течении нескольких секунд</string>
+    <string name="knock_code_longpress_cleared">Долгое нажатие, для очистки шаблона</string>
+    <string name="knock_code_confirm_shortcut">Подтверждение %1$s</string>
+    <string name="knock_no_match">Коды не совпадают</string>
+    <string name="knock_match">Коды совпали успешно!</string>
+
+
+    <string name="shortcut_helper_apps">Приложения</string>
+    <string name="shortcut_helper_activities">Транзакции</string>
+    <string name="shortcut_helper_target">Выберите объект</string>
+
+    <string name="about">О программе</string>
+    <string name="about_help">Справка</string>
+    <string name="about_help_description">Прежде чем обращаться за помощью, убедитесь, что модуль активен и включен шаблон в параметрах настройки</string>
+    <string name="about_app_settings">Скачать приложение для настройки Xposed Module</string>
+    <string name="about_app_settings_desc">Используется для открытия ярлыков посредством экрана блокировки</string>
+    <string name="about_license">Лицензия</string>
+    <string name="about_disclaimer_desc">Используя этот модуль, вы соглашаетесь, что авторы не несут ответственности за любой ущерб.</string>
+    <string name="about_source_code">Исходный код</string>
+    <string name="about_developers">Разработчики</string>
+    <string name="about_developers_mohammadag_desc">Создатель и разработчик программы до Kitkat</string>
+    <string name="about_developers_rijul_desc">Разработчик программы для Marshmallow и Lollipop</string>
+
+    <string name="settings_module_inactive">Модуль неактивен, нажмите для получения информации</string>
+    <string name="settings_require_pattern">KnockCode требуется шаблон разблокировки, нажмите здесь чтобы настроить</string>
+    <string name="settings_module_inactive_title">KnockCode неактивен</string>
+    <string name="settings_module_inactive_message">KnockCode неактивен. Это может иметь несколько причин:\n
+    &#x2022; <i>Xposed Framework не установлен</i>\n
+    &#x2022; <i>Xposed установлен и активен, но вы не включили KnockCode в Xposed installer или не выполнили перезагрузку.</i>\n
+    &#x2022; <i>Xposed Framework был отключен в безопасном режиме Xposed. Смотрите тему Xposed на XDA для получения дополнительной информации.</i>\n
+&#x2022; <i>KnockCode возможно столкнулся с ошибками при работе. Вы должны послать мне отчет об ошибках на XDA (Меню -> О приложении -> Справка).</i></string>
+    <string name="settings_change_code">Изменение KnockCode</string>
+    <string name="settings_reboot_required">Требуется перезагрузка или необходим перезапуск блокировки клавиатуры</string>
+    <string name="settings_set_code">Настройка KnockCode</string>
+    <string name="settings_custom_shortcuts_desc">Запуск ярлыков прямо с экрана блокировки</string>
+    <string name="settings_about_desc">Помощь, исходный код, лицензия, авторы и т.д.</string>
+    <string name="settings_restart_keyguard">Перезапуск блокировки клавиатуры</string>
+    <string name="settings_visibility">Видимость</string>
+    <string name="settings_app">Параметры приложения</string>
+    <string name="settings_hide_launcher">Скрыть из лаунчера</string>
+    <string name="settings_failsafe">Самоотключение</string>
+    <string name="settings_failsafe_summary_on">Пять последовательных долгих нажатий отключат KnockCode и восстановят стандартные настройки.</string>
+    <string name="settings_failsafe_summary_off">Отключено, на свой страх и риск</string>
+    <string name="settings_code_fullscreen">Полноэкранный режим KnockCode</string>
+    <string name="settings_code_dialog">Показать диалог</string>
+    <string name="settings_code_dialog_summary">Слишком много неудачных попыток</string>
+    <string name="settings_code_direct_entry">Непосредственно показать работу KnockCode</string>
+    <string name="settings_code_text">Показ текста</string>
+    <string name="settings_code_taps_visible">Показывать нажатия кнопок</string>
+    <string name="settings_code_background">Применить фон</string>
+    <string name="settings_code_background_color">Цвет фона</string>
+    <string name="settings_code_lines">Строки</string>
+    <string name="settings_code_lines_visible">Показывать строки</string>
+    <string name="settings_code_lines_color_ready">Цвет для строк по умолчанию</string>
+    <string name="settings_code_lines_correct">Показывать корректные строки</string>
+    <string name="settings_code_lines_color_correct">Подобрать цвет правильных строк</string>
+    <string name="settings_code_lines_error">Показывать ошибки строк</string>
+    <string name="settings_code_lines_color_error">Цвет ошибки строк</string>
+    <string name="settings_code_lines_disabled">Показать отключеные строки</string>
+    <string name="settings_code_lines_color_disabled">Цвет отключеных строк</string>
+    <string name="settings_code_dots">Нажатия</string>
+    <string name="settings_code_dots_visible">Показывать нажатия</string>
+    <string name="settings_code_dots_color_ready">Цвет нажатий по умолчанию</string>
+    <string name="settings_code_dots_correct">Показывать корректные нажатия</string>
+    <string name="settings_code_dots_color_correct">Цвет корректных нажатий</string>
+    <string name="settings_code_dots_error">Показывать ошибочные нажатия</string>
+    <string name="settings_emergency_button">Аварийная кнопка</string>
+    <string name="settings_show_emergency_button">Показывать аварийную кнопку</string>
+    <string name="settings_show_emergency_button_summary_off">Отключение на свой страх и риск</string>
+    <string name="settings_emergency_text">Показать аварийный текст</string>
+    <string name="settings_emergency_text_summary_off">Кнопка нажатий все еще будет работать</string>
+    <string name="settings_vibration">Вибрация (игнорирует системные настройки)</string>
+    <string name="settings_vibrate_tap">Виброотклик на нажатия</string>
+    <string name="settings_vibrate_long_press">Виброотклик на длительное нажатие</string>
+    <string name="settings">Настройки</string>
+</resources>

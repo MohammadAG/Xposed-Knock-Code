@@ -33,7 +33,7 @@ public class AppearAnimationUtils implements AppearAnimationCreator<View> {
     private float mStartTranslation;
     private final AppearAnimationProperties mProperties = new AppearAnimationProperties();
     protected final float mDelayScale;
-    private final long mDuration;
+    private long mDuration;
     protected boolean mScaleTranslationWithRow;
     protected boolean mAppearing;
 
@@ -54,6 +54,10 @@ public class AppearAnimationUtils implements AppearAnimationCreator<View> {
         mDuration = duration;
         mScaleTranslationWithRow = false;
         mAppearing = true;
+    }
+
+    public void setDuration(int duration) {
+        mDuration = duration;
     }
 
     public void startAnimation(View[][] objects, final Runnable finishListener) {

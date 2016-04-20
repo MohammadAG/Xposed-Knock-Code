@@ -347,6 +347,8 @@ public class KeyguardKnockView extends LinearLayout implements LockButtonView.On
         if (mLockButtonView!=null) {
             mLockButtonView.updateViewState(mSettingsHelper);
         }
+        mAppearAnimationUtils.setDuration(mSettingsHelper.appearDuration());
+        mDisappearAnimationUtils.setDuration(mSettingsHelper.disappearDuration());
         invalidate();
     }
 
@@ -629,7 +631,7 @@ public class KeyguardKnockView extends LinearLayout implements LockButtonView.On
         setAlpha(1f);
         setTranslationY(mAppearAnimationUtils.getStartTranslation());
         animate()
-                .setDuration(500)
+                .setDuration(mSettingsHelper.appearDuration())
                 .setInterpolator(mAppearAnimationUtils.getInterpolator())
                 .translationY(0);
         mAppearAnimationUtils.startAnimation(getViews(),
@@ -645,7 +647,7 @@ public class KeyguardKnockView extends LinearLayout implements LockButtonView.On
         enableClipping(false);
         setTranslationY(0);
         animate()
-                .setDuration(280)
+                .setDuration(mSettingsHelper.disappearDuration())
                 .setInterpolator(mDisappearAnimationUtils.getInterpolator())
                 .translationY(mDisappearYTranslation);
         mDisappearAnimationUtils.startAnimation(getViews(),

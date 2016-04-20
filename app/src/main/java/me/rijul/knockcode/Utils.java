@@ -31,7 +31,7 @@ public class Utils {
 
     public static final String SETTINGS_CODE_FULLSCREEN = "settings_code_fullscreen";
     public static final String SETTINGS_CODE_DIALOG = "settings_code_dialog";
-    public static final String SETTINGS_CODE_DIRECT_ENTRY = "settings_code_direct_entry";
+    public static final String SETTINGS_CODE_FORCE_NONE = "settings_code_force_none";
     public static final String SETTINGS_CODE_DIRECT_ENTRY_POLICY = "settings_code_direct_entry_policy";
     public static final String SETTINGS_CODE_BACKGROUND = "settings_code_background";
     public static final String SETTINGS_CODE_BACKGROUND_COLOR = "settings_code_background_color";
@@ -81,6 +81,8 @@ public class Utils {
     public static final String SETTINGS_CORRECT_DURATION = "settings_correct_duration";
     public static final String SETTINGS_ERROR_DURATION = "settings_error_duration";
     public static final String SETTINGS_CODE_WAIT_LAST_DOT = "settings_code_wait_last_dot";
+    public static final String SETTINGS_APPEAR_DURATION = "settings_appear_duration";
+    public static final String SETTINGS_DISAPPEAR_DURATION = "settings_disappear_duration";
 
     public static final String ABOUT_DISCLAIMER = "about_disclaimer";
     public static final String ABOUT_RIJUL = "about_rijul";

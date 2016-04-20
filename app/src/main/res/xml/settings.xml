@@ -57,6 +57,11 @@
             android:entries="@array/settings_code_direct_entry_entries"
             android:entryValues="@array/settings_code_direct_entry_values"
             android:summary="%1$s" />
+        <!--<SwitchPreference
+            android:key="settings_code_force_none"
+            android:defaultValue="false"
+            android:title="Show notifications first"
+            android:summary="Use this to force the notification swipe up screen (not required on most devices)" />-->
         <SwitchPreference
             android:defaultValue="true"
             android:key="settings_code_taps_visible"
@@ -242,6 +247,24 @@
                 android:key="settings_code_wait_last_dot"
                 android:title="@string/settings_code_wait_last_dot"
                 android:summary="@string/settings_code_wait_last_dot_summary"/>
+            <me.rijul.knockcode.SeekBarPreference
+                android:key="settings_appear_duration"
+                android:title="@string/settings_appear_anim"
+                minimum="0"
+                maximum="1000"
+                interval="50"
+                android:defaultValue="500"
+                monitorBoxEnabled="true"
+                monitorBoxUnit="ms" />
+            <me.rijul.knockcode.SeekBarPreference
+                android:key="settings_disappear_duration"
+                android:title="@string/settings_disappear_anim"
+                minimum="0"
+                maximum="1000"
+                interval="50"
+                android:defaultValue="300"
+                monitorBoxEnabled="true"
+                monitorBoxUnit="ms" />
         </PreferenceScreen>
     </PreferenceCategory>
 

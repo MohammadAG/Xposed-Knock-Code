@@ -40,6 +40,7 @@ public class XposedMod implements IXposedHookLoadPackage, IXposedHookZygoteInit,
     private XC_MethodHook mShowTimeoutDialogHook;
     private XC_MethodHook mOnScreenTurnedOnHook;
     private XC_MethodHook mOnScreenTurnedOffHook;
+    private XC_MethodHook mShowNextSecurityScreenOrFinishHook;
     protected static KeyguardKnockView mKnockCodeView;
     private static SettingsHelper mSettingsHelper;
     private String modulePath;
@@ -50,6 +51,7 @@ public class XposedMod implements IXposedHookLoadPackage, IXposedHookZygoteInit,
                 mSettingsHelper.reloadSettings();
         }
     };
+    private XC_MethodHook mShowPrimarySecurityScreenHook;
 
     public enum UnlockPolicy { NEVER, ALWAYS, NO_CLEARABLE_NOTIF, NO_NOTIF };
 
@@ -128,6 +130,9 @@ public class XposedMod implements IXposedHookLoadPackage, IXposedHookZygoteInit,
         } catch (NoSuchMethodError e) {
             XposedBridge.log(e);
         }
+
+        //findAndHookMethod(KeyguardHostView, "showPrimarySecurityScreen", boolean.class, mShowPrimarySecurityScreenHook);
+        //findAndHookMethod(KeyguardHostView, "showNextSecurityScreenOrFinish", boolean.class, mShowNextSecurityScreenOrFinishHook);
     }
 
     private void createHooksIfNeeded(final String keyguardPackageName) {
@@ -350,6 +355,44 @@ public class XposedMod implements IXposedHookLoadPackage, IXposedHookZygoteInit,
                 CustomLogger.log(((Context) XposedHelpers.getObjectField(param.thisObject, "mContext")), "Lockscreen", "Device", "Screen turned off", null, -1);
             }
         };
+
+        mShowNextSecurityScreenOrFinishHook = new XC_MethodHook() {
+            @Override
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                super.beforeHookedMethod(param);
+                if (mSettingsHelper==null || mKnockCodeView==null)
+                    return;
+                if (!mSettingsHelper.forceNone())
+                    return;
+                if (param.args[0].equals(false)) {
+                    Object mSecurityModel = XposedHelpers.getObjectField(param.thisObject, "mSecurityModel");
+                    Object securityMode = XposedHelpers.callMethod(mSecurityModel, "getSecurityMode");
+                    //Class<?> SecurityMode = XposedHelpers.findClass(keyguardPackageName + ".KeyguardSecurityModel$SecurityMode",
+                    //        param.thisObject.getClass().getClassLoader());
+                    //Object SecurityNone = XposedHelpers.getStaticObjectField(SecurityMode, "None");
+                    //if (!securityMode.equals(SecurityNone)) {
+                        XposedHelpers.callMethod(param.thisObject, "showSecurityScreen", securityMode);
+                        param.setResult(false);
+                    //}
+                }
+            }
+        };
+
+        mShowPrimarySecurityScreenHook = new XC_MethodHook() {
+            @Override
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                super.beforeHookedMethod(param);
+                if (mSettingsHelper==null || mKnockCodeView==null)
+                    return;
+                if (!mSettingsHelper.forceNone())
+                    return;
+                param.setResult(null);
+                Class<?> SecurityMode = XposedHelpers.findClass(keyguardPackageName + ".KeyguardSecurityModel$SecurityMode",
+                        param.thisObject.getClass().getClassLoader());
+                Object SecurityNone = XposedHelpers.getStaticObjectField(SecurityMode, "None");
+                XposedHelpers.callMethod(param.thisObject, "showSecurityScreen", SecurityNone);
+            }
+        };
     }
 
     private boolean shouldUnlock(XC_MethodHook.MethodHookParam param) {
@@ -373,6 +416,7 @@ public class XposedMod implements IXposedHookLoadPackage, IXposedHookZygoteInit,
                 notifClearableCount++;
             }
         }
-        return (mSettingsHelper.getPolicy() == UnlockPolicy.NO_CLEARABLE_NOTIF ? notifClearableCount==0 : notifCount==0);
+        return (currentPolicy == UnlockPolicy.NO_CLEARABLE_NOTIF ? notifClearableCount==0 : notifCount==0);
     }
+
 }
