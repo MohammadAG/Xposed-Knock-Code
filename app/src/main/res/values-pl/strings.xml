@@ -3,100 +3,109 @@
     tools:ignore="MissingTranslation">
 
     <string name="app_name">Knock Code</string>
-    <string name="loading">Åadowanieâ€¦</string>
+    <string name="loading">Ładowanie</string>
 
-    <string name="main_retry">PonÃ³w</string>
-    <string name="main_next">NastÄ™pny</string>
+    <string name="main_retry">Ponów</string>
+    <string name="main_next">Następny</string>
     <string name="main_select_grid_size">Wybierz rozmiar siatki</string>
-    <string name="main_shortcuts_will_delete">Gdy kod zostanie zmieniony, wszystkie istniejÄ…ce skrÃ³ty zostanÄ… usuniÄ™te</string>
-    <string name="main_too_many_taps">Zbyt wiele dotkniÄ™Ä‡, resetowanie!</string>
+    <string name="main_shortcuts_will_delete">Gdy kod zostanie zmieniony, wszystkie istniejące skróty zostaną usunięte</string>
+    <string name="main_too_many_taps">Zbyt wiele dotknięć, resetowanie!</string>
     <string name="main_conflict_shortcut">Ten kod powoduje konflikty z %1$s, resetowanie!</string>
 
-    <string name="about_disclaimer_title">WyÅ‚Ä…czenie odpowiedzialnoÅ›ci</string>
+    <string name="about_disclaimer_title">Wyłączenie odpowiedzialności</string>
 
-    <string name="custom_shortcuts">Niestandardowe skrÃ³ty</string>
+    <string name="custom_shortcuts">Niestandardowe skróty</string>
     <string name="custom_shortcuts_add">Dodaj</string>
     <string name="custom_shortcuts_edit">Edytuj</string>
-    <string name="custom_shortcuts_delete">UsuÅ„</string>
+    <string name="custom_shortcuts_delete">Usuń</string>
 
-    <string name="knock_enter_code">WprowadÅº kod</string>
-    <string name="knock_enter_new_code">WprowadÅº nowy kod</string>
-    <string name="knock_confirm_code">PotwierdÅº nowy kod</string>
+    <string name="knock_enter_code">Wprowadź kod</string>
+    <string name="knock_enter_new_code">Wprowadź nowy kod</string>
+    <string name="knock_confirm_code">Potwierdź nowy kod</string>
     <string name="knock_code_correct">Poprawny</string>
     <string name="knock_code_wrong">Niepoprawny</string>
-    <string name="knock_code_enabling">UrzÄ…dzenie wyÅ‚Ä…czone, sprÃ³buj ponownie za %1$d sekund</string>
-    <string name="knock_code_longpress_cleared">DÅ‚ugie naciÅ›niÄ™cie, wzÃ³r wyczyszczony!</string>
-    <string name="knock_code_confirm_shortcut">PotwierdÅº %1$s</string>
-    <string name="knock_no_match">Kody nie pasujÄ…</string>
-    <string name="knock_match">Kody pasujÄ…, powodzenie!</string>
+    <string name="knock_code_enabling">Urządzenie wyłączone, spróbuj ponownie za %1$d sekund</string>
+    <string name="knock_code_longpress_cleared">Długie naciśnięcie, wzór wyczyszczony!</string>
+    <string name="knock_code_confirm_shortcut">Potwierdź %1$s</string>
+    <string name="knock_no_match">Kody nie pasują</string>
+    <string name="knock_match">Kody pasują, powodzenie!</string>
 
 
     <string name="shortcut_helper_apps">Aplikacje</string>
-    <string name="shortcut_helper_activities">AktywnoÅ›ci</string>
+    <string name="shortcut_helper_activities">Aktywności</string>
     <string name="shortcut_helper_target">Wybierz cel</string>
 
     <string name="about">O aplikacji</string>
     <string name="about_help">Pomoc</string>
-    <string name="about_help_description">Przed szukaniem pomocy, upewnij siÄ™, Å¼e moduÅ‚ jest aktywny i wzÃ³r jest wÅ‚Ä…czony w ustawieniach</string>
-    <string name="about_app_settings">Pobierz moduÅ‚ xposed App Settings</string>
-    <string name="about_app_settings_desc">SÅ‚uÅ¼y do otwierania skrÃ³tÃ³w na ekranie blokady</string>
+    <string name="about_help_description">Przed szukaniem pomocy, upewnij siÄ™, Å¼e moduÅ‚ jest aktywny i wzór jest włączony w ustawieniach</string>
+    <string name="about_app_settings">Pobierz moduł‚ xposed App Settings</string>
+    <string name="about_app_settings_desc">Służy do otwierania skrutów na ekranie blokady</string>
     <string name="about_license">Licencja</string>
-    <string name="about_disclaimer_desc">UÅ¼ywajÄ…c tego moduÅ‚u, zgadzasz siÄ™, Å¼e autorzy nie ponoszÄ… odpowiedzialnoÅ›ci za jakiekolwiek szkody</string>
-    <string name="about_source_code">Å¹rÃ³dÅ‚o kodu</string>
+    <string name="about_disclaimer_desc">Używając tego modułu, zgadzasz się, że autorzy nie ponoszą odpowiedzialności za jakiekolwiek szkody</string>
+    <string name="about_source_code">Źródło kodu</string>
     <string name="about_developers">Deweloperzy</string>
-    <string name="about_developers_mohammadag_desc">Autor oryginaÅ‚u do wersji Kitkat</string>
+    <string name="about_developers_mohammadag_desc">Autor oryginału do wersji Kitkat</string>
     <string name="about_developers_rijul_desc">Deweloper dla Marshmallow i Lollipop</string>
 
-    <string name="settings_module_inactive">ModuÅ‚ jest nieaktywny, dotknij, aby uzyskaÄ‡ informacje</string>
+    <string name="settings_module_inactive">Moduł jest nieaktywny, dotknij, aby uzyskać informacje</string>
     <string name="settings_require_pattern">Knock Code wymaga odblokowania wzorem, dotknij tutaj, aby ustawiÄ‡</string>
     <string name="settings_module_inactive_title">Knock Code jest nieaktywny</string>
-    <string name="settings_module_inactive_message">Knock Code nie moÅ¼e hakowaÄ‡ metod systemu Android potrzebnych, aby dziaÅ‚aÅ‚. Oto kilka moÅ¼liwych powodÃ³w:\n
+    <string name="settings_module_inactive_message">Knock Code nie może hakować metod systemu Android potrzebnych, aby działał. Oto kilka możliwych powodów:\n
     &#x2022; <i>Xposed Framework jest niezainstalowany</i>\n
-    &#x2022; <i>Xposed jest zainstalowany i aktywny, ale Knock Code nie zostaÅ‚ wÅ‚Ä…czony w Instalatorze Xposed (\"ModuÅ‚y\") lub nie uruchomiÅ‚eÅ› ponownie po wÅ‚Ä…czeniu.</i>\n
-    &#x2022; <i>Xposed Framework zostaÅ‚ wyÅ‚Ä…czony w trybie bezpiecznym Xposed. Zajrzyj do tematu Xposed na XDA w celu uzyskania dalszych informacji.</i>\n
-&#x2022; <i>Knock Code mÃ³gÅ‚ ulec awarii. WyÅ›lij mi raport o bÅ‚Ä™dzie w temacie XDA (Menu -> O aplikacji -> Pomoc).</i></string>
-    <string name="settings_change_code">ZmieÅ„ kod</string>
+    &#x2022; <i>Xposed jest zainstalowany i aktywny, ale Knock Code nie został włączony w Instalatorze Xposed (\"Moduły\") lub nie uruchomiono ponownie po włączeniu.</i>\n
+    &#x2022; <i>Xposed Framework został wyłączony w trybie bezpiecznym Xposed. Zajrzyj do tematu Xposed na XDA w celu uzyskania dalszych informacji.</i>\n
+    &#x2022; <i>Knock Code mógł‚ ulec awarii. Wyślij mi raport o błędzie w temacie XDA (Menu -> O aplikacji -> Pomoc).</i></string>
+    <string name="settings_change_code">Zmień kod</string>
     <string name="settings_reboot_required">Ponowne uruchomienie lub restart blokady jest wymagane</string>
     <string name="settings_set_code">Ustaw kod</string>
-    <string name="settings_custom_shortcuts_desc">Uruchamiaj skrÃ³ty bezpoÅ›rednio z ekranu blokady</string>
-    <string name="settings_about_desc">Pomoc, ÅºrÃ³dÅ‚o kodu, licencja, autorzy, itp</string>
+    <string name="settings_custom_shortcuts_desc">Uruchamiaj skróty bezpośrednio z ekranu blokady</string>
+    <string name="settings_about_desc">Pomoc, źródło kodu, licencja, autorzy, itp</string>
     <string name="settings_restart_keyguard">Restart blokady</string>
-    <string name="settings_visibility">WidocznoÅ›Ä‡</string>
+    <string name="settings_visibility">Widocznść</string>
     <string name="settings_app">Ustawienia aplikacji</string>
     <string name="settings_hide_launcher">Ukryj w launcherze</string>
     <string name="settings_failsafe">Zabezpieczenie (Failsafe)</string>
-    <string name="settings_failsafe_summary_on">PiÄ™Ä‡ ciÄ…gÅ‚ych, dÅ‚ugich naciÅ›niÄ™Ä‡ usunie kod i przywrÃ³ci twÃ³j wzÃ³r</string>
-    <string name="settings_failsafe_summary_off">WyÅ‚Ä…czone na wÅ‚asne ryzyko</string>
-    <string name="settings_code_fullscreen">Kod peÅ‚noekranowy</string>
+    <string name="settings_failsafe_summary_on">Pięć ciągłych, długich naciśnięć usunie kod i przywróci twój wzór</string>
+    <string name="settings_failsafe_summary_off">Wyłączone na własne ryzyko</string>
+    <string name="settings_code_fullscreen">Kod pełnoekranowy</string>
     <string name="settings_code_dialog">Pokazuj dialog</string>
-    <string name="settings_code_dialog_summary">Na zbyt wiele nieudanych prÃ³b</string>
-    <string name="settings_code_direct_entry">BezpoÅ›rednio pokazuj wprowadzanie kodu</string>
+    <string name="settings_code_dialog_summary">Na zbyt wiele nieudanych prób</string>
+    <string name="settings_code_direct_entry">Bezpośrednio pokazuj wprowadzanie kodu</string>
     <string name="settings_code_text">Pokazuj tekst</string>
-    <string name="settings_code_taps_visible">Pokazuj dotkniÄ™cia</string>
-    <string name="settings_code_background">Pokazuj tÅ‚o</string>
-    <string name="settings_code_background_color">Kolor tÅ‚a</string>
+    <string name="settings_code_taps_visible">Pokazuj dotknięcia</string>
+    <string name="settings_code_background">Pokazuj tło</string>
+    <string name="settings_code_background_color">Kolor tła</string>
     <string name="settings_code_lines">Linie</string>
     <string name="settings_code_lines_visible">Pokazuj linie</string>
-    <string name="settings_code_lines_color_ready">DomyÅ›lny kolor linii</string>
+    <string name="settings_code_lines_color_ready">Domyślny kolor linii</string>
     <string name="settings_code_lines_correct">Pokazuj poprawne linie</string>
     <string name="settings_code_lines_color_correct">Kolor poprawnych linii</string>
-    <string name="settings_code_lines_error">Pokazuj bÅ‚Ä™dne linie</string>
-    <string name="settings_code_lines_color_error">Kolor bÅ‚Ä™dnych linii</string>
-    <string name="settings_code_lines_disabled">Pokazuj linie wyÅ‚Ä…czone</string>
-    <string name="settings_code_lines_color_disabled">Kolor linii wyÅ‚Ä…czony</string>
+    <string name="settings_code_lines_error">Pokazuj błędne linie</string>
+    <string name="settings_code_lines_color_error">Kolor błędnych linii</string>
+    <string name="settings_code_lines_disabled">Pokazuj linie wyłączone</string>
+    <string name="settings_code_lines_color_disabled">Kolor linii wyłączony</string>
     <string name="settings_code_dots">Kropki</string>
     <string name="settings_code_dots_visible">Pokazuj kropki</string>
-    <string name="settings_code_dots_color_ready">DomyÅ›lny kolor kropek</string>
+    <string name="settings_code_dots_color_ready">Domyślny kolor kropek</string>
     <string name="settings_code_dots_correct">Pokazuj poprawne kropki</string>
     <string name="settings_code_dots_color_correct">Kolor poprawnych kropek</string>
-    <string name="settings_code_dots_error">Pokazuj bÅ‚Ä™dne kropki</string>
-    <string name="settings_emergency_button">Przycisk poÅ‚Ä…czenia alarmowego</string>
-    <string name="settings_show_emergency_button">Pokazuj przycisk poÅ‚Ä…czenia alarmowego</string>
-    <string name="settings_show_emergency_button_summary_off">WyÅ‚Ä…cz na wÅ‚asne ryzyko</string>
-    <string name="settings_emergency_text">Pokazuj tekst poÅ‚Ä…czenia alarmowego</string>
-    <string name="settings_emergency_text_summary_off">DotkniÄ™cie przycisku nadal bÄ™dzie dziaÅ‚aÄ‡</string>
+    <string name="settings_code_dots_error">Pokazuj błędne kropki</string>
+    <string name="settings_emergency_button">Przycisk połączenia alarmowego</string>
+    <string name="settings_show_emergency_button">Pokazuj przycisk połączenia alarmowego</string>
+    <string name="settings_show_emergency_button_summary_off">Wyłącz na własne ryzyko</string>
+    <string name="settings_emergency_text">Pokazuj tekst połączenia alarmowego</string>
+    <string name="settings_emergency_text_summary_off">Dotknięcie przycisku nadal będzie działać</string>
     <string name="settings_vibration">Wibracja (ignoruje ustawienia systemu)</string>
-    <string name="settings_vibrate_tap">Wibracja na dotkniÄ™cie</string>
-    <string name="settings_vibrate_long_press">Wibracja na dÅ‚ugie naciÅ›niÄ™cie</string>
+    <string name="settings_vibrate_tap">Wibracja na dotknięcie</string>
+    <string name="settings_vibrate_long_press">Wibracja na długie naciśnięcie</string>
     <string name="settings">Ustawienia</string>
+    <string name="about_translators">Tłumacze</string>
+    <string name="custom_shortcut_never_again">Nie pokazuj ponownie</string>
+    <string name="settings_code_direct_entry_always">Zawsze</string>
+    <string name="settings_code_direct_entry_never">Nigdy</string>
+    <string name="settings_code_direct_entry_no_clearable_notif">Jeśli nie ma opcji kasowania powiadomień</string>
+    <string name="settings_code_direct_entry_no_notif">Jeśli nie ma żadnych powiadomień</string>
+    <string name="settings_code_duration">Czas trwania</string>
+    <string name="settings_vibrate_error">Wibracja przy błędzie</string>
+    <string name="settings_reboot_upgrade">Restart jest wymagany do zakończenia uaktualniania</string>
 </resources>
