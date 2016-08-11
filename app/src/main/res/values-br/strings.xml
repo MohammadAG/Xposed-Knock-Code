@@ -1,0 +1,158 @@
+﻿<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <string name="app_name">Knock Code</string>
+    <string name="loading">Carregando…</string>
+
+    <string name="main_retry">Tentar Novamente</string>
+    <string name="main_next">Próximo</string>
+    <string name="main_select_grid_size">Escolha o tamanho da grade</string>
+    <string name="main_shortcuts_will_delete">Uma vez que o código é alterado, todos os atalhos existentes serão excluídos</string>
+    <string name="main_too_many_taps">Muitos toques, redefinindo!</string>
+    <string name="main_conflict_shortcut">Esse código entra em conflito com %1$s, redefinindo!</string>
+
+    <string name="about_disclaimer_title">Aviso Legal</string>
+
+    <string name="about_translators">Tradutores</string>
+    <string name="about_translator_polish_pantin">pantinPL (Polonês)</string>
+    <string name="about_translator_russian_julia">Ms_Julia (Russo)</string>
+    <string name="about_translator_brazillian_victor">VictorxD70 (Brasileiro)</string>
+
+    <string name="custom_shortcuts">Atalhos personalizados</string>
+    <string name="custom_shortcuts_add">Adicionar</string>
+    <string name="custom_shortcuts_edit">Editar</string>
+    <string name="custom_shortcuts_delete">Apagar</string>
+    <string name="custom_shortcut_never_again">Não mostrar isto novamente.</string>
+    <string name="custom_shortcuts_instructions">Para iniciar um atalho personalizado através da tela de bloqueio, ligue o interruptor ao lado dele. Sair do aplicativo irá levá-lo de volta para a tela de bloqueio.\nVerifique se você marcou o aplicativo para ser mostrado quando trancado no App Settings (link disponível em Sobre)</string>
+
+    <string name="knock_enter_code">Insira seu código</string>
+    <string name="knock_enter_new_code">Insira seu novo código</string>
+    <string name="knock_confirm_code">Confirme seu novo código</string>
+    <string name="knock_code_correct">Correto</string>
+    <string name="knock_code_wrong">Incorreto</string>
+    <string name="knock_code_enabling">Dispositivo desabilitado, tente novamente em %1$d segundos</string>
+    <string name="knock_code_longpress_cleared">Pressionamento longo, padrão apagado!</string>
+    <string name="knock_code_confirm_shortcut">Confirme %1$s</string>
+    <string name="knock_no_match">Os códigos não correspondem</string>
+    <string name="knock_match">Códigos correspondem, sucesso!</string>
+
+    <string name="shortcut_helper_apps">Apps</string>
+    <string name="shortcut_helper_activities">Atividades</string>
+    <string name="shortcut_helper_target">Selecione o alvo</string>
+
+    <string name="about">Sobre</string>
+
+    <string name="about_help">Ajuda</string>
+    <string name="about_help_description">Antes de procurar ajuda, certifique-se de que o módulo está ativo e o padrão está ativado nas configurações</string>
+
+    <string name="about_app_settings">Baixar Módulo Xposed App Settings</string>
+    <string name="about_app_settings_desc">Usado para abrir atalhos sobre a tela de bloqueio</string>
+
+    <string name="about_license">Licença</string>
+    <string name="about_disclaimer_desc">Ao utilizar este módulo, você concorda que os autores não são responsáveis por quaisquer danos</string>
+
+    <string name="about_source_code">Código fonte</string>
+
+    <string name="about_developers">Desenvolvedores</string>
+    <string name="about_developers_mohammadag_desc">Autor original até o Kitkat</string>
+    <string name="about_developers_rijul_desc">Desenvolvedor para Marshmallow e Lollipop</string>
+
+    <string name="settings">Configurações</string>
+
+    <string name="settings_module_inactive">Módulo está inativo, toque para obter informações</string>
+    <string name="settings_module_inactive_title">Knock code está inativo</string>
+    <string name="settings_module_inactive_message">Knock Code não pode ligar os métodos do sistema Android necessários para que ele funcione. Isto pode ter várias razões:\n
+    &#x2022; <i>Xposed Framework não está instalado</i>\n
+    &#x2022; <i>Xposed está instalado e ativo, mas você não ativou Knock Code no Xposed installer (aba \"Módulos\") ou não reiniciou depois.</i>\n
+    &#x2022; <i>Xposed Framework foi desativado pelo modo seguro Xposed. Veja o Tópico Xposed no XDA para mais informações.</i>\n
+&#x2022; <i>Knock Code pode ter encontrado um erro. Você deve enviar-me um relatório de erros no XDA (Sobre -> Ajuda).</i></string>
+    <string name="settings_require_pattern">Knock code requer o padrão de desbloqueio, toque aqui para configurar</string>
+    <string name="settings_reboot_upgrade">Uma reinicialização é necessária para concluir a atualização</string>
+
+    <string name="settings_change_code">Mudar o knock code</string>
+    <string name="settings_set_code">Configurar knock code</string>
+
+    <string name="settings_custom_shortcuts_desc">Iniciar atalhos diretamente a partir da tela de bloqueio</string>
+
+    <string name="settings_about_desc">Ajuda, código fonte, licenciamento, autores, etc</string>
+
+    <string name="settings_restart_keyguard">Reinício suave</string>
+    <string name="settings_reboot_required">Uma reinicialização ou reinicialização suave é necessária</string>
+
+    <string name="settings_app">Configurações do App</string>
+    <string name="settings_hide_launcher">Esconder do lançador</string>
+    <string name="settings_failsafe">À prova de falhas</string>
+    <string name="settings_failsafe_summary_on">Cinco toques longos consecutivos vai matar o knock code e restaurar o seu padrão de estoque</string>
+    <string name="settings_failsafe_summary_off">Desativar a seu próprio risco</string>
+
+    <string name="settings_visibility">Visibilidade</string>
+    <string name="settings_code_fullscreen">Knock code em tela cheia</string>
+
+    <string name="settings_code_dialog">Mostrar diálogo</string>
+    <string name="settings_code_dialog_summary">Em muitas tentativas incorretas</string>
+
+    <string name="settings_code_direct_entry">Mostrar diretamente o knock code</string>
+    <string name="settings_code_direct_entry_never">Nunca</string>
+    <string name="settings_code_direct_entry_always">Sempre</string>
+    <string name="settings_code_direct_entry_no_clearable_notif">Se não houver nenhuma notificação eliminável</string>
+    <string name="settings_code_direct_entry_no_notif">Se não houver nenhuma notificação</string>
+
+    <string name="settings_code_taps_visible">Mostrar botões de toque</string>
+    <string name="settings_code_taps_visible_borderless">Borda circular nos botões</string>
+
+    <string name="settings_code_background">Mostrar plano de fundo</string>
+    <string name="settings_code_background_color">Cor do plano de fundo</string>
+
+    <string name="settings_code_text">Texto</string>
+    <string name="settings_code_text_color">Cor do texto</string>
+    <string name="settings_code_text_ready">Mostrar texto de entrada</string>
+    <string name="settings_code_text_ready_value">Mudar texto de entrada</string>
+    <string name="settings_code_text_correct">Mostrar texto de sucesso</string>
+    <string name="settings_code_text_correct_value">Texto de sucesso</string>
+    <string name="settings_code_text_error">Mostrar texto de erro</string>
+    <string name="settings_code_text_error_summary">Texto de erro</string>
+    <string name="settings_code_text_reset">Mostrar texto de reinício</string>
+    <string name="settings_code_text_reset_summary">Quando pressionar logamente</string>
+    <string name="settings_code_text_reset_value">Texto de reinício</string>
+    <string name="settings_code_text_disabled">Mostrar texto de dispositivo desabilitado</string>
+    <string name="settings_code_text_disabled_summary">Use %1$d para representar os segundos restantes abaixo</string>
+    <string name="settings_code_text_disabled_value">Texto de dispositivo desabilitado</string>
+
+    <string name="settings_code_dots">Pontos</string>
+    <string name="settings_code_dots_visible">Mostrar pontos</string>
+    <string name="settings_code_dots_color_ready">Cor padrão dos pontos</string>
+    <string name="settings_code_dots_correct">Mostrar pontos de sucesso</string>
+    <string name="settings_code_dots_color_correct">Cor dos pontos de sucesso</string>
+    <string name="settings_code_dots_error">Mostrar pontos de erro</string>
+
+    <string name="settings_code_lines">Linhas</string>
+    <string name="settings_code_lines_visible">Mostrar linhas</string>
+    <string name="settings_code_lines_color_ready">Cor padrão das linhas</string>
+    <string name="settings_code_lines_correct">Mostrar linhas de sucesso</string>
+    <string name="settings_code_lines_color_correct">Cor das linhas de sucesso</string>
+    <string name="settings_code_lines_error">Mostrar linhas de erro</string>
+    <string name="settings_code_lines_color_error">Cor das linhas de erro</string>
+    <string name="settings_code_lines_disabled">Mostrar linhas desabilitado</string>
+    <string name="settings_code_lines_color_disabled">Cor das linhas desabilitado</string>
+
+    <string name="settings_code_duration">Duração</string>
+    <string name="settings_code_duration_summary">Alterar a duração da visibilidade para o sucesso e erro, e durações de animação</string>
+    <string name="settings_correct_duration">Duração de sucesso</string>
+    <string name="settings_correct_duration_summary">Tempo entre a entrada correta do código e desbloqueio; usado para mostrar texto, linhas e animar pontos. \nCausará atraso no desbloqueio!</string>
+    <string name="settings_error_duration">Duração de erro</string>
+    <string name="settings_error_duration_summary">Tempo entre a entrada de código errado e reajuste; usado para mostrar texto, linhas e animar pontos.</string>
+    <string name="settings_code_wait_last_dot">Esperar a última animação de ponto</string>
+    <string name="settings_code_wait_last_dot_summary">Atraso de 320 ms</string>
+
+    <string name="settings_emergency_button">Botão de emergência</string>
+    <string name="settings_show_emergency_button">Mostrar botão de emergência</string>
+    <string name="settings_show_emergency_button_summary_off">Desativar a seu próprio risco</string>
+    <string name="settings_emergency_text">Mostrar texto de emergência</string>
+    <string name="settings_emergency_text_summary_off">Botões de toque continuarão funcionando</string>
+    <string name="settings_emergency_background">Mostrar plano de fundo do botão de emergência</string>
+
+    <string name="settings_vibration">Vibração (ignora as configurações do sistema)</string>
+    <string name="settings_vibrate_tap">Vibrar ao tocar</string>
+    <string name="settings_vibrate_long_press">Vibrar no toque longo</string>
+    <string name="settings_vibrate_error">Vibrar ao errar</string>
+    <string name="settings_appear_anim">Animação de aparecer</string>
+    <string name="settings_disappear_anim">Animação de desaparecer</string>
+</resources>
