@@ -48,6 +48,8 @@
 
     <PreferenceCategory android:title="@string/about_translators">
         <Preference
+            android:title="@string/about_translator_brazillian_victor" />
+        <Preference
             android:title="@string/about_translator_polish_pantin" />
         <Preference
             android:title="@string/about_translator_russian_julia" />
