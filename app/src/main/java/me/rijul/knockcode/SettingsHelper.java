@@ -10,7 +10,6 @@ import android.graphics.Color;
 import android.provider.Settings.Secure;
 
 import de.robv.android.xposed.XSharedPreferences;
-import de.robv.android.xposed.XposedBridge;
 
 public class SettingsHelper {
     //these are for xposed
@@ -166,11 +165,10 @@ public class SettingsHelper {
     //these are done via hooks, so they will check if enabled
 
     //fullscreen is stored unencrypted
-    public static boolean fullScreen() {return (new XSharedPreferences(BuildConfig.APPLICATION_ID)).
-            getBoolean(Utils.SETTINGS_CODE_FULLSCREEN, false);}
+    public boolean fullScreen() {return getBoolean(Utils.SETTINGS_CODE_FULLSCREEN, false);}
     public boolean showDialog() {return getBoolean(Utils.SETTINGS_CODE_DIALOG, true) && !isDisabled();}
     public XposedMod.UnlockPolicy getPolicy() {
-        return XposedMod.UnlockPolicy.valueOf(getString(Utils.SETTINGS_CODE_DIRECT_ENTRY_POLICY, "DEFAULT"));
+        return XposedMod.UnlockPolicy.valueOf(getString(Utils.SETTINGS_CODE_DIRECT_ENTRY_POLICY, "NEVER"));
     }
     public boolean forceNone() {return getBoolean(Utils.SETTINGS_CODE_FORCE_NONE, false) && !isDisabled();}
 

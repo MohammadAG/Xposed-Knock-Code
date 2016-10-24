@@ -9,6 +9,8 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import de.robv.android.xposed.XposedBridge;
+
 /**
  * Created by rijul on 2/3/16.
  */
@@ -105,9 +107,7 @@ public class Utils {
                     os.writeBytes("exit\n");
                     os.flush();
                     su.waitFor();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (InterruptedException e) {
+                } catch (IOException | InterruptedException e) {
                     e.printStackTrace();
                 }
             }
@@ -167,5 +167,9 @@ public class Utils {
             passcode.add(Integer.parseInt(digitString));
         }
         return passcode;
+    }
+
+    public static void XposedLog(String string) {
+        XposedBridge.log("[KnockCode] " + string);
     }
 }

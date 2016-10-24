@@ -1,15 +1,11 @@
 package me.rijul.knockcode;
 
-import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.BroadcastReceiver;
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
@@ -19,14 +15,12 @@ import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
 import android.preference.SwitchPreference;
-import android.provider.Settings;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.Map;
 
@@ -36,21 +30,11 @@ import java.util.Map;
 public class SettingsActivity extends Activity {
     private static SettingsHelper mSettingsHelper;
     private static boolean MODULE_INACTIVE = true;
-    BroadcastReceiver deadReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            invalidateOptionsMenu();
-        }
-    };
     ProgressDialog mProgressDialog;
 
     @Override
     public SharedPreferences getSharedPreferences(String name, int mode) {
         return SettingsHelper.getWritablePreferences(getApplicationContext());
-    }
-
-    public SharedPreferences getSharedPreferences(String name, int mode, boolean original) {
-        return super.getSharedPreferences(name, mode);
     }
 
     @Override
@@ -120,33 +104,6 @@ public class SettingsActivity extends Activity {
         return true;
     }
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        unregisterReceiver(deadReceiver);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        registerReceiver(deadReceiver, new IntentFilter(BuildConfig.APPLICATION_ID + ".DEAD"));
-        try {
-            if (android.provider.Settings.Secure.getInt(getContentResolver(), Settings.Secure.LOCK_PATTERN_ENABLED) == 0) {
-                View patternActive = findViewById(R.id.pattern_inactive);
-                patternActive.setVisibility(View.VISIBLE);
-                patternActive.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent intent = new Intent("android.app.action.SET_NEW_PASSWORD");
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        startActivity(intent);
-                    }
-                });
-            } else
-                findViewById(R.id.pattern_inactive).setVisibility(View.GONE);
-        } catch (Settings.SettingNotFoundException ignored) {}
-    }
-
     private int getXposedVersionCode() {
         return BuildConfig.VERSION_CODE;
     }
@@ -191,20 +148,10 @@ public class SettingsActivity extends Activity {
                 findPreference(Utils.SETTINGS_CHANGE_CODE).setTitle(R.string.settings_change_code);
             else
                 findPreference(Utils.SETTINGS_CUSTOM_SHORTCUTS).setEnabled(false);
-            findPreference(Utils.SETTINGS_CODE_FULLSCREEN).setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                @Override
-                @SuppressLint("WorldReadableFiles")
-                @SuppressWarnings("deprecation")
-                public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    ((SettingsActivity) getActivity()).getSharedPreferences(Utils.PREFERENCES_FILE, Context.MODE_WORLD_READABLE,
-                            true).edit().putBoolean(Utils.SETTINGS_CODE_FULLSCREEN, (boolean) newValue).apply();
-                    return true;
-                }
-            });
-            String[] editTextPrefereneces = {"settings_code_text_ready_value", "settings_code_text_correct_value",
+            String[] editTextPreferences = {"settings_code_text_ready_value", "settings_code_text_correct_value",
                                             "settings_code_text_error_value", "settings_code_text_disabled_value",
                                             "settings_code_text_reset_value"};
-            for(String key : editTextPrefereneces) {
+            for(String key : editTextPreferences) {
                 EditTextPreference etp = (EditTextPreference) findPreference(key);
                 etp.setSummary(etp.getText());
             }
@@ -220,11 +167,7 @@ public class SettingsActivity extends Activity {
             else if (key.equals(Utils.SETTINGS_CHANGE_CODE)) {
                 startActivityForResult(new Intent(getActivity(), MainActivity.class), MainActivity.CHANGE_CODE);
                 return true;
-            } else if (key.equals(Utils.SETTINGS_RESTART_KEYGUARD)) {
-                Utils.restartKeyguard(getActivity());
-                return true;
-            }
-            else if (key.equals(Utils.SETTINGS_HIDE_LAUNCHER)) {
+            } else if (key.equals(Utils.SETTINGS_HIDE_LAUNCHER)) {
                 if (((SwitchPreference) preference).isChecked()) {
                     ComponentName componentName = new ComponentName(getActivity(), BuildConfig.APPLICATION_ID + ".MainActivity-Alias");
                     getActivity().getPackageManager().setComponentEnabledSetting(componentName, PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
@@ -233,8 +176,7 @@ public class SettingsActivity extends Activity {
                     getActivity().getPackageManager().setComponentEnabledSetting(componentName, PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
                 }
                 return true;
-            } else if (key.equals(Utils.SETTINGS_CODE_FULLSCREEN))
-                Toast.makeText(getActivity(), R.string.settings_reboot_required, Toast.LENGTH_SHORT).show();
+            }
             return false;
         }
 

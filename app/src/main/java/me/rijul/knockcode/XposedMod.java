@@ -9,10 +9,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.XModuleResources;
+import android.graphics.Point;
 import android.os.Build;
 import android.provider.Settings.Secure;
+import android.util.TypedValue;
+import android.view.Display;
+import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ViewFlipper;
 
@@ -64,12 +69,10 @@ public class XposedMod implements IXposedHookLoadPackage, IXposedHookZygoteInit,
     public void handleInitPackageResources(XC_InitPackageResources.InitPackageResourcesParam resParam) throws Throwable {
         if ((resParam.packageName.contains("android.keyguard")) || (resParam.packageName.contains("com.android.systemui"))) {
             XModuleResources modRes = XModuleResources.createInstance(modulePath, resParam.res);
-            if (SettingsHelper.fullScreen()) {
-                XposedBridge.log("[KnockCode] Setting fullscreen!");
-                resParam.res.setReplacement(resParam.packageName, "dimen", "keyguard_security_height", modRes.fwd(R.dimen.replace_keyguard_security_max_height));
-                resParam.res.setReplacement(resParam.packageName, "dimen", "keyguard_security_view_margin", modRes.fwd(R.dimen.replace_keyguard_security_view_margin));
-                resParam.res.setReplacement(resParam.packageName, "dimen", "keyguard_security_width", modRes.fwd(R.dimen.replace_keyguard_security_max_height));
-            }
+            Utils.XposedLog("Setting resources to fullscreen!");
+            resParam.res.setReplacement(resParam.packageName, "dimen", "keyguard_security_view_margin", modRes.fwd(R.dimen.replace_keyguard_security_view_margin));
+            resParam.res.setReplacement(resParam.packageName, "dimen", "keyguard_security_width", modRes.fwd(R.dimen.replace_keyguard_security_max_height));
+            resParam.res.setReplacement(resParam.packageName, "dimen", "keyguard_security_max_height", modRes.fwd(R.dimen.replace_keyguard_security_max_height));
         }
     }
 
@@ -83,11 +86,11 @@ public class XposedMod implements IXposedHookLoadPackage, IXposedHookZygoteInit,
             XposedHelpers.findAndHookMethod(SettingsActivityClazz, "getXposedVersionCode",
                     XC_MethodReplacement.returnConstant(BuildConfig.VERSION_CODE));
         } else if (lpparam.packageName.equals("com.htc.lockscreen")) {
-            XposedBridge.log("[KnockCode] HTC Device");
+            Utils.XposedLog("HTC Device");
             createHooksIfNeeded("com.htc.lockscreen.keyguard");
             hookMethods("com.htc.lockscreen.keyguard", lpparam);
         } else if ((lpparam.packageName.contains("android.keyguard")) || (lpparam.packageName.contains("com.android.systemui"))) {
-            XposedBridge.log("[KnockCode] AOSPish Device");
+            Utils.XposedLog("AOSPish Device");
             createHooksIfNeeded("com.android.keyguard");
             hookMethods("com.android.keyguard", lpparam);
         }
@@ -221,14 +224,21 @@ public class XposedMod implements IXposedHookLoadPackage, IXposedHookZygoteInit,
                 Context mContext = ((FrameLayout) param.thisObject).getContext();
                 mContext.registerReceiver(broadcastReceiver, new IntentFilter(Utils.SETTINGS_CHANGED));
                 if ((mSettingsHelper==null) || (mSettingsHelper.isDisabled())) {
+                    //find whichever view is enabled
+                    View pinView = (View) callMethod(param.thisObject, "getSecurityView", param.args[0]);
+                    ViewGroup.LayoutParams layoutParams = pinView.getLayoutParams();
+                    //set width and height
+                    layoutParams.height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 400, mContext.getResources().getDisplayMetrics());
+                    layoutParams.width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 320, mContext.getResources().getDisplayMetrics());
+                    pinView.setLayoutParams(layoutParams);
                     mKnockCodeView = null;
                     return;
                 }
                 Object securityMode = param.args[0];
                 Class<?> SecurityMode = XposedHelpers.findClass(keyguardPackageName + ".KeyguardSecurityModel$SecurityMode",
                         param.thisObject.getClass().getClassLoader());
-                Object patternMode = XposedHelpers.getStaticObjectField(SecurityMode, "Pattern");
-                if (!patternMode.equals(securityMode)) {
+                Object pinMode = XposedHelpers.getStaticObjectField(SecurityMode, "PIN");
+                if (!pinMode.equals(securityMode)) {
                     mKnockCodeView = null;
                     return;
                 }
@@ -237,20 +247,9 @@ public class XposedMod implements IXposedHookLoadPackage, IXposedHookZygoteInit,
                     param.setResult(null);
                     return;
                 }
-
                 View oldView = (View) callMethod(param.thisObject, "getSecurityView", mCurrentSecuritySelection);
-                //LinearLayout eca = (LinearLayout) XposedHelpers.
-                //	newInstance(XposedHelpers.findClass(keyguardPackageName + ".EmergencyCarrierArea", param.thisObject.getClass().getClassLoader()), mContext);
-                //eca.addView((Button) XposedHelpers.
-                //	newInstance(XposedHelpers.findClass(keyguardPackageName + ".EmergencyButton",param.thisObject.getClass().getClassLoader()), mContext));
-                //eca.addView((TextView) XposedHelpers.
-                //		newInstance(XposedHelpers.findClass(keyguardPackageName + ".CarrierText", param.thisObject.getClass().getClassLoader()), mContext));
                 mKnockCodeView = new KeyguardKnockView(mContext,param,mSettingsHelper,keyguardPackageName);
                 View newView = mKnockCodeView;
-
-                FrameLayout layout = (FrameLayout) param.thisObject;
-                int disableSearch = XposedHelpers.getStaticIntField(View.class, "STATUS_BAR_DISABLE_SEARCH");
-                layout.setSystemUiVisibility((layout.getSystemUiVisibility() & ~disableSearch));
 
                 // pause old view, and ignore requests from it
                 if (oldView != null) {
@@ -258,6 +257,28 @@ public class XposedMod implements IXposedHookLoadPackage, IXposedHookZygoteInit,
                     callMethod(oldView, "onPause");
                     callMethod(oldView, "setKeyguardCallback", mNullCallback);
                 }
+
+                View pinView = (View) callMethod(param.thisObject, "getSecurityView", pinMode);
+                ViewGroup.LayoutParams layoutParams = pinView.getLayoutParams();
+                if (mSettingsHelper.fullScreen())  {
+                    Utils.XposedLog("Setting view to fullscreen!");
+                    Display display = ((WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+                    Point size = new Point();
+                    display.getSize(size);
+                    int rotation = display.getRotation();
+                    if (rotation==Surface.ROTATION_0 || rotation==Surface.ROTATION_180) {
+                        layoutParams.height = size.y;
+                        layoutParams.width = size.x;
+                    } else {
+                        layoutParams.height = size.x;
+                        layoutParams.width = size.y;
+                    }
+                } else {
+                    layoutParams.height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 400, mContext.getResources().getDisplayMetrics());
+                    layoutParams.width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 320, mContext.getResources().getDisplayMetrics());
+                }
+                newView.setLayoutParams(layoutParams);
+
 
                 //show new view, and set a callback for it
                 Object mCallback = getObjectField(param.thisObject, "mCallback");
@@ -334,7 +355,6 @@ public class XposedMod implements IXposedHookLoadPackage, IXposedHookZygoteInit,
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 super.afterHookedMethod(param);
-                //means either not init or not pattern, so we don't track it
                 if (mSettingsHelper==null || mKnockCodeView==null)
                     return;
                 CustomLogger.log(((Context) XposedHelpers.getObjectField(param.thisObject, "mContext")), "Lockscreen", "Device", "Screen turned on", null, -1);
@@ -349,7 +369,6 @@ public class XposedMod implements IXposedHookLoadPackage, IXposedHookZygoteInit,
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 super.afterHookedMethod(param);
-                //means either not init or not pattern, so we don't track it
                 if (mSettingsHelper==null || mKnockCodeView==null)
                     return;
                 CustomLogger.log(((Context) XposedHelpers.getObjectField(param.thisObject, "mContext")), "Lockscreen", "Device", "Screen turned off", null, -1);
@@ -418,5 +437,4 @@ public class XposedMod implements IXposedHookLoadPackage, IXposedHookZygoteInit,
         }
         return (currentPolicy == UnlockPolicy.NO_CLEARABLE_NOTIF ? notifClearableCount==0 : notifCount==0);
     }
-
 }
