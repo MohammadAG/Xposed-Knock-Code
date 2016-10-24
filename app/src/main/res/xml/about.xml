@@ -43,16 +43,30 @@
         <Preference
             android:key="about_rijul"
             android:title="@string/about_developers_rijul"
-            android:summary="@string/about_developers_rijul_desc"/>
+            android:summary="@string/about_developers_rijul_desc">
+            <intent android:action="android.intent.action.VIEW"
+                android:data="https://github.com/andrianeko"/>
+        </Preference>
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/about_translators">
         <Preference
-            android:title="@string/about_translator_brazillian_victor" />
+            android:title="@string/about_translator_brazillian_victor">
+            <intent android:action="android.intent.action.VIEW"
+                android:data="https://github.com/VictorxD70"/>
+        </Preference>
+        <Preference
+            android:title="@string/about_translator_indonesian_andrian">
+            <intent android:action="android.intent.action.VIEW"
+                android:data="https://github.com/andrianeko"/>
+        </Preference>
         <Preference
             android:title="@string/about_translator_polish_pantin" />
         <Preference
-            android:title="@string/about_translator_russian_julia" />
+            android:title="@string/about_translator_russian_julia">
+            <intent android:action="android.intent.action.VIEW"
+                android:data="http://forum.xda-developers.com/member.php?u=5976147"/>
+        </Preference>
     </PreferenceCategory>
 
 </PreferenceScreen>

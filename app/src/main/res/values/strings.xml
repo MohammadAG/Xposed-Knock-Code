@@ -158,4 +158,5 @@
     <string name="settings_vibrate_error">Vibrate on error</string>
     <string name="settings_appear_anim">Appear animation</string>
     <string name="settings_disappear_anim">Disappear animation</string>
+    <string name="about_translator_indonesian_andrian">Andrian Eko</string>
 </resources>

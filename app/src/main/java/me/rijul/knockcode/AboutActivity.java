@@ -41,8 +41,6 @@ public class AboutActivity extends Activity {
     }
 
     public static class AboutFragment extends PreferenceFragment {
-        private static final String FACEBOOK_RIJUL = "rijul.ahuja";
-
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
@@ -69,20 +67,8 @@ public class AboutActivity extends Activity {
                 Dialog dialog = builder.create();
                 dialog.show();
                 return true;
-            } else if (key.equals(Utils.ABOUT_RIJUL)) {
-                openFacebook(FACEBOOK_RIJUL);
-                return true;
             }
             return false;
         }
-
-        private void openFacebook(String profile) {
-            try {
-                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("fb://profile/" + profile)));
-            } catch (Exception e) {
-                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.facebook.com/" + profile)));
-            }
-        }
     }
-
 }
