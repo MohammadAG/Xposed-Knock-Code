@@ -10,7 +10,7 @@
     <string name="main_conflict_shortcut">This code conflicts with %1$s, resetting!</string>
 
     <string name="about_disclaimer_title">Disclaimer</string>
-    <string name="about_disclaimer_message" translatable="false">THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE</string>
+    <string name="about_disclaimer_message" translatable="false">THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE\nBy using this software, you implicitly allow the developer to collect usage data about the app. No personally identifiable information is collected.</string>
     <string name="about_translators">Translators</string>
     <string name="about_translator_polish_pantin">pantinPL (Polish)</string>
     <string name="about_translator_russian_julia">Ms_Julia (Russian)</string>
@@ -159,4 +159,5 @@
     <string name="settings_appear_anim">Appear animation</string>
     <string name="settings_disappear_anim">Disappear animation</string>
     <string name="about_translator_indonesian_andrian">Andrian Eko</string>
+    <string name="about_translator_brazillian_victor">VictorxD70 (Brazilian)</string>
 </resources>

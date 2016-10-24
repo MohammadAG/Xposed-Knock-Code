@@ -10,7 +10,6 @@
     <string name="main_conflict_shortcut">Kode ini bertentangan dengan %1$s, menyetel ulang!</string>
 
     <string name="about_disclaimer_title">Sangkalan</string>
-    <string name="about_disclaimer_message" translatable="false">THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE</string>
     <string name="about_translators">Penerjemah</string>
 
     <string name="custom_shortcuts">Jalan pintas kustom</string>
@@ -44,16 +43,13 @@
     <string name="about_app_settings_desc">Digunakan untuk membuka jalan pintas lewat pengunci layar</string>
 
     <string name="about_license">Lisensi</string>
-    <string name="about_license_desc" translatable="false">GPL v3</string>
 
     <string name="about_disclaimer_desc">Dengan menggunakan modul ini, anda setuju bahwa pembuat tidak bertanggung jawab atas segala kerusakan yang mungkin terjadi</string>
 
     <string name="about_source_code">Kode sumber</string>
 
     <string name="about_developers">Pembuat</string>
-    <string name="about_developers_mohammadag" translatable="false">Mohammad Abu-Garbeyyeh</string>
     <string name="about_developers_mohammadag_desc">Pembuat asli sampai dengan versi Kitkat</string>
-    <string name="about_developers_rijul" translatable="false">Rijul Ahuja</string>
     <string name="about_developers_rijul_desc">Pembuat untuk versi Marshmallow dan Lollipop</string>
 
     <string name="settings">Setelan</string>
