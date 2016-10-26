@@ -158,6 +158,8 @@
     <string name="settings_vibrate_error">Vibrate on error</string>
     <string name="settings_appear_anim">Appear animation</string>
     <string name="settings_disappear_anim">Disappear animation</string>
-    <string name="about_translator_indonesian_andrian">Andrian Eko</string>
+    <string name="about_translator_indonesian_andrian">Andrian Eko (Indonesian)</string>
     <string name="about_translator_brazillian_victor">VictorxD70 (Brazilian)</string>
+    <string name="settings_code_relative_taps">Relative taps</string>
+    <string name="settings_code_relative_taps_summary">Highly experimental, will disable lines</string>
 </resources>

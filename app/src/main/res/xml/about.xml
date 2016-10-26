@@ -45,7 +45,7 @@
             android:title="@string/about_developers_rijul"
             android:summary="@string/about_developers_rijul_desc">
             <intent android:action="android.intent.action.VIEW"
-                android:data="https://github.com/andrianeko"/>
+                android:data="https://github.com/Rijul-Ahuja"/>
         </Preference>
     </PreferenceCategory>
 

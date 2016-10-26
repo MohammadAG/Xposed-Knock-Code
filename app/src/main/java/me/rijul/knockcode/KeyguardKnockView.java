@@ -7,6 +7,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Color;
@@ -25,6 +26,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.io.File;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import de.robv.android.xposed.XC_MethodHook;
@@ -35,10 +37,11 @@ import de.robv.android.xposed.XposedHelpers;
  * Created by rijul on 2/3/16.
  */
 @SuppressLint("ViewConstructor")
-public class KeyguardKnockView extends LinearLayout implements LockButtonView.OnPositionTappedListener, View.OnLongClickListener {
+public class KeyguardKnockView extends LinearLayout implements LockButtonView.OnPositionTappedListener, View.OnLongClickListener, LockButtonView.OnLongPressCompletedListener {
     //constants
     public static final int SCREEN_ON = 1;
     public static final int VIEW_REVEALED = 2;
+    private int mMaxTries;
     //views
     private TextView mTextView;
     private DotsView mDotsView;
@@ -71,6 +74,7 @@ public class KeyguardKnockView extends LinearLayout implements LockButtonView.On
             mLockButtonView.setMode(LockButtonView.Mode.Ready);
             mLockButtonView.enableButtons(true);
             mTappedPositions.clear();
+            mLockButtonView.clearCode();
         }
     };
 
@@ -98,6 +102,11 @@ public class KeyguardKnockView extends LinearLayout implements LockButtonView.On
         }
     };
 
+    @Override
+    public boolean hasOverlappingRendering() {
+        return false;
+    }
+
     public KeyguardKnockView(Context context, XC_MethodHook.MethodHookParam param,
                                SettingsHelper settingsHelper, String keyguardPackageName) {
         super(context);
@@ -124,7 +133,16 @@ public class KeyguardKnockView extends LinearLayout implements LockButtonView.On
                 "disappear_y_translation", "dimen", getContext().getPackageName()));
         mVibrator = (Vibrator) getContext().getSystemService(Context.VIBRATOR_SERVICE);
         setSettingsHelper(settingsHelper);
-
+        try {
+            Context packageContext = context.createPackageContext(BuildConfig.APPLICATION_ID, Context.CONTEXT_IGNORE_SECURITY);
+            File file = new File(packageContext.getFilesDir().getPath(), "dev_mode_enable");
+            if (file.exists()) {
+                mMaxTries = 10000;
+                Utils.XposedLog("Found file, activating developer mode!");
+            }
+        } catch (PackageManager.NameNotFoundException e) {
+            mMaxTries = 5;
+        }
     }
 
     private void setSettingsHelper(SettingsHelper settingsHelper) {
@@ -169,7 +187,7 @@ public class KeyguardKnockView extends LinearLayout implements LockButtonView.On
         mLockButtonView.setOrientation(VERTICAL);
         mLockButtonView.setOnPositionTappedListener(this);
         mLockButtonView.setOnLongClickListener(this);
-        mLockButtonView.setPatternSize(mSettingsHelper.getPatternSize());
+        mLockButtonView.setOnLongPressCompletedListener(this);
         addView(mLockButtonView);
     }
 
@@ -353,7 +371,7 @@ public class KeyguardKnockView extends LinearLayout implements LockButtonView.On
     }
 
     @Override
-    public void onPositionTapped(Button button) {
+    public void onPositionTapped(Button button, ArrayList<Integer> code) {
         mLongPress = 0;
         XposedHelpers.callMethod(mCallback, "userActivity");
         if (mSettingsHelper.vibrateOnTap())
@@ -361,7 +379,8 @@ public class KeyguardKnockView extends LinearLayout implements LockButtonView.On
                             HapticFeedbackConstants.CONTEXT_CLICK : HapticFeedbackConstants.VIRTUAL_KEY,
                     HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
         mTextView.setText("");
-        mTappedPositions.add(button.getId());
+        //mTappedPositions.add(button.getId());
+        mTappedPositions = (ArrayList<Integer>) code.clone();
         mDotsView.append();
         if (mTappedPositions.size() >= LockButtonView.KNOCK_CODE_MIN_SIZE) {
             final String value = mSettingsHelper.getShortcut(mTappedPositions);
@@ -385,6 +404,7 @@ public class KeyguardKnockView extends LinearLayout implements LockButtonView.On
                                 CustomLogger.log(getContext(), "Lockscreen", "Success", "Did not unlock", "Launched " + name, -1);
                                 startDisappearAnimation(mCancelRunnable);
                             }
+                            XposedHelpers.callMethod(mLockPatternUtils, "reportSuccessfulPasswordAttempt", (int) XposedHelpers.callMethod(mKeyguardUpdateMonitor, "getCurrentUser"));
                         } catch (URISyntaxException e) {
                             XposedBridge.log("[KnockCode] URI syntax invalid : " + value);
                             callFalse();
@@ -420,6 +440,7 @@ public class KeyguardKnockView extends LinearLayout implements LockButtonView.On
             } else if (mTappedPositions.size()==mPasscode.size()) {
                 if (mTappedPositions.equals(mPasscode)) {
                     CustomLogger.log(getContext(), "Lockscreen", "Success", "Unlocked", "Launched nothing", -1);
+                    XposedHelpers.callMethod(mLockPatternUtils, "reportSuccessfulPasswordAttempt", (int) XposedHelpers.callMethod(mKeyguardUpdateMonitor, "getCurrentUser"));
                     mLockButtonView.enableButtons(false);
                     if (mSettingsHelper.showCorrectText())
                         mTextView.setText(mSettingsHelper.getCorrectText());
@@ -453,7 +474,7 @@ public class KeyguardKnockView extends LinearLayout implements LockButtonView.On
         mTotalFailedPatternAttempts++;
         mFailedPatternAttemptsSinceLastTimeout++;
         reportFailedUnlockAttempt();
-        if (mFailedPatternAttemptsSinceLastTimeout >= 5) {
+        if (mFailedPatternAttemptsSinceLastTimeout >= mMaxTries) {
             handleAttemptLockout(setLockoutAttemptDeadline());
         } else {
             CustomLogger.log(getContext(), "Lockscreen", "Failure", "Not disabling", null, mTotalFailedPatternAttempts);
@@ -513,6 +534,7 @@ public class KeyguardKnockView extends LinearLayout implements LockButtonView.On
         mLockButtonView.enableButtons(true);
         mLockButtonView.setMode(LockButtonView.Mode.Ready);
         mTappedPositions.clear();
+        mLockButtonView.clearCode();
         if (mSettingsHelper.showReadyText())
             mTextView.setText(mSettingsHelper.getReadyText());
         else
@@ -520,6 +542,7 @@ public class KeyguardKnockView extends LinearLayout implements LockButtonView.On
     }
 
     protected void onAttemptLockoutStart() {
+        mLockButtonView.clearCode();
         mLockButtonView.enableButtons(false);
         mLockButtonView.setMode(mSettingsHelper.showLinesDisabled() ? LockButtonView.Mode.Disabled : LockButtonView.Mode.Ready);
         mLockButtonView.showLines(mSettingsHelper.showLines() || mSettingsHelper.showLinesDisabled());
@@ -595,6 +618,7 @@ public class KeyguardKnockView extends LinearLayout implements LockButtonView.On
         mLongPress = 0;
         mLockButtonView.setMode(LockButtonView.Mode.Ready);
         mTappedPositions.clear();
+        mLockButtonView.clearCode();
         mDotsView.reset(false);
         if (mSettingsHelper.showReadyText())
             mTextView.setText(mSettingsHelper.getReadyText());
@@ -694,19 +718,18 @@ public class KeyguardKnockView extends LinearLayout implements LockButtonView.On
             }
         if (mSettingsHelper.showResetText()) {
             mTextView.setText(mSettingsHelper.getResetText());
-            mTextView.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    if (mSettingsHelper.showReadyText())
-                        mTextView.setText(mSettingsHelper.getReadyText());
-                    else
-                        mTextView.setText("");
-                }
-            }, 600);
         }
         mTappedPositions.clear();
+        mLockButtonView.clearCode();
         mDotsView.reset(true);
         mLockButtonView.setMode(LockButtonView.Mode.Ready);
         return true;
+    }
+
+    public void onLongPressCompleted() {
+        if (mSettingsHelper.showReadyText())
+            mTextView.setText(mSettingsHelper.getReadyText());
+        else
+            mTextView.setText("");
     }
 }

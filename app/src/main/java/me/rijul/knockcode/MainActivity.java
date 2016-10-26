@@ -222,6 +222,8 @@ public class MainActivity extends Activity {
                             Toast.makeText(getActivity(), R.string.main_shortcuts_will_delete, Toast.LENGTH_SHORT).show();
                             ((TextView) getView().findViewById(android.R.id.hint)).setText(R.string.knock_confirm_code);
                             mDotsView.reset(true);
+                            maxSize = mFirstTappedPositions.size() + 1;
+                            mLockButtonView.clearCode();
                         }
                     } else {
                         if (mSecondTappedPositions.isEmpty())
@@ -318,6 +320,7 @@ public class MainActivity extends Activity {
                 else
                     ((TextView) getView().findViewById(android.R.id.hint)).setText(getString(R.string.knock_code_confirm_shortcut, mName));
                 mSecondTappedPositions.clear();
+                mLockButtonView.clearCode();
                 mDotsView.reset(true);
             }
             else
@@ -334,13 +337,14 @@ public class MainActivity extends Activity {
                 ((TextView) getView().findViewById(android.R.id.hint)).setText(R.string.knock_enter_code);
             getView().findViewById(R.id.retry_button).setEnabled(false);
             mFirstTappedPositions.clear();
+            mLockButtonView.clearCode();
             mDotsView.reset(true);
         }
 
         @Override
-        public void onPositionTapped(Button button) {
+        public void onPositionTapped(Button button, ArrayList<Integer> code) {
             if (mRequestCode==-1) {
-                mFirstTappedPositions.add(button.getId());
+                mFirstTappedPositions = (ArrayList<Integer>) code.clone();
                 mDotsView.append();
                 if (mFirstTappedPositions.size()==mPasscode.size()) {
                     if (mFirstTappedPositions.equals(mPasscode)) {
@@ -363,7 +367,7 @@ public class MainActivity extends Activity {
             }
             getView().findViewById(R.id.retry_button).setEnabled(true);
             if (!mConfirmationMode) {
-                mFirstTappedPositions.add(button.getId());
+                mFirstTappedPositions = (ArrayList<Integer>) code.clone();
                 mDotsView.append();
                 if (mFirstTappedPositions.size() == maxSize) {
                     Toast.makeText(getActivity(), R.string.main_too_many_taps, Toast.LENGTH_SHORT).show();
@@ -373,7 +377,7 @@ public class MainActivity extends Activity {
                 if (mFirstTappedPositions.size() == LockButtonView.KNOCK_CODE_MIN_SIZE)
                     getView().findViewById(R.id.next_button).setEnabled(true);
             } else {
-                mSecondTappedPositions.add(button.getId());
+                mSecondTappedPositions = (ArrayList<Integer>) code.clone();
                 mDotsView.append();
                 if (mSecondTappedPositions.size() == maxSize) {
                     Toast.makeText(getActivity(), R.string.main_too_many_taps, Toast.LENGTH_SHORT).show();
@@ -442,6 +446,7 @@ public class MainActivity extends Activity {
                 getView().findViewById(R.id.next_button).setEnabled(false);
                 getView().findViewById(R.id.retry_button).setEnabled(true);
                 mDotsView.reset(true);
+                mLockButtonView.clearCode();
             } else {
                 Toast.makeText(getActivity(), getString(R.string.main_conflict_shortcut, result), Toast.LENGTH_SHORT).show();
                 reset();

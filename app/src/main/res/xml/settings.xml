@@ -169,7 +169,8 @@
                 android:title="@string/settings_code_dots_error" />
         </PreferenceScreen>
         <PreferenceScreen
-            android:title="@string/settings_code_lines">
+            android:title="@string/settings_code_lines"
+            android:key="settings_code_lines">
             <SwitchPreference
                 android:defaultValue="true"
                 android:key="settings_code_lines_visible"

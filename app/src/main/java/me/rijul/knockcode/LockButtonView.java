@@ -2,16 +2,61 @@ package me.rijul.knockcode;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.os.Handler;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.TypedValue;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-public class LockButtonView extends LinearLayout implements View.OnClickListener, View.OnLongClickListener {
+public class LockButtonView extends LinearLayout implements View.OnLongClickListener, View.OnTouchListener {
+    private ArrayList<Integer> mEnteredCode = new ArrayList<>();
+
+    final Handler mHandler = new Handler();
+    Runnable mLongPressed = new Runnable() {
+        @Override
+        public void run() {
+            mLongPress = true;
+            if (mLongClickListener!=null)
+                mLongClickListener.onLongClick(LockButtonView.this);
+        }
+    };
+    private boolean mLongPress = false;
+
+    public interface OnLongPressCompletedListener {
+        void onLongPressCompleted();
+    }
+    private OnLongPressCompletedListener onLongPressCompletedListener;
+    public void setOnLongPressCompletedListener(OnLongPressCompletedListener listener) {
+        onLongPressCompletedListener = listener;
+    }
+
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        if (event.getActionMasked() == MotionEvent.ACTION_DOWN)
+            mHandler.postDelayed(mLongPressed, ViewConfiguration.getLongPressTimeout());
+        else if (event.getActionMasked() == MotionEvent.ACTION_UP) {
+            if (mLongPress) {
+                if (onLongPressCompletedListener != null)
+                    onLongPressCompletedListener.onLongPressCompleted();
+                mLongPress = false;
+                return false;
+            }
+            mHandler.removeCallbacks(mLongPressed);
+            mEnteredCode.add(v.getId());
+            if (mListener != null)
+                mListener.onPositionTapped((Button) v, mEnteredCode);
+        }
+        return false;
+    }
+
     public enum Mode {
         Ready, Correct, Incorrect, Disabled
     }
@@ -36,7 +81,7 @@ public class LockButtonView extends LinearLayout implements View.OnClickListener
 
 
     public interface OnPositionTappedListener {
-        void onPositionTapped(Button button);
+        void onPositionTapped(Button button, ArrayList<Integer> position);
     }
 
 
@@ -59,7 +104,6 @@ public class LockButtonView extends LinearLayout implements View.OnClickListener
         readyColor = Utils.getOwnResources(getContext()).getColor(R.color.textColorPrimary);
         correctColor = Utils.getOwnResources(getContext()).getColor(R.color.colorCorrect);
         errorColor = Utils.getOwnResources(getContext()).getColor(R.color.colorWrong);
-        setUpButtons();
     }
 
     private void setUpButtons() {
@@ -67,6 +111,7 @@ public class LockButtonView extends LinearLayout implements View.OnClickListener
         mHors.clear();
         mVers.clear();
         mOutputArray.clear();
+        mEnteredCode.clear();
         this.removeAllViews();
 
         float mLineWidth = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 1, getContext().getResources().getDisplayMetrics());
@@ -97,7 +142,7 @@ public class LockButtonView extends LinearLayout implements View.OnClickListener
                 button.setLayoutParams(buttonParams);
                 button.setBackgroundResource(outValue.resourceId);
                 button.setId(currentColumn + (currentRow - 1) * mPatternSize.numberOfColumns);
-                button.setOnClickListener(this);
+                button.setOnTouchListener(this);
                 button.setOnLongClickListener(this);
                 mButtons.add(button);
                 horizontalLayout.addView(button);
@@ -144,10 +189,16 @@ public class LockButtonView extends LinearLayout implements View.OnClickListener
         invalidate();
     }
 
+    /*
     @Override
     public void onClick(View v) {
+        mEnteredCode.add(v.getId());
         if (mListener!=null)
-            mListener.onPositionTapped((Button) v);
+            mListener.onPositionTapped((Button) v, mEnteredCode);
+    }*/
+
+    public void clearCode() {
+        mEnteredCode.clear();
     }
 
     @Override
@@ -168,13 +219,16 @@ public class LockButtonView extends LinearLayout implements View.OnClickListener
         errorColor = settingsHelper.getLinesErrorColor();
         correctColor = settingsHelper.getLinesCorrectColor();
         disabledColor = settingsHelper.getLinesDisabledColor();
-        Grid patternSizeNew = settingsHelper.getPatternSize();
-        if (!patternSizeNew.equals(mPatternSize))
-            setPatternSize(settingsHelper.getPatternSize());
+        setPatternSize(settingsHelper.getPatternSize());
         if (settingsHelper.showBackground())
             setBackgroundColor(settingsHelper.getBackgroundColor());
         showLines(settingsHelper.showLines());
         showButtonTaps(settingsHelper.showButtonTaps(), settingsHelper.borderlessTaps());
+    }
+
+    @Override
+    public boolean hasOverlappingRendering() {
+        return false;
     }
 
     public void setPatternSize(Grid g) {
@@ -203,7 +257,6 @@ public class LockButtonView extends LinearLayout implements View.OnClickListener
     public void enableButtons(boolean enable) {
         for(Button btn : mButtons)
             btn.setEnabled(enable);
-        //setMode(enable ? Mode.Ready : Mode.Disabled);
     }
 
     public Grid getPatternSize() {return mPatternSize;}
