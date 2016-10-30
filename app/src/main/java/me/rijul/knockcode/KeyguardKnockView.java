@@ -139,7 +139,8 @@ public class KeyguardKnockView extends LinearLayout implements LockButtonView.On
             if (file.exists()) {
                 mMaxTries = 10000;
                 Utils.XposedLog("Found file, activating developer mode!");
-            }
+            } else
+                mMaxTries = 5;
         } catch (PackageManager.NameNotFoundException e) {
             mMaxTries = 5;
         }
