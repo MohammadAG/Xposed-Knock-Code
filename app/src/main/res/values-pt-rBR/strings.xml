@@ -156,6 +156,4 @@
     <string name="settings_vibrate_error">Vibrar ao errar</string>
     <string name="settings_appear_anim">Animação de aparecer</string>
     <string name="settings_disappear_anim">Animação de desaparecer</string>
-    <string name="settings_code_relative_taps">Toques relativos</string>
-    <string name="settings_code_relative_taps_summary">Altamente experimental, irá desativar linhas</string>
 </resources>
