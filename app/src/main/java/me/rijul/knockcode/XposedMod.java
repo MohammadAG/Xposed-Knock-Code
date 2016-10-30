@@ -247,6 +247,13 @@ public class XposedMod implements IXposedHookLoadPackage, IXposedHookZygoteInit,
                         param.thisObject.getClass().getClassLoader());
                 Object pinMode = XposedHelpers.getStaticObjectField(SecurityMode, "PIN");
                 if (!pinMode.equals(securityMode)) {
+                    //find whichever view is enabled
+                    View pinView = (View) callMethod(param.thisObject, "getSecurityView", param.args[0]);
+                    ViewGroup.LayoutParams layoutParams = pinView.getLayoutParams();
+                    //set width and height
+                    layoutParams.height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 400, mContext.getResources().getDisplayMetrics());
+                    layoutParams.width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 320, mContext.getResources().getDisplayMetrics());
+                    pinView.setLayoutParams(layoutParams);
                     mKnockCodeView = null;
                     return;
                 }
