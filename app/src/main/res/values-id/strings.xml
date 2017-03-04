@@ -1,0 +1,153 @@
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <string name="app_name">Knock Code</string>
+    <string name="loading">Memuat…</string>
+
+    <string name="main_retry">Coba lagi</string>
+    <string name="main_next">Selanjutnya</string>
+    <string name="main_select_grid_size">Pilih ukuran grid anda</string>
+    <string name="main_shortcuts_will_delete">Setelah kode diganti, semua jalan pintas akan dihapus</string>
+    <string name="main_too_many_taps">Terlalu banyak sentuhan, menyetel ulang!</string>
+    <string name="main_conflict_shortcut">Kode ini bertentangan dengan %1$s, menyetel ulang!</string>
+
+    <string name="about_disclaimer_title">Sangkalan</string>
+    <string name="about_translators">Penerjemah</string>
+
+    <string name="custom_shortcuts">Jalan pintas kustom</string>
+    <string name="custom_shortcuts_add">Tambah</string>
+    <string name="custom_shortcuts_edit">Sunting</string>
+    <string name="custom_shortcuts_delete">Hapus</string>
+    <string name="custom_shortcut_never_again">Jangan tampilkan ini lagi.</string>
+    <string name="custom_shortcuts_instructions">Untuk memulai jalan pintas kustom lewat pengunci layar, nyalakan pilihan di sebelah. Keluar dari aplikasi akan mengembalikan anda ke pengunci layar.\nPastikan anda menandai aplikasi untuk tampil saat sedang terkunci di setelan aplikasi (tautan tersedia di Tentang)</string>
+
+    <string name="knock_enter_code">Masukkan kode anda</string>
+    <string name="knock_enter_new_code">Masukkan kode baru anda</string>
+    <string name="knock_confirm_code">Konfirmasi kode baru anda</string>
+    <string name="knock_code_correct">Benar</string>
+    <string name="knock_code_wrong">Salah</string>
+    <string name="knock_code_enabling">Perangkat dinonaktifkan, coba lagi setelah %1$d detik</string>
+    <string name="knock_code_longpress_cleared">Lama ditekan, pola dibersihkan!</string>
+    <string name="knock_code_confirm_shortcut">Konfirmasi %1$s</string>
+    <string name="knock_no_match">Kode tidak cocok</string>
+    <string name="knock_match">Kode cocok, sukses!</string>
+
+    <string name="shortcut_helper_apps">Aplikasi</string>
+    <string name="shortcut_helper_activities">Aktivitas</string>
+    <string name="shortcut_helper_target">Pilih sasaran</string>
+
+    <string name="about">Tentang</string>
+
+    <string name="about_help">Bantuan</string>
+    <string name="about_help_description">Sebelum mencari bantuan, pastikan modul aktif dan kunci pola sedang digunakan pada setelan android</string>
+
+    <string name="about_app_settings">Unduh aplikasi penyetelan Xposed Module</string>
+    <string name="about_app_settings_desc">Digunakan untuk membuka jalan pintas lewat pengunci layar</string>
+
+    <string name="about_license">Lisensi</string>
+
+    <string name="about_disclaimer_desc">Dengan menggunakan modul ini, anda setuju bahwa pembuat tidak bertanggung jawab atas segala kerusakan yang mungkin terjadi</string>
+
+    <string name="about_source_code">Kode sumber</string>
+
+    <string name="about_developers">Pembuat</string>
+    <string name="about_developers_mohammadag_desc">Pembuat asli sampai dengan versi Kitkat</string>
+    <string name="about_developers_rijul_desc">Pembuat untuk versi Marshmallow dan Lollipop</string>
+
+    <string name="settings">Setelan</string>
+
+    <string name="settings_module_inactive">Modul non-aktif, sentuh untuk informasi lainnya</string>
+    <string name="settings_module_inactive_title">Knock code non-aktif</string>
+    <string name="settings_module_inactive_message">Knock Code tidak dapat menghubungkan metode Sistem Android yang diperlukan untuk bekerja. Ini mungkin memiliki beberapa sebab:\n
+    &#x2022; <i>Xposed Framework tidak terpasang</i>\n
+    &#x2022; <i>Xposed terpasang dan sudah aktif, tapi anda tidak mengaktifkan Knock Code di Xposed installer (pilihan \"Modules\") atau tidak memuat ulang sistem setelahnya.</i>\n
+    &#x2022; <i>Xposed Framework ternonaktifkan oleh Xposed safemode. Untuk informasi lebih lanjut, lihat pada thread Xposed pada forum XDA.</i>\n
+&#x2022; <i>Knock Code mungkin mengalami kegagalan. Anda sebaiknya mengirim laporan permasalahan di thread XDA saya (Tentang -> Bantuan).</i></string>
+    <string name="settings_require_pattern">Knock code membutuhkan pembuka kunci pola, sentuh untuk menyetel</string>
+    <string name="settings_reboot_upgrade">Pemuatan ulang sistem diperlukan untuk menyelesaikan peningkatan</string>
+
+    <string name="settings_change_code">Ganti knock code</string>
+    <string name="settings_set_code">Menyetel knock code</string>
+
+    <string name="settings_custom_shortcuts_desc">Mulai jalan pintas langsung dari pengunci layar</string>
+
+    <string name="settings_about_desc">Bantuan, kode sumber, perizinan, pembuat, dll.</string>
+
+    <string name="settings_restart_keyguard">Muat ulang layanan keyguard</string>
+    <string name="settings_reboot_required">Pemuatan ulang sistem atau layanan keyguard diperlukan</string>
+
+    <string name="settings_app">Setelan aplikasi</string>
+    <string name="settings_hide_launcher">Sembunyikan ikon aplikasi dari peluncur</string>
+    <string name="settings_failsafe">Pengaman kesalahan</string>
+    <string name="settings_failsafe_summary_on">Lima kali sentuhan lama akan mematikan knock kode dan mengembalikan ke pola awal</string>
+    <string name="settings_failsafe_summary_off">Nonaktifkan dengan risiko anda tanggung sendiri</string>
+
+    <string name="settings_visibility">Jarak penglihatan</string>
+    <string name="settings_code_fullscreen">knock code layar penuh</string>
+
+    <string name="settings_code_dialog">Tampilkan dialog</string>
+    <string name="settings_code_dialog_summary">Saat terlalu banyak percobaan yang salah</string>
+
+    <string name="settings_code_direct_entry">Langsung tampilkan input knock kodeDirectly show knock code entry</string>
+    <string name="settings_code_direct_entry_never">Tidak pernah</string>
+    <string name="settings_code_direct_entry_always">Selalu</string>
+    <string name="settings_code_direct_entry_no_clearable_notif">Jika tidak ada pemberitahuan yang dapat dibersihkan</string>
+    <string name="settings_code_direct_entry_no_notif">Jika tidak ada pemberitahuan</string>
+
+    <string name="settings_code_taps_visible">Tampilkan sentuhan tombol</string>
+    <string name="settings_code_taps_visible_borderless">Sentuhan tombol tak bergaris</string>
+
+    <string name="settings_code_background">Tampilkan latar belakang</string>
+    <string name="settings_code_background_color">Warna latar belakang</string>
+
+    <string name="settings_code_text">Teks</string>
+    <string name="settings_code_text_color">Warna teks</string>
+    <string name="settings_code_text_ready">Tampilan teks masuk</string>
+    <string name="settings_code_text_ready_value">Ganti teks masuk</string>
+    <string name="settings_code_text_correct">Tampilkan teks benar</string>
+    <string name="settings_code_text_correct_value">Teks benar</string>
+    <string name="settings_code_text_error">Tampilkan teks salah</string>
+    <string name="settings_code_text_error_summary">Teks salah</string>
+    <string name="settings_code_text_reset">Tampilkan teks menyetel ulang</string>
+    <string name="settings_code_text_reset_summary">Ketika ditekan dalam waktu lama</string>
+    <string name="settings_code_text_reset_value">Menyetel ulang teks</string>
+    <string name="settings_code_text_disabled">Tampilkan teks perangkat dinonaktifkan</string>
+    <string name="settings_code_text_disabled_summary">Gunakan %1$d untuk merepresentasikan detik tersisa dibawah ini</string>
+    <string name="settings_code_text_disabled_value">Teks perangkat dinonaktifkan</string>
+
+    <string name="settings_code_dots">Titik</string>
+    <string name="settings_code_dots_visible">Tampilkan titik</string>
+    <string name="settings_code_dots_color_ready">Warna awal untuk titik</string>
+    <string name="settings_code_dots_correct">Tampilkan titik benar</string>
+    <string name="settings_code_dots_color_correct">Warna titik benar</string>
+    <string name="settings_code_dots_error">Tampilkan titik kesalahan</string>
+
+    <string name="settings_code_lines">Garis</string>
+    <string name="settings_code_lines_visible">Tampilkan garis</string>
+    <string name="settings_code_lines_color_ready">Warna awal untuk garis</string>
+    <string name="settings_code_lines_correct">Tampilkan garis benar</string>
+    <string name="settings_code_lines_color_correct">Warna garis benar</string>
+    <string name="settings_code_lines_error">Tampilkan garis salah</string>
+    <string name="settings_code_lines_color_error">Warna garis salah</string>
+    <string name="settings_code_lines_disabled">Tampilkan garis nonaktif</string>
+    <string name="settings_code_lines_color_disabled">Warna garis nonaktif</string>
+
+    <string name="settings_code_duration">Durasi</string>
+    <string name="settings_code_duration_summary">Ganti durasi tampil untuk kode benar dan salah</string>
+    <string name="settings_correct_duration">Durasi teks benar</string>
+    <string name="settings_correct_duration_summary">Waktu antara input kode benar dan pembukaan kunci; digunakan untuk menampilkan teks, garis dan titik yang bergerak. \nMenyebabkan lag saat pembukaan kunci!</string>
+    <string name="settings_error_duration">Durasi teks salah</string>
+    <string name="settings_error_duration_summary">Waktu antara input kode salah dan pengembalian; digunakan untuk menampilkan teks, garis dan titik yang bergerak.</string>
+    <string name="settings_code_wait_last_dot">Tunggu animasi titik yang terakhir</string>
+    <string name="settings_code_wait_last_dot_summary">Waktu tunggu 320 ms</string>
+
+    <string name="settings_emergency_button">Tombol darurat</string>
+    <string name="settings_show_emergency_button">Tampilkan tombol darurat</string>
+    <string name="settings_show_emergency_button_summary_off">Nonaktifkan dengan risiko anda tanggung sendiri</string>
+    <string name="settings_emergency_text">Tampilkan pesan darurat</string>
+    <string name="settings_emergency_text_summary_off">Sentuhan tombol akan tetap bekerja</string>
+    <string name="settings_emergency_background">Tampilkan latar belakang tombol darurat</string>
+
+    <string name="settings_vibration">Getaran (mengabaikan setelan sistem)</string>
+    <string name="settings_vibrate_tap">Bergetar saat disentuh</string>
+    <string name="settings_vibrate_long_press">Bergetar saat sentuhan panjang</string>
+    <string name="settings_vibrate_error">Bergetar saat terjadi kesalahan</string>
+</resources>

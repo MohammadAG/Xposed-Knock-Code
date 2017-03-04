@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string-array name="my_apps" translatable="false">
-        <item>@string/menu_playstore</item>
-        <item>@string/menu_xposed</item>
-    </string-array>
-</resources>

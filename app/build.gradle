@@ -1,0 +1,37 @@
+apply plugin: 'com.android.application'
+
+android {
+    signingConfigs {
+        config {
+            keyAlias 'MyKeyStore'
+            keyPassword 'YmdvL9d8T$M!Y2'
+            storeFile file('/home/rijul/Android/keyStore.jks')
+            storePassword 'YmdvL9d8T$M!Y2'
+        }
+    }
+    compileSdkVersion 23
+    buildToolsVersion "23.0.2"
+
+    defaultConfig {
+        applicationId "me.rijul.knockcode"
+        minSdkVersion 21
+        targetSdkVersion 22
+        versionCode 47
+        versionName "1.4.7 (test)"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.config
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    provided 'de.robv.android.xposed:api:82'
+    compile project(':ColorPickerPreference')
+    compile 'com.google.android.gms:play-services-analytics:8.4.0'
+    testCompile 'junit:junit:4.12'
+}

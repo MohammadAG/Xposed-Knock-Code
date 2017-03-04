@@ -1,0 +1,305 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <Preference
+        android:key="settings_change_code"
+        android:title="@string/settings_set_code"/>
+    <Preference
+        android:title="@string/custom_shortcuts"
+        android:summary="@string/settings_custom_shortcuts_desc"
+        android:key="settings_custom_shortcuts">
+        <intent android:action="android.intent.action.VIEW"
+            android:targetPackage="me.rijul.knockcode"
+            android:targetClass="me.rijul.knockcode.CustomShortcutActivity"/>
+    </Preference>
+    <Preference
+        android:title="@string/about"
+        android:summary="@string/settings_about_desc">
+        <intent android:action="android.intent.action.VIEW"
+            android:targetPackage="me.rijul.knockcode"
+            android:targetClass="me.rijul.knockcode.AboutActivity"/>
+    </Preference>
+
+    <PreferenceCategory
+        android:title="@string/settings_app">
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="settings_hide_launcher"
+            android:title="@string/settings_hide_launcher" />
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="settings_failsafe"
+            android:title="@string/settings_failsafe"
+            android:summaryOn="@string/settings_failsafe_summary_on"
+            android:summaryOff="@string/settings_failsafe_summary_off"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/settings_visibility">
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="settings_code_fullscreen"
+            android:title="@string/settings_code_fullscreen" />
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="settings_code_dialog"
+            android:title="@string/settings_code_dialog"
+            android:summary="@string/settings_code_dialog_summary"/>
+        <ListPreference
+            android:key="settings_code_direct_entry_policy"
+            android:defaultValue="NEVER"
+            android:title="@string/settings_code_direct_entry"
+            android:entries="@array/settings_code_direct_entry_entries"
+            android:entryValues="@array/settings_code_direct_entry_values"
+            android:summary="%1$s" />
+        <!--<SwitchPreference
+            android:key="settings_code_force_none"
+            android:defaultValue="false"
+            android:title="Show notifications first"
+            android:summary="Use this to force the notification swipe up screen (not required on most devices)" />-->
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="settings_code_taps_visible"
+            android:title="@string/settings_code_taps_visible" />
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="settings_code_taps_visible_borderless"
+            android:title="@string/settings_code_taps_visible_borderless"
+            android:dependency="settings_code_taps_visible"/>
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="settings_code_background"
+            android:title="@string/settings_code_background" />
+        <net.margaritov.preference.colorpicker.ColorPickerPreference
+            android:key="settings_code_background_color"
+            android:title="@string/settings_code_background_color"
+            android:defaultValue="@color/backgroundColor"
+            alphaSlider="true"
+            hexValue="true"
+            android:dependency="settings_code_background"/>
+        <PreferenceScreen
+            android:title="@string/settings_code_text">
+            <net.margaritov.preference.colorpicker.ColorPickerPreference
+                android:key="settings_code_text_color"
+                android:title="@string/settings_code_text_color"
+                android:defaultValue="@color/windowBackground"
+                alphaSlider="true"
+                hexValue="true" />
+            <SwitchPreference
+                android:defaultValue="true"
+                android:key="settings_code_text_ready"
+                android:title="@string/settings_code_text_ready"/>
+            <EditTextPreference
+                android:defaultValue="@string/knock_enter_code"
+                android:summary="@string/knock_enter_code"
+                android:key="settings_code_text_ready_value"
+                android:title="@string/settings_code_text_ready_value"
+                android:dependency="settings_code_text_ready"/>
+            <SwitchPreference
+                android:defaultValue="true"
+                android:key="settings_code_text_correct"
+                android:title="@string/settings_code_text_correct"/>
+            <EditTextPreference
+                android:defaultValue="@string/knock_code_correct"
+                android:summary="@string/knock_code_correct"
+                android:key="settings_code_text_correct_value"
+                android:title="@string/settings_code_text_correct_value"
+                android:dependency="settings_code_text_correct"/>
+            <SwitchPreference
+                android:defaultValue="true"
+                android:key="settings_code_text_error"
+                android:title="@string/settings_code_text_error"/>
+            <EditTextPreference
+                android:summary="@string/knock_code_wrong"
+                android:defaultValue="@string/knock_code_wrong"
+                android:key="settings_code_text_error_value"
+                android:title="@string/settings_code_text_error_summary"
+                android:dependency="settings_code_text_error"/>
+            <SwitchPreference
+                android:defaultValue="true"
+                android:key="settings_code_text_reset"
+                android:title="@string/settings_code_text_reset"
+                android:summary="@string/settings_code_text_reset_summary"/>
+            <EditTextPreference
+                android:summary="@string/knock_code_longpress_cleared"
+                android:defaultValue="@string/knock_code_longpress_cleared"
+                android:key="settings_code_text_reset_value"
+                android:title="@string/settings_code_text_reset_value"
+                android:dependency="settings_code_text_reset"/>
+            <SwitchPreference
+                android:defaultValue="true"
+                android:key="settings_code_text_disabled"
+                android:title="@string/settings_code_text_disabled"
+                android:summaryOn="@string/settings_code_text_disabled_summary"/>
+            <EditTextPreference
+                android:summary="@string/knock_code_enabling"
+                android:defaultValue="@string/knock_code_enabling"
+                android:key="settings_code_text_disabled_value"
+                android:title="@string/settings_code_text_disabled_value"
+                android:dependency="settings_code_text_disabled"/>
+        </PreferenceScreen>
+        <PreferenceScreen
+            android:title="@string/settings_code_dots">
+            <SwitchPreference
+                android:defaultValue="true"
+                android:key="settings_code_dots_visible"
+                android:title="@string/settings_code_dots_visible" />
+            <net.margaritov.preference.colorpicker.ColorPickerPreference
+                android:key="settings_code_dots_color_ready"
+                android:title="@string/settings_code_dots_color_ready"
+                android:defaultValue="@color/windowBackground"
+                alphaSlider="true"
+                hexValue="true"
+                android:dependency="settings_code_dots_visible"/>
+            <SwitchPreference
+                android:defaultValue="false"
+                android:key="settings_code_dots_correct"
+                android:title="@string/settings_code_dots_correct" />
+            <net.margaritov.preference.colorpicker.ColorPickerPreference
+                android:key="settings_code_dots_color_correct"
+                android:title="@string/settings_code_dots_color_correct"
+                android:defaultValue="@color/colorCorrect"
+                alphaSlider="true"
+                hexValue="true"
+                android:dependency="settings_code_dots_correct"/>
+            <SwitchPreference
+                android:defaultValue="true"
+                android:key="settings_code_dots_error"
+                android:title="@string/settings_code_dots_error" />
+        </PreferenceScreen>
+        <PreferenceScreen
+            android:title="@string/settings_code_lines"
+            android:key="settings_code_lines">
+            <SwitchPreference
+                android:defaultValue="true"
+                android:key="settings_code_lines_visible"
+                android:title="@string/settings_code_lines_visible" />
+            <net.margaritov.preference.colorpicker.ColorPickerPreference
+                android:key="settings_code_lines_color_ready"
+                android:title="@string/settings_code_lines_color_ready"
+                android:defaultValue="@color/windowBackground"
+                alphaSlider="true"
+                hexValue="true"
+                android:dependency="settings_code_lines_visible"/>
+            <SwitchPreference
+                android:defaultValue="true"
+                android:key="settings_code_lines_correct"
+                android:title="@string/settings_code_lines_correct" />
+            <net.margaritov.preference.colorpicker.ColorPickerPreference
+                android:key="settings_code_lines_color_correct"
+                android:title="@string/settings_code_lines_color_correct"
+                android:defaultValue="@color/colorCorrect"
+                alphaSlider="true"
+                hexValue="true"
+                android:dependency="settings_code_lines_correct"/>
+            <SwitchPreference
+                android:defaultValue="true"
+                android:key="settings_code_lines_error"
+                android:title="@string/settings_code_lines_error" />
+            <net.margaritov.preference.colorpicker.ColorPickerPreference
+                android:key="settings_code_lines_color_error"
+                android:title="@string/settings_code_lines_color_error"
+                android:defaultValue="@color/colorWrong"
+                alphaSlider="true"
+                hexValue="true"
+                android:dependency="settings_code_lines_error"/>
+            <SwitchPreference
+                android:defaultValue="true"
+                android:key="settings_code_lines_disabled"
+                android:title="@string/settings_code_lines_disabled" />
+            <net.margaritov.preference.colorpicker.ColorPickerPreference
+                android:key="settings_code_lines_color_disabled"
+                android:title="@string/settings_code_lines_color_disabled"
+                android:defaultValue="@android:color/darker_gray"
+                alphaSlider="true"
+                hexValue="true"
+                android:dependency="settings_code_lines_disabled"/>
+        </PreferenceScreen>
+        <PreferenceScreen
+            android:title="@string/settings_code_duration"
+            android:summary="@string/settings_code_duration_summary">
+            <me.rijul.knockcode.SeekBarPreference
+                android:key="settings_correct_duration"
+                android:title="@string/settings_correct_duration"
+                android:summary="@string/settings_correct_duration_summary"
+                minimum="0"
+                maximum="1000"
+                interval="50"
+                android:defaultValue="50"
+                monitorBoxEnabled="true"
+                monitorBoxUnit="ms" />
+            <me.rijul.knockcode.SeekBarPreference
+                android:key="settings_error_duration"
+                android:title="@string/settings_error_duration"
+                android:summary="@string/settings_error_duration_summary"
+                minimum="0"
+                maximum="1000"
+                interval="50"
+                android:defaultValue="400"
+                monitorBoxEnabled="true"
+                monitorBoxUnit="ms" />
+            <SwitchPreference
+                android:defaultValue="true"
+                android:key="settings_code_wait_last_dot"
+                android:title="@string/settings_code_wait_last_dot"
+                android:summary="@string/settings_code_wait_last_dot_summary"/>
+            <me.rijul.knockcode.SeekBarPreference
+                android:key="settings_appear_duration"
+                android:title="@string/settings_appear_anim"
+                minimum="0"
+                maximum="1000"
+                interval="50"
+                android:defaultValue="250"
+                monitorBoxEnabled="true"
+                monitorBoxUnit="ms" />
+            <me.rijul.knockcode.SeekBarPreference
+                android:key="settings_disappear_duration"
+                android:title="@string/settings_disappear_anim"
+                minimum="0"
+                maximum="1000"
+                interval="50"
+                android:defaultValue="250"
+                monitorBoxEnabled="true"
+                monitorBoxUnit="ms" />
+        </PreferenceScreen>
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/settings_emergency_button">
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="settings_emergency_button"
+            android:title="@string/settings_show_emergency_button"
+            android:summaryOff="@string/settings_show_emergency_button_summary_off"/>
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="settings_emergency_text"
+            android:title="@string/settings_emergency_text"
+            android:summaryOff="@string/settings_emergency_text_summary_off"
+            android:dependency="settings_emergency_button"/>
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="settings_emergency_background"
+            android:title="@string/settings_emergency_background"
+            android:summaryOff="@string/settings_emergency_text_summary_off"
+            android:dependency="settings_emergency_button"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/settings_vibration">
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="settings_vibrate_tap"
+            android:title="@string/settings_vibrate_tap" />
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="settings_vibrate_long_press"
+            android:title="@string/settings_vibrate_long_press" />
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="settings_vibrate_error"
+            android:title="@string/settings_vibrate_error"/>
+    </PreferenceCategory>
+
+</PreferenceScreen>

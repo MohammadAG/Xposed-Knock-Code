@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <TextView
+        android:id="@+id/module_inactive"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimaryDark"
+        android:elevation="4dp"
+        android:gravity="center_horizontal"
+        android:paddingBottom="8dp"
+        android:paddingTop="8dp"
+        android:text="@string/settings_module_inactive"
+        android:textColor="@color/windowBackground"
+        android:textSize="14sp"
+        android:textStyle="italic"
+        android:visibility="gone"
+        tools:ignore="UnusedAttribute" />
+    <TextView
+        android:id="@+id/pattern_inactive"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimaryDarker"
+        android:elevation="4dp"
+        android:gravity="center_horizontal"
+        android:paddingBottom="8dp"
+        android:paddingTop="8dp"
+        android:text="@string/settings_require_pattern"
+        android:textColor="@color/windowBackground"
+        android:textSize="14sp"
+        android:textStyle="italic"
+        android:visibility="gone"
+        tools:ignore="UnusedAttribute" />
+    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+</LinearLayout>
